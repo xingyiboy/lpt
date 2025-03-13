@@ -19,7 +19,7 @@ import com.ruoyi.system.api.model.LoginUser;
 
 /**
  * token 控制
- * 
+ *
  * @author ruoyi
  */
 @RestController
@@ -38,6 +38,14 @@ public class TokenController
         LoginUser userInfo = sysLoginService.login(form.getUsername(), form.getPassword());
         // 获取登录token
         return R.ok(tokenService.createToken(userInfo));
+    }
+
+    @PostMapping("register")
+    public R<?> register(@RequestBody RegisterBody registerBody)
+    {
+        // 用户注册
+        sysLoginService.register(registerBody.getUsername(), registerBody.getPassword());
+        return R.ok();
     }
 
     @DeleteMapping("logout")
@@ -68,11 +76,5 @@ public class TokenController
         return R.ok();
     }
 
-    @PostMapping("register")
-    public R<?> register(@RequestBody RegisterBody registerBody)
-    {
-        // 用户注册
-        sysLoginService.register(registerBody.getUsername(), registerBody.getPassword());
-        return R.ok();
-    }
+
 }

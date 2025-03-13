@@ -1,8 +1,8 @@
 /*
  * @Author: xingyi 2416820386@qq.com
  * @Date: 2025-03-13 10:21:47
- * @LastEditors: xingyi 2416820386@qq.com
- * @LastEditTime: 2025-03-13 17:46:58
+ * @LastEditors: xingyi && 2416820386@qq.com
+ * @LastEditTime: 2025-03-13 21:51:26
  * @FilePath: \react-ui\src\locales\zh-CN\pages.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -39,7 +39,7 @@ export default {
   'pages.searchTable.updateForm.ruleConfig': '规则配置',
   'pages.searchTable.updateForm.basicConfig': '基本信息',
   'pages.searchTable.updateForm.ruleName.nameLabel': '规则名称',
-  'pages.searchTable.updateForm.ruleName.nameRules': '请输入规则名称！',
+  'pages.searchTable.updateForm.ruleName.nameRules': '请输入验证码！',
   'pages.searchTable.updateForm.ruleDesc.descLabel': '规则描述',
   'pages.searchTable.updateForm.ruleDesc.descPlaceholder': '请输入至少五个字符',
   'pages.searchTable.updateForm.ruleDesc.descRules': '请输入至少五个字符的规则描述！',

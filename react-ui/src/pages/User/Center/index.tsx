@@ -1,5 +1,12 @@
 import { getUserInfo } from '@/services/session';
-import { MailOutlined, ManOutlined, MobileOutlined, UserOutlined } from '@ant-design/icons';
+import {
+  LockFilled,
+  MailOutlined,
+  ManOutlined,
+  MobileOutlined,
+  RiseOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
 import { PageLoading } from '@ant-design/pro-components';
 import { useRequest } from '@umijs/max';
 import { Card, Col, Divider, List, Row } from 'antd';
@@ -43,7 +50,8 @@ const Center: React.FC = () => {
     phonenumber,
     email,
     sex,
-    dept,
+    secretKey,
+    offset,
   }: Partial<API.CurrentUser>) => {
     return (
       <List>
@@ -91,17 +99,28 @@ const Center: React.FC = () => {
           </div>
           <div>{email}</div>
         </List.Item>
-        {/* <List.Item>
+        <List.Item>
           <div>
-            <ClusterOutlined
+            <LockFilled
               style={{
                 marginRight: 8,
               }}
             />
-            部门
+            密钥
           </div>
-          <div>{dept?.deptName}</div>
-        </List.Item> */}
+          <div>{secretKey}</div>
+        </List.Item>
+        <List.Item>
+          <div>
+            <RiseOutlined
+              style={{
+                marginRight: 8,
+              }}
+            />
+            偏移量
+          </div>
+          <div>{offset}</div>
+        </List.Item>
       </List>
     );
   };

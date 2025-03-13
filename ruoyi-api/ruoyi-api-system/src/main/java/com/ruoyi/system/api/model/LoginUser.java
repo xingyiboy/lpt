@@ -58,6 +58,28 @@ public class LoginUser implements Serializable
      */
     private SysUser sysUser;
 
+    /** 密钥 */
+    private String secretKey;
+
+    /** 偏移量 */
+    private String offset;
+
+    public String getSecretKey() {
+        return secretKey;
+    }
+
+    public void setSecretKey(String secretKey) {
+        this.secretKey = secretKey;
+    }
+
+    public String getOffset() {
+        return offset;
+    }
+
+    public void setOffset(String offset) {
+        this.offset = offset;
+    }
+
     public String getToken()
     {
         return token;

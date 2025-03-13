@@ -6,7 +6,7 @@ import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
 import { setAlpha } from '@ant-design/pro-components';
 import { useEmotionCss } from '@ant-design/use-emotion-css';
 import { history, useModel } from '@umijs/max';
-import { Avatar, Dropdown, Spin } from 'antd';
+import { Avatar, Dropdown, Modal, Spin } from 'antd';
 import { stringify } from 'querystring';
 import type { MenuInfo } from 'rc-menu/lib/interface';
 import React, { useCallback } from 'react';
@@ -98,10 +98,18 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
     (event: MenuInfo) => {
       const { key } = event;
       if (key === 'logout') {
-        flushSync(() => {
-          setInitialState((s) => ({ ...s, currentUser: undefined }));
+        Modal.confirm({
+          title: '确认退出',
+          content: '是否确认退出登录？',
+          okText: '确认',
+          cancelText: '取消',
+          onOk: async () => {
+            flushSync(() => {
+              setInitialState((s) => ({ ...s, currentUser: undefined }));
+            });
+            await loginOut();
+          },
         });
-        loginOut();
         return;
       }
       history.push(`/account/${key}`);
@@ -158,6 +166,8 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
         onClick: onMenuClick,
         items: menuItems,
       }}
+      trigger={['click']}
+      placement="bottomRight"
       arrow
     >
       <span className={actionClassName}>

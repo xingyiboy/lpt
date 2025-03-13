@@ -1,17 +1,14 @@
 import { clearSessionToken, setSessionToken } from '@/access';
 import Footer from '@/components/Footer';
 import { getFakeCaptcha } from '@/services/ant-design-pro/login';
-import { getCaptchaImg, login } from '@/services/system/auth';
+import { getCaptchaImg, login, register } from '@/services/system/auth';
 import { LockOutlined, MobileOutlined, UserOutlined } from '@ant-design/icons';
-import {
-  LoginForm,
-  ProFormCaptcha,
-  ProFormCheckbox,
-  ProFormText,
-} from '@ant-design/pro-components';
+import { LoginForm, ProFormCaptcha, ProFormText } from '@ant-design/pro-components';
 import { useEmotionCss } from '@ant-design/use-emotion-css';
 import { FormattedMessage, history, SelectLang, useIntl, useModel } from '@umijs/max';
-import { Alert, Col, Image, message, Row, Tabs } from 'antd';
+import { Alert, Checkbox, Col, Form, Image, message, Row, Tabs } from 'antd';
+
+import { decrypt, encrypt } from '@/utils/crypto';
 import React, { useEffect, useState } from 'react';
 import { flushSync } from 'react-dom';
 
@@ -55,9 +52,12 @@ const LoginMessage: React.FC<{
 const Login: React.FC = () => {
   const [userLoginState, setUserLoginState] = useState<API.LoginResult>({ code: 200 });
   const [type, setType] = useState<string>('account');
+  const [isRegister, setIsRegister] = useState<boolean>(false);
   const { initialState, setInitialState } = useModel('@@initialState');
   const [captchaCode, setCaptchaCode] = useState<string>('');
   const [uuid, setUuid] = useState<string>('');
+  const [form] = Form.useForm(); // 添加这行来创建表单实例
+  const [rememberMe, setRememberMe] = useState<boolean>(false);
 
   const containerClassName = useEmotionCss(() => {
     return {
@@ -92,38 +92,78 @@ const Login: React.FC = () => {
     }
   };
 
+  // 在组件加载时获取存储的账号密码
+  useEffect(() => {
+    const savedUsername = localStorage.getItem('rememberedUsername');
+    const savedPassword = localStorage.getItem('rememberedPassword');
+
+    if (savedUsername && savedPassword) {
+      try {
+        const decryptedUsername = decrypt(savedUsername);
+        const decryptedPassword = decrypt(savedPassword);
+        form.setFieldsValue({
+          username: decryptedUsername,
+          password: decryptedPassword,
+        });
+        setRememberMe(true);
+      } catch (error) {
+        console.error('解密失败:', error);
+        localStorage.removeItem('rememberedUsername');
+        localStorage.removeItem('rememberedPassword');
+      }
+    }
+  }, []);
+
   const handleSubmit = async (values: API.LoginParams) => {
     try {
-      // 登录
-      const response = await login({ ...values, uuid });
+      const response = await (isRegister ? register : login)({ ...values, uuid });
       if (response.code === 200) {
-        const defaultLoginSuccessMessage = intl.formatMessage({
-          id: 'pages.login.success',
-          defaultMessage: '登录成功！',
+        const defaultSuccessMessage = intl.formatMessage({
+          id: isRegister ? 'pages.register.success' : 'pages.login.success',
+          defaultMessage: isRegister ? '注册成功！' : '登录成功！',
         });
+        message.success(defaultSuccessMessage);
+
+        if (isRegister) {
+          getCaptchaCode();
+          setIsRegister(false);
+          return;
+        }
+
         const current = new Date();
         const expireTime = current.setTime(current.getTime() + 1000 * 12 * 60 * 60);
         setSessionToken(response.data?.access_token, response.data?.access_token, expireTime);
-        message.success(defaultLoginSuccessMessage);
         await fetchUserInfo();
-        console.log('login ok');
         const urlParams = new URL(window.location.href).searchParams;
         history.push(urlParams.get('redirect') || '/');
+
+        // 如果选择记住密码，则加密存储
+        if (rememberMe) {
+          localStorage.setItem('rememberedUsername', encrypt(values.username));
+          localStorage.setItem('rememberedPassword', encrypt(values.password));
+        } else {
+          // 如果取消记住密码，则清除存储
+          localStorage.removeItem('rememberedUsername');
+          localStorage.removeItem('rememberedPassword');
+        }
         return;
       } else {
-        console.log(response.msg);
+        console.log('登录失败:', response.msg);
         clearSessionToken();
-        // 如果失败去设置用户错误信息
-        setUserLoginState({ ...response, type });
+        setUserLoginState({
+          code: response.code,
+          msg: response.msg,
+          type,
+        });
         getCaptchaCode();
       }
     } catch (error) {
-      const defaultLoginFailureMessage = intl.formatMessage({
-        id: 'pages.login.failure',
-        defaultMessage: '登录失败，请重试！',
+      const defaultFailureMessage = intl.formatMessage({
+        id: isRegister ? 'pages.register.failure' : 'pages.login.failure',
+        defaultMessage: isRegister ? '注册失败，请重试！' : '登录失败，请重试！',
       });
       console.log(error);
-      message.error(defaultLoginFailureMessage);
+      message.error(defaultFailureMessage);
     }
   };
   const { code } = userLoginState;
@@ -132,6 +172,32 @@ const Login: React.FC = () => {
   useEffect(() => {
     getCaptchaCode();
   }, []);
+
+  // 替换原有的自动登录复选框
+  const renderRememberPassword = () => (
+    <div style={{ marginBottom: 24 }}>
+      <Checkbox
+        checked={rememberMe}
+        onChange={(e) => {
+          setRememberMe(e.target.checked);
+          if (!e.target.checked) {
+            localStorage.removeItem('rememberedUsername');
+            localStorage.removeItem('rememberedPassword');
+          }
+        }}
+      >
+        记住账号密码
+      </Checkbox>
+      <a
+        style={{
+          float: 'right',
+        }}
+        onClick={() => setIsRegister(!isRegister)}
+      >
+        {isRegister ? '已有账号？去登录' : '没有账号？去注册'}
+      </a>
+    </div>
+  );
 
   return (
     <div className={containerClassName}>
@@ -147,11 +213,20 @@ const Login: React.FC = () => {
             minWidth: 280,
             maxWidth: '75vw',
           }}
-          // logo={<img alt="logo" src="/logo.svg" />}
+          logo={<img alt="logo" src="/logo.svg" />}
           title="令牌通"
           subTitle={intl.formatMessage({ id: 'pages.layouts.userLayout.title' })}
           initialValues={{
             autoLogin: true,
+          }}
+          submitter={{
+            searchConfig: {
+              submitText: isRegister ? '注册' : '登录',
+            },
+            submitButtonProps: {
+              block: true,
+              size: 'large',
+            },
           }}
           // actions={[
           //   <FormattedMessage
@@ -164,6 +239,7 @@ const Login: React.FC = () => {
           onFinish={async (values) => {
             await handleSubmit(values as API.LoginParams);
           }}
+          form={form}
         >
           <Tabs
             activeKey={type}
@@ -172,34 +248,35 @@ const Login: React.FC = () => {
             items={[
               {
                 key: 'account',
-                label: intl.formatMessage({
-                  id: 'pages.login.accountLogin.tab',
-                  defaultMessage: '账户密码登录',
-                }),
+                label: isRegister ? '账户注册' : '账户密码登录',
               },
-              {
-                key: 'mobile',
-                label: intl.formatMessage({
-                  id: 'pages.login.phoneLogin.tab',
-                  defaultMessage: '手机号登录',
-                }),
-              },
+              ...(!isRegister
+                ? [
+                    {
+                      key: 'mobile',
+                      label: '手机号登录',
+                    },
+                  ]
+                : []),
             ]}
           />
 
           {code !== 200 && loginType === 'account' && (
             <LoginMessage
-              content={intl.formatMessage({
-                id: 'pages.login.accountLogin.errorMessage',
-                defaultMessage: '账户或密码错误',
-              })}
+              content={
+                userLoginState.msg ||
+                intl.formatMessage({
+                  id: 'pages.login.accountLogin.errorMessage',
+                  defaultMessage: '账户或密码错误',
+                })
+              }
             />
           )}
           {type === 'account' && (
             <>
               <ProFormText
                 name="username"
-                initialValue="xingyi"
+                initialValue=""
                 fieldProps={{
                   size: 'large',
                   prefix: <UserOutlined />,
@@ -222,7 +299,7 @@ const Login: React.FC = () => {
               />
               <ProFormText.Password
                 name="password"
-                initialValue="123456"
+                initialValue=""
                 fieldProps={{
                   size: 'large',
                   prefix: <LockOutlined />,
@@ -368,22 +445,7 @@ const Login: React.FC = () => {
               />
             </>
           )}
-          <div
-            style={{
-              marginBottom: 24,
-            }}
-          >
-            <ProFormCheckbox noStyle name="autoLogin">
-              <FormattedMessage id="pages.login.rememberMe" defaultMessage="记住密码" />
-            </ProFormCheckbox>
-            <a
-              style={{
-                float: 'right',
-              }}
-            >
-              <FormattedMessage id="pages.login.forgotPassword" defaultMessage="忘记密码" />
-            </a>
-          </div>
+          {renderRememberPassword()}
         </LoginForm>
       </div>
       <Footer />

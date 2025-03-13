@@ -42,7 +42,7 @@ import com.ruoyi.system.service.ISysUserService;
 
 /**
  * 用户信息
- * 
+ *
  * @author ruoyi
  */
 @RestController
@@ -142,13 +142,9 @@ public class SysUserController extends BaseController
     public R<Boolean> register(@RequestBody SysUser sysUser)
     {
         String username = sysUser.getUserName();
-        if (!("true".equals(configService.selectConfigByKey("sys.account.registerUser"))))
-        {
-            return R.fail("当前系统没有开启注册功能！");
-        }
         if (!userService.checkUserNameUnique(sysUser))
         {
-            return R.fail("保存用户'" + username + "'失败，注册账号已存在");
+            return R.fail("注册用户'" + username + "'失败，注册账号已存在");
         }
         return R.ok(userService.registerUser(sysUser));
     }
@@ -165,25 +161,21 @@ public class SysUserController extends BaseController
 
     /**
      * 获取用户信息
-     * 
+     *
      * @return 用户信息
      */
     @GetMapping("getInfo")
     public AjaxResult getInfo()
     {
-        LoginUser loginUser = SecurityUtils.getLoginUser();
-        SysUser user = loginUser.getSysUser();
+        Long userId = SecurityUtils.getUserId();
+        SysUser loginUser = userService.selectUserById(userId);
         // 角色集合
-        Set<String> roles = permissionService.getRolePermission(user);
+        Set<String> roles = permissionService.getRolePermission(loginUser);
         // 权限集合
-        Set<String> permissions = permissionService.getMenuPermission(user);
-        if (!loginUser.getPermissions().equals(permissions))
-        {
-            loginUser.setPermissions(permissions);
-            tokenService.refreshToken(loginUser);
-        }
+        Set<String> permissions = permissionService.getMenuPermission(loginUser);
+
         AjaxResult ajax = AjaxResult.success();
-        ajax.put("user", user);
+        ajax.put("user", loginUser);
         ajax.put("roles", roles);
         ajax.put("permissions", permissions);
         return ajax;

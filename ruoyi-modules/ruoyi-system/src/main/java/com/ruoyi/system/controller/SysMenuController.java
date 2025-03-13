@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 import com.ruoyi.common.redis.service.RedisService;
 import com.ruoyi.system.api.domain.SysRole;
 import com.ruoyi.system.domain.vo.RouterVo;
+import com.ruoyi.system.mapper.SysRoleMapper;
 import com.ruoyi.system.service.ISysRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -43,6 +44,8 @@ public class SysMenuController extends BaseController
     private ISysRoleService roleService;
     @Autowired
     private RedisService redisService;
+    @Autowired
+    private SysRoleMapper roleMapper;
 
     /**
      * 获取菜单列表
@@ -163,8 +166,8 @@ public class SysMenuController extends BaseController
     public AjaxResult getRouters()
     {
         Long userId = SecurityUtils.getUserId();
-        List<SysRole> roles = roleService.selectRolesByUserId(userId);
-        Long roleId = roles.get(0).getRoleId();
+        List<Long> roles = roleMapper.selectRoleListByUserId(userId);
+        Long roleId = roles.get(0);
 
         // 从Redis中获取缓存的路由数据
         String cacheKey = "menu:router:" + roleId;
@@ -176,8 +179,8 @@ public class SysMenuController extends BaseController
             List<SysMenu> menus = menuService.selectMenuTreeByUserId(userId);
             routerVos = menuService.buildMenus(menus);
 
-            // 将数据存入Redis，设置过期时间为1天
-            redisService.setCacheObject(cacheKey, routerVos, 24L, TimeUnit.HOURS);
+            // 将数据存入 Redis，设置为永久存储
+            redisService.setCacheObject(cacheKey, routerVos);
         }
 
         return success(routerVos);
