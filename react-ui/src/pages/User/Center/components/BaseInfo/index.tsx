@@ -1,9 +1,8 @@
-import React from 'react';
-import { Form, message, Row } from 'antd';
-import { FormattedMessage, useIntl } from '@umijs/max';
-import { ProForm, ProFormRadio, ProFormText } from '@ant-design/pro-components';
 import { updateUserProfile } from '@/services/system/user';
-
+import { ProForm, ProFormRadio, ProFormText } from '@ant-design/pro-components';
+import { FormattedMessage, useIntl } from '@umijs/max';
+import { Form, message, Row } from 'antd';
+import React from 'react';
 
 export type BaseInfoProps = {
   values: Partial<API.CurrentUser> | undefined;
@@ -50,7 +49,7 @@ const BaseInfo: React.FC<BaseInfoProps> = (props) => {
             name="phonenumber"
             label={intl.formatMessage({
               id: 'system.user.phonenumber',
-              defaultMessage: '手机号码',
+              defaultMessage: '用户电话',
             })}
             width="xl"
             placeholder="请输入手机号码"

@@ -1,4 +1,9 @@
-import { QuestionCircleOutlined } from '@ant-design/icons';
+/*
+ * @Date: 2025-03-13 10:21:47
+ * @LastEditors: xingyi && 2416820386@qq.com
+ * @LastEditTime: 2025-03-13 18:17:41
+ * @FilePath: \react-ui\src\components\RightContent\index.tsx
+ */
 import { useEmotionCss } from '@ant-design/use-emotion-css';
 import { SelectLang, useModel } from '@umijs/max';
 import React from 'react';
@@ -41,14 +46,6 @@ const GlobalHeaderRight: React.FC = () => {
 
   return (
     <div className={className}>
-      <span
-        className={actionClassName}
-        onClick={() => {
-          window.open('https://pro.ant.design/docs/getting-started');
-        }}
-      >
-        <QuestionCircleOutlined />
-      </span>
       <Avatar menu={true} />
       <SelectLang className={actionClassName} />
     </div>

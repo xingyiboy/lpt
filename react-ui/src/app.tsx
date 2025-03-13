@@ -6,15 +6,18 @@ import { SettingDrawer } from '@ant-design/pro-components';
 import type { RunTimeLayoutConfig } from '@umijs/max';
 import { history, Link } from '@umijs/max';
 import defaultSettings from '../config/defaultSettings';
-import { errorConfig } from './requestErrorConfig';
 import { clearSessionToken, getAccessToken, getRefreshToken, getTokenExpireTime } from './access';
-import { getRemoteMenu, getRoutersInfo, getUserInfo, patchRouteWithRemoteMenus, setRemoteMenu } from './services/session';
 import { PageEnum } from './enums/pagesEnums';
-
+import { errorConfig } from './requestErrorConfig';
+import {
+  getRemoteMenu,
+  getRoutersInfo,
+  getUserInfo,
+  patchRouteWithRemoteMenus,
+  setRemoteMenu,
+} from './services/session';
 
 const isDev = process.env.NODE_ENV === 'development';
-
-
 
 /**
  * @see  https://umijs.org/zh-CN/plugins/plugin-initial-state
@@ -118,11 +121,11 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     ],
     links: isDev
       ? [
-        <Link key="openapi" to="/umi/plugin/openapi" target="_blank">
-          <LinkOutlined />
-          <span>OpenAPI 文档</span>
-        </Link>,
-      ]
+          <Link key="openapi" to="/umi/plugin/openapi" target="_blank">
+            <LinkOutlined />
+            <span>前往官网</span>
+          </Link>,
+        ]
       : [],
     menuHeaderRender: undefined,
     // 自定义 403 页面
@@ -153,9 +156,9 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
 
 export async function onRouteChange({ clientRoutes, location }) {
   const menus = getRemoteMenu();
- // console.log('onRouteChange', clientRoutes, location, menus);
-  if(menus === null && location.pathname !== PageEnum.LOGIN) {
-    console.log('refresh')
+  // console.log('onRouteChange', clientRoutes, location, menus);
+  if (menus === null && location.pathname !== PageEnum.LOGIN) {
+    console.log('refresh');
     history.go(0);
   }
 }
@@ -163,7 +166,6 @@ export async function onRouteChange({ clientRoutes, location }) {
 // export function patchRoutes({ routes, routeComponents }) {
 //   console.log('patchRoutes', routes, routeComponents);
 // }
-
 
 export async function patchClientRoutes({ routes }) {
   // console.log('patchClientRoutes', routes);
@@ -173,13 +175,13 @@ export async function patchClientRoutes({ routes }) {
 export function render(oldRender: () => void) {
   // console.log('render get routers', oldRender)
   const token = getAccessToken();
-  if(!token || token?.length === 0) {
+  if (!token || token?.length === 0) {
     oldRender();
     return;
   }
-  getRoutersInfo().then(res => {
+  getRoutersInfo().then((res) => {
     setRemoteMenu(res);
-    oldRender()
+    oldRender();
   });
 }
 

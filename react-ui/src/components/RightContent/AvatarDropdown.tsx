@@ -1,17 +1,16 @@
-import { LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
+import { clearSessionToken } from '@/access';
+import { PageEnum } from '@/enums/pagesEnums';
+import { setRemoteMenu } from '@/services/session';
+import { logout } from '@/services/system/auth';
+import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
+import { setAlpha } from '@ant-design/pro-components';
 import { useEmotionCss } from '@ant-design/use-emotion-css';
 import { history, useModel } from '@umijs/max';
-import { Avatar, Spin } from 'antd';
-import { setAlpha } from '@ant-design/pro-components';
+import { Avatar, Dropdown, Spin } from 'antd';
 import { stringify } from 'querystring';
 import type { MenuInfo } from 'rc-menu/lib/interface';
 import React, { useCallback } from 'react';
 import { flushSync } from 'react-dom';
-import HeaderDropdown from '../HeaderDropdown';
-import { setRemoteMenu } from '@/services/session';
-import { PageEnum } from '@/enums/pagesEnums';
-import { clearSessionToken } from '@/access';
-import { logout } from '@/services/system/auth';
 
 export type GlobalHeaderRightProps = {
   menu?: boolean;
@@ -141,11 +140,6 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
             label: '个人中心',
           },
           {
-            key: 'settings',
-            icon: <SettingOutlined />,
-            label: '个人设置',
-          },
-          {
             type: 'divider' as const,
           },
         ]
@@ -158,18 +152,19 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
   ];
 
   return (
-    <HeaderDropdown
+    <Dropdown
       menu={{
         selectedKeys: [],
         onClick: onMenuClick,
         items: menuItems,
       }}
+      arrow
     >
       <span className={actionClassName}>
         <AvatarLogo />
         <Name />
       </span>
-    </HeaderDropdown>
+    </Dropdown>
   );
 };
 

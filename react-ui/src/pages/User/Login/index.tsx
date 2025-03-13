@@ -1,14 +1,8 @@
+import { clearSessionToken, setSessionToken } from '@/access';
 import Footer from '@/components/Footer';
-import { getCaptchaImg, login } from '@/services/system/auth';
 import { getFakeCaptcha } from '@/services/ant-design-pro/login';
-import {
-  AlipayCircleOutlined,
-  LockOutlined,
-  MobileOutlined,
-  TaobaoCircleOutlined,
-  UserOutlined,
-  WeiboCircleOutlined,
-} from '@ant-design/icons';
+import { getCaptchaImg, login } from '@/services/system/auth';
+import { LockOutlined, MobileOutlined, UserOutlined } from '@ant-design/icons';
 import {
   LoginForm,
   ProFormCaptcha,
@@ -16,36 +10,10 @@ import {
   ProFormText,
 } from '@ant-design/pro-components';
 import { useEmotionCss } from '@ant-design/use-emotion-css';
-import { FormattedMessage, history, SelectLang, useIntl, useModel, Helmet } from '@umijs/max';
-import { Alert, Col, message, Row, Tabs, Image } from 'antd';
-import Settings from '../../../../config/defaultSettings';
+import { FormattedMessage, history, SelectLang, useIntl, useModel } from '@umijs/max';
+import { Alert, Col, Image, message, Row, Tabs } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { flushSync } from 'react-dom';
-import { clearSessionToken, setSessionToken } from '@/access';
-
-const ActionIcons = () => {
-  const langClassName = useEmotionCss(({ token }) => {
-    return {
-      marginLeft: '8px',
-      color: 'rgba(0, 0, 0, 0.2)',
-      fontSize: '24px',
-      verticalAlign: 'middle',
-      cursor: 'pointer',
-      transition: 'color 0.3s',
-      '&:hover': {
-        color: token.colorPrimaryActive,
-      },
-    };
-  });
-
-  return (
-    <>
-      <AlipayCircleOutlined key="AlipayCircleOutlined" className={langClassName} />
-      <TaobaoCircleOutlined key="TaobaoCircleOutlined" className={langClassName} />
-      <WeiboCircleOutlined key="WeiboCircleOutlined" className={langClassName} />
-    </>
-  );
-};
 
 const Lang = () => {
   const langClassName = useEmotionCss(({ token }) => {
@@ -85,7 +53,7 @@ const LoginMessage: React.FC<{
 };
 
 const Login: React.FC = () => {
-  const [userLoginState, setUserLoginState] = useState<API.LoginResult>({code: 200});
+  const [userLoginState, setUserLoginState] = useState<API.LoginResult>({ code: 200 });
   const [type, setType] = useState<string>('account');
   const { initialState, setInitialState } = useModel('@@initialState');
   const [captchaCode, setCaptchaCode] = useState<string>('');
@@ -167,15 +135,6 @@ const Login: React.FC = () => {
 
   return (
     <div className={containerClassName}>
-      <Helmet>
-        <title>
-          {intl.formatMessage({
-            id: 'menu.login',
-            defaultMessage: '登录页',
-          })}
-          - {Settings.title}
-        </title>
-      </Helmet>
       <Lang />
       <div
         style={{
@@ -188,20 +147,20 @@ const Login: React.FC = () => {
             minWidth: 280,
             maxWidth: '75vw',
           }}
-          logo={<img alt="logo" src="/logo.svg" />}
-          title="Ant Design"
+          // logo={<img alt="logo" src="/logo.svg" />}
+          title="令牌通"
           subTitle={intl.formatMessage({ id: 'pages.layouts.userLayout.title' })}
           initialValues={{
             autoLogin: true,
           }}
-          actions={[
-            <FormattedMessage
-              key="loginWith"
-              id="pages.login.loginWith"
-              defaultMessage="其他登录方式"
-            />,
-            <ActionIcons key="icons" />,
-          ]}
+          // actions={[
+          //   <FormattedMessage
+          //     key="loginWith"
+          //     id="pages.login.loginWith"
+          //     defaultMessage="其他登录方式"
+          //   />,
+          //   <ActionIcons key="icons" />,
+          // ]}
           onFinish={async (values) => {
             await handleSubmit(values as API.LoginParams);
           }}
@@ -232,7 +191,7 @@ const Login: React.FC = () => {
             <LoginMessage
               content={intl.formatMessage({
                 id: 'pages.login.accountLogin.errorMessage',
-                defaultMessage: '账户或密码错误(admin/admin123)',
+                defaultMessage: '账户或密码错误',
               })}
             />
           )}
@@ -240,14 +199,14 @@ const Login: React.FC = () => {
             <>
               <ProFormText
                 name="username"
-                initialValue="admin"
+                initialValue="xingyi"
                 fieldProps={{
                   size: 'large',
                   prefix: <UserOutlined />,
                 }}
                 placeholder={intl.formatMessage({
                   id: 'pages.login.username.placeholder',
-                  defaultMessage: '用户名: admin',
+                  defaultMessage: '用户名: ',
                 })}
                 rules={[
                   {
@@ -263,14 +222,14 @@ const Login: React.FC = () => {
               />
               <ProFormText.Password
                 name="password"
-                initialValue="admin123"
+                initialValue="123456"
                 fieldProps={{
                   size: 'large',
                   prefix: <LockOutlined />,
                 }}
                 placeholder={intl.formatMessage({
                   id: 'pages.login.password.placeholder',
-                  defaultMessage: '密码: admin123',
+                  defaultMessage: '密码: ',
                 })}
                 rules={[
                   {
@@ -415,7 +374,7 @@ const Login: React.FC = () => {
             }}
           >
             <ProFormCheckbox noStyle name="autoLogin">
-              <FormattedMessage id="pages.login.rememberMe" defaultMessage="自动登录" />
+              <FormattedMessage id="pages.login.rememberMe" defaultMessage="记住密码" />
             </ProFormCheckbox>
             <a
               style={{

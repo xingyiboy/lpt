@@ -1,20 +1,51 @@
-
-import React, { useState, useRef, useEffect } from 'react';
-import { useIntl, FormattedMessage, useAccess } from '@umijs/max';
-import { Card, Col, Dropdown, FormInstance, Row, Space, Switch } from 'antd';
-import { Button, message, Modal } from 'antd';
-import { ActionType, FooterToolbar, PageContainer, ProColumns, ProTable } from '@ant-design/pro-components';
-import { PlusOutlined, DeleteOutlined, ExclamationCircleOutlined, DownOutlined, EditOutlined } from '@ant-design/icons';
-import { getUserList, removeUser, addUser, updateUser, exportUser, getUser, changeUserStatus, updateAuthRole, resetUserPwd } from '@/services/system/user';
-import UpdateForm from './edit';
 import { getDictValueEnum } from '@/services/system/dict';
-import { DataNode } from 'antd/es/tree';
-import { getDeptTree } from '@/services/system/user';
-import DeptTree from './components/DeptTree';
-import ResetPwd from './components/ResetPwd';
 import { getPostList } from '@/services/system/post';
 import { getRoleList } from '@/services/system/role';
+import {
+  addUser,
+  changeUserStatus,
+  exportUser,
+  getDeptTree,
+  getUser,
+  getUserList,
+  removeUser,
+  resetUserPwd,
+  updateAuthRole,
+  updateUser,
+} from '@/services/system/user';
+import {
+  DeleteOutlined,
+  DownOutlined,
+  EditOutlined,
+  ExclamationCircleOutlined,
+  PlusOutlined,
+} from '@ant-design/icons';
+import {
+  ActionType,
+  FooterToolbar,
+  PageContainer,
+  ProColumns,
+  ProTable,
+} from '@ant-design/pro-components';
+import { FormattedMessage, useAccess, useIntl } from '@umijs/max';
+import {
+  Button,
+  Card,
+  Col,
+  Dropdown,
+  FormInstance,
+  message,
+  Modal,
+  Row,
+  Space,
+  Switch,
+} from 'antd';
+import { DataNode } from 'antd/es/tree';
+import React, { useEffect, useRef, useState } from 'react';
 import AuthRoleForm from './components/AuthRole';
+import DeptTree from './components/DeptTree';
+import ResetPwd from './components/ResetPwd';
+import UpdateForm from './edit';
 
 const { confirm } = Modal;
 
@@ -22,7 +53,7 @@ const { confirm } = Modal;
  *
  * @author whiteshader@163.com
  * @datetime  2023/02/06
- * 
+ *
  * */
 
 /**
@@ -102,7 +133,7 @@ const handleRemoveOne = async (selectedRow: API.System.User) => {
 /**
  * 导出数据
  *
- * 
+ *
  */
 const handleExport = async () => {
   const hide = message.loading('正在导出');
@@ -156,12 +187,12 @@ const UserTableList: React.FC = () => {
   }, []);
 
   const showChangeStatusConfirm = (record: API.System.User) => {
-    let text = record.status === "1" ? "启用" : "停用";
+    let text = record.status === '1' ? '启用' : '停用';
     const newStatus = record.status === '0' ? '1' : '0';
     confirm({
       title: `确认要${text}${record.userName}用户吗？`,
       onOk() {
-        changeUserStatus(record.userId, newStatus).then(resp => {
+        changeUserStatus(record.userId, newStatus).then((resp) => {
           if (resp.code === 200) {
             messageApi.open({
               type: 'success',
@@ -178,7 +209,7 @@ const UserTableList: React.FC = () => {
       },
     });
   };
-  
+
   const fetchUserInfo = async (userId: number) => {
     const res = await getUser(userId);
     setPostIds(res.postIds);
@@ -221,7 +252,7 @@ const UserTableList: React.FC = () => {
       title: <FormattedMessage id="system.user.dept_name" defaultMessage="部门" />,
       dataIndex: ['dept', 'deptName'],
       valueType: 'text',
-      hideInSearch: true
+      hideInSearch: true,
     },
     {
       title: <FormattedMessage id="system.user.phonenumber" defaultMessage="手机号码" />,
@@ -241,7 +272,8 @@ const UserTableList: React.FC = () => {
             unCheckedChildren="停用"
             defaultChecked
             onClick={() => showChangeStatusConfirm(record)}
-          />)
+          />
+        );
       },
     },
     {
@@ -297,7 +329,9 @@ const UserTableList: React.FC = () => {
           menu={{
             items: [
               {
-                label: <FormattedMessage id="system.user.reset.password" defaultMessage="密码重置" />,
+                label: (
+                  <FormattedMessage id="system.user.reset.password" defaultMessage="密码重置" />
+                ),
                 key: 'reset',
                 disabled: !access.hasPerms('system:user:edit'),
               },
@@ -311,13 +345,12 @@ const UserTableList: React.FC = () => {
               if (key === 'reset') {
                 setResetPwdModalVisible(true);
                 setCurrentRow(record);
-              }
-              else if (key === 'authRole') {
+              } else if (key === 'authRole') {
                 fetchUserInfo(record.userId);
                 setAuthRoleModalVisible(true);
                 setCurrentRow(record);
               }
-            }
+            },
           }}
         >
           <a onClick={(e) => e.preventDefault()}>
@@ -369,7 +402,7 @@ const UserTableList: React.FC = () => {
                   const treeData = await getDeptTree({});
                   setDeptTree(treeData);
 
-                  const postResp = await getPostList()
+                  const postResp = await getPostList();
                   if (postResp.code === 200) {
                     setPostList(
                       postResp.rows.map((item: any) => {
@@ -381,7 +414,7 @@ const UserTableList: React.FC = () => {
                     );
                   }
 
-                  const roleResp = await getRoleList()
+                  const roleResp = await getRoleList();
                   if (roleResp.code === 200) {
                     setRoleList(
                       roleResp.rows.map((item: any) => {
@@ -396,7 +429,8 @@ const UserTableList: React.FC = () => {
                   setModalVisible(true);
                 }}
               >
-                <PlusOutlined /> <FormattedMessage id="pages.searchTable.new" defaultMessage="新建" />
+                <PlusOutlined />{' '}
+                <FormattedMessage id="pages.searchTable.new" defaultMessage="新建" />
               </Button>,
               <Button
                 type="primary"
@@ -414,7 +448,7 @@ const UserTableList: React.FC = () => {
                         actionRef.current?.reloadAndRest?.();
                       }
                     },
-                    onCancel() { },
+                    onCancel() {},
                   });
                 }}
               >
@@ -434,14 +468,16 @@ const UserTableList: React.FC = () => {
               </Button>,
             ]}
             request={(params) =>
-              getUserList({ ...params, deptId: selectDept.id } as API.System.UserListParams).then((res) => {
-                const result = {
-                  data: res.rows,
-                  total: res.total,
-                  success: true,
-                };
-                return result;
-              })
+              getUserList({ ...params, deptId: selectDept.id } as API.System.UserListParams).then(
+                (res) => {
+                  const result = {
+                    data: res.rows,
+                    total: res.total,
+                    success: true,
+                  };
+                  return result;
+                },
+              )
             }
             columns={columns}
             rowSelection={{
