@@ -1,6 +1,14 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+      <el-form-item label="用户编号" prop="userId">
+        <el-input
+          v-model="queryParams.userId"
+          placeholder="请输入用户编号"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
       <el-form-item label="用户名" prop="username">
         <el-input
           v-model="queryParams.username"
@@ -123,6 +131,7 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="编号" align="center" prop="id" />
       <el-table-column label="备注信息" align="center" prop="remark" />
+      <el-table-column label="用户编号" align="center" prop="userId" />
       <el-table-column label="用户名" align="center" prop="username" />
       <el-table-column label="密码" align="center" prop="password" />
       <el-table-column label="盐值" align="center" prop="salt" />
@@ -168,6 +177,9 @@
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="备注信息" prop="remark">
           <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
+        </el-form-item>
+        <el-form-item label="用户编号" prop="userId">
+          <el-input v-model="form.userId" placeholder="请输入用户编号" />
         </el-form-item>
         <el-form-item label="用户名" prop="username">
           <el-input v-model="form.username" placeholder="请输入用户名" />
@@ -239,6 +251,7 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
+        userId: null,
         username: null,
         password: null,
         salt: null,
@@ -282,6 +295,7 @@ export default {
         updateBy: null,
         updateTime: null,
         remark: null,
+        userId: null,
         username: null,
         password: null,
         salt: null,

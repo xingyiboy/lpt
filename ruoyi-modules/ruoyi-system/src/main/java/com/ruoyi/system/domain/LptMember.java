@@ -8,8 +8,8 @@ import com.ruoyi.common.core.web.domain.BaseEntity;
 /**
  * 成员对象 lpt_member
  * 
- * @author ruoyi
- * @date 2025-03-13
+ * @author xingyi
+ * @date 2025-03-14
  */
 public class LptMember extends BaseEntity
 {
@@ -17,6 +17,10 @@ public class LptMember extends BaseEntity
 
     /** 编号 */
     private Long id;
+
+    /** 用户编号 */
+    @Excel(name = "用户编号")
+    private Long userId;
 
     /** 用户名 */
     @Excel(name = "用户名")
@@ -58,6 +62,15 @@ public class LptMember extends BaseEntity
     public Long getId() 
     {
         return id;
+    }
+    public void setUserId(Long userId) 
+    {
+        this.userId = userId;
+    }
+
+    public Long getUserId() 
+    {
+        return userId;
     }
     public void setUsername(String username) 
     {
@@ -141,6 +154,7 @@ public class LptMember extends BaseEntity
             .append("updateBy", getUpdateBy())
             .append("updateTime", getUpdateTime())
             .append("remark", getRemark())
+            .append("userId", getUserId())
             .append("username", getUsername())
             .append("password", getPassword())
             .append("salt", getSalt())

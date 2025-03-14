@@ -6,8 +6,8 @@ import com.ruoyi.system.domain.LptMember;
 /**
  * 成员Mapper接口
  * 
- * @author ruoyi
- * @date 2025-03-13
+ * @author xingyi
+ * @date 2025-03-14
  */
 public interface LptMemberMapper 
 {

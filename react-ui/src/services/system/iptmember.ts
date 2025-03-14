@@ -41,8 +41,19 @@ export async function updateLptMember(data: API.System.LptMember) {
   });
 }
 
+// 重置成员密码
+export async function resetLptMemberPwd(data: API.System.LptMember) {
+  return request<API.Result>('/api/system/member/resetPwd', {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: data,
+  });
+}
+
 // 删除成员
-export async function removeLptMember(ids: number[]) {
+export async function removeLptMember(ids: string) {
   return request<API.Result>(`/api/system/member/${ids}`, {
     method: 'DELETE',
   });

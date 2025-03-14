@@ -3,6 +3,7 @@ package com.ruoyi.system.service.impl;
 import java.util.List;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
+import com.ruoyi.system.util.SaltUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.system.mapper.LptMemberMapper;
@@ -12,8 +13,8 @@ import com.ruoyi.system.service.ILptMemberService;
 /**
  * 成员Service业务层处理
  *
- * @author ruoyi
- * @date 2025-03-13
+ * @author xingyi
+ * @date 2025-03-14
  */
 @Service
 public class LptMemberServiceImpl implements ILptMemberService
@@ -42,7 +43,7 @@ public class LptMemberServiceImpl implements ILptMemberService
     @Override
     public List<LptMember> selectLptMemberList(LptMember lptMember)
     {
-        lptMember.setCreateBy(SecurityUtils.getUserId().toString());
+        lptMember.setUserId(SecurityUtils.getUserId());
         return lptMemberMapper.selectLptMemberList(lptMember);
     }
 
@@ -56,7 +57,13 @@ public class LptMemberServiceImpl implements ILptMemberService
     public int insertLptMember(LptMember lptMember)
     {
         lptMember.setCreateTime(DateUtils.getNowDate());
-        lptMember.setCreateBy(SecurityUtils.getUserId().toString());
+        lptMember.setUserId(SecurityUtils.getUserId());
+        // 生成随机盐值
+        String salt = SaltUtils.generateSalt();
+        // 设置初始密码为123456@lpt并加密
+        String password = SaltUtils.hashPasswordWithSHA256("123456@lpt", salt);
+        lptMember.setPassword(password);
+        lptMember.setSalt(salt);
         return lptMemberMapper.insertLptMember(lptMember);
     }
 
@@ -95,5 +102,18 @@ public class LptMemberServiceImpl implements ILptMemberService
     public int deleteLptMemberById(Long id)
     {
         return lptMemberMapper.deleteLptMemberById(id);
+    }
+
+    /**
+     * 重置成员密码
+     *
+     * @param lptMember
+     * @return
+     */
+    @Override
+    public int resetLptMemberPwd(LptMember lptMember) {
+        LptMember updateMember = lptMemberMapper.selectLptMemberById(lptMember.getId());
+        updateMember.setPassword(SaltUtils.hashPasswordWithSHA256(lptMember.getPassword(), updateMember.getSalt()));
+        return lptMemberMapper.updateLptMember(updateMember);
     }
 }

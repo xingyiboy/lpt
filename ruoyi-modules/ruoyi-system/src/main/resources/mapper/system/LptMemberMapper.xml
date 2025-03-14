@@ -3,7 +3,7 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.system.mapper.LptMemberMapper">
-
+    
     <resultMap type="LptMember" id="LptMemberResult">
         <result property="id"    column="id"    />
         <result property="createBy"    column="create_by"    />
@@ -11,6 +11,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateBy"    column="update_by"    />
         <result property="updateTime"    column="update_time"    />
         <result property="remark"    column="remark"    />
+        <result property="userId"    column="user_id"    />
         <result property="username"    column="username"    />
         <result property="password"    column="password"    />
         <result property="salt"    column="salt"    />
@@ -22,24 +23,24 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectLptMemberVo">
-        select id, create_by, create_time, update_by, update_time, remark, username, password, salt, is_release, mailbox, login_ip, facility, risk_number from lpt_member
+        select id, create_by, create_time, update_by, update_time, remark, user_id, username, password, salt, is_release, mailbox, login_ip, facility, risk_number from lpt_member
     </sql>
 
     <select id="selectLptMemberList" parameterType="LptMember" resultMap="LptMemberResult">
         <include refid="selectLptMemberVo"/>
-        <where>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
             <if test="username != null  and username != ''"> and username like concat('%', #{username}, '%')</if>
             <if test="password != null  and password != ''"> and password like concat('%', #{password}, '%')</if>
-            <if test="salt != null  and salt != ''"> and salt = #{salt}</if>
+            <if test="salt != null  and salt != ''"> and salt like concat('%', #{salt}, '%')</if>
             <if test="isRelease != null "> and is_release = #{isRelease}</if>
-            <if test="mailbox != null  and mailbox != ''"> and mailbox like concat('%', #{mailbox}, '%')</if>
-            <if test="loginIp != null  and loginIp != ''"> and login_ip like concat('%', #{loginIp}, '%')</if>
-            <if test="facility != null  and facility != ''"> and facility like concat('%', #{facility}, '%')</if>
+            <if test="mailbox != null  and mailbox != ''"> and mailbox = #{mailbox}</if>
+            <if test="loginIp != null  and loginIp != ''"> and login_ip = #{loginIp}</if>
+            <if test="facility != null  and facility != ''"> and facility = #{facility}</if>
             <if test="riskNumber != null "> and risk_number = #{riskNumber}</if>
-            <if test="createBy != null "> and create_by = #{createBy}</if>
         </where>
     </select>
-
+    
     <select id="selectLptMemberById" parameterType="Long" resultMap="LptMemberResult">
         <include refid="selectLptMemberVo"/>
         where id = #{id}
@@ -53,6 +54,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">update_by,</if>
             <if test="updateTime != null">update_time,</if>
             <if test="remark != null">remark,</if>
+            <if test="userId != null">user_id,</if>
             <if test="username != null">username,</if>
             <if test="password != null">password,</if>
             <if test="salt != null">salt,</if>
@@ -68,6 +70,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">#{updateBy},</if>
             <if test="updateTime != null">#{updateTime},</if>
             <if test="remark != null">#{remark},</if>
+            <if test="userId != null">#{userId},</if>
             <if test="username != null">#{username},</if>
             <if test="password != null">#{password},</if>
             <if test="salt != null">#{salt},</if>
@@ -87,6 +90,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
             <if test="remark != null">remark = #{remark},</if>
+            <if test="userId != null">user_id = #{userId},</if>
             <if test="username != null">username = #{username},</if>
             <if test="password != null">password = #{password},</if>
             <if test="salt != null">salt = #{salt},</if>
@@ -104,7 +108,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
 
     <delete id="deleteLptMemberByIds" parameterType="String">
-        delete from lpt_member where id in
+        delete from lpt_member where id in 
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>

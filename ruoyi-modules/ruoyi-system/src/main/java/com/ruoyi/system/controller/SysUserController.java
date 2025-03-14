@@ -167,17 +167,18 @@ public class SysUserController extends BaseController
     @GetMapping("getInfo")
     public AjaxResult getInfo()
     {
-        Long userId = SecurityUtils.getUserId();
-        SysUser loginUser = userService.selectUserById(userId);
-        // 角色集合
-        Set<String> roles = permissionService.getRolePermission(loginUser);
-        // 权限集合
-        Set<String> permissions = permissionService.getMenuPermission(loginUser);
+        LoginUser user = SecurityUtils.getLoginUser();
+        SysUser loginUser = userService.selectUserById(user.getUserid());
+
+//        // 角色集合
+//        Set<String> roles = permissionService.getRolePermission(loginUser);
+//        // 权限集合
+//        Set<String> permissions = permissionService.getMenuPermission(loginUser);
 
         AjaxResult ajax = AjaxResult.success();
         ajax.put("user", loginUser);
-        ajax.put("roles", roles);
-        ajax.put("permissions", permissions);
+        ajax.put("roles", user.getRoles());
+        ajax.put("permissions", user.getPermissions());
         return ajax;
     }
 

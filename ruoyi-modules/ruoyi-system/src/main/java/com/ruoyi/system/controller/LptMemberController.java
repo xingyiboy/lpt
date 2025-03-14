@@ -3,6 +3,9 @@ package com.ruoyi.system.controller;
 import java.util.List;
 import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
+
+import com.ruoyi.common.security.utils.SecurityUtils;
+import com.ruoyi.system.api.domain.SysUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,9 +27,9 @@ import com.ruoyi.common.core.web.page.TableDataInfo;
 
 /**
  * 成员Controller
- * 
- * @author ruoyi
- * @date 2025-03-13
+ *
+ * @author xingyi
+ * @date 2025-03-14
  */
 @RestController
 @RequestMapping("/member")
@@ -90,6 +93,17 @@ public class LptMemberController extends BaseController
     public AjaxResult edit(@RequestBody LptMember lptMember)
     {
         return toAjax(lptMemberService.updateLptMember(lptMember));
+    }
+
+    /**
+     * 重置密码
+     */
+    @RequiresPermissions("system:member:edit")
+    @Log(title = "成员", businessType = BusinessType.UPDATE)
+    @PutMapping("/resetPwd")
+    public AjaxResult resetPwd(@RequestBody LptMember lptMember)
+    {
+        return toAjax(lptMemberService.resetLptMemberPwd(lptMember));
     }
 
     /**

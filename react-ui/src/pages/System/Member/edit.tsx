@@ -28,7 +28,7 @@ const MemberForm: React.FC<MemberFormProps> = (props) => {
       username: props.values.username,
       password: props.values.password,
       mailbox: props.values.mailbox,
-      isRelease: props.values.isRelease,
+      isRelease: props.values.isRelease || 0,
       riskNumber: props.values.riskNumber,
       remark: props.values.remark,
     });
@@ -95,15 +95,10 @@ const MemberForm: React.FC<MemberFormProps> = (props) => {
             id: 'system.member.password',
             defaultMessage: '密码',
           })}
-          placeholder="请输入密码"
-          rules={[
-            {
-              required: !props.values.id,
-              message: <FormattedMessage id="请输入密码！" defaultMessage="请输入密码！" />,
-            },
-          ]}
+          placeholder="默认初始密码:123456@lpt"
+          disabled
         />
-        <ProFormText
+        {/* <ProFormText
           name="salt"
           label={intl.formatMessage({
             id: 'system.member.salt',
@@ -111,7 +106,7 @@ const MemberForm: React.FC<MemberFormProps> = (props) => {
           })}
           placeholder="请输入盐值"
           disabled
-        />
+        /> */}
         <ProFormRadio.Group
           name="isRelease"
           label={intl.formatMessage({
@@ -148,7 +143,7 @@ const MemberForm: React.FC<MemberFormProps> = (props) => {
             },
           ]}
         />
-        <ProFormText
+        {/* <ProFormText
           name="loginIp"
           label={intl.formatMessage({
             id: 'system.member.loginIp',
@@ -165,7 +160,7 @@ const MemberForm: React.FC<MemberFormProps> = (props) => {
           })}
           placeholder="请输入登录设备"
           disabled
-        />
+        /> */}
         <ProFormDigit
           name="riskNumber"
           label={intl.formatMessage({

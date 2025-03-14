@@ -3,7 +3,7 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.system.mapper.UserVerificationMapper">
-    
+
     <resultMap type="UserVerification" id="UserVerificationResult">
         <result property="id"    column="id"    />
         <result property="createBy"    column="create_by"    />
@@ -23,14 +23,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectUserVerificationList" parameterType="UserVerification" resultMap="UserVerificationResult">
         <include refid="selectUserVerificationVo"/>
-        <where>  
+        <where>
             <if test="userId != null "> and user_id = #{userId}</if>
             <if test="riskType != null "> and risk_type = #{riskType}</if>
             <if test="verificationId != null "> and verification_id = #{verificationId}</if>
             <if test="sort != null "> and sort = #{sort}</if>
         </where>
+        ORDER BY risk_type ASC, sort ASC
     </select>
-    
+
     <select id="selectUserVerificationById" parameterType="Long" resultMap="UserVerificationResult">
         <include refid="selectUserVerificationVo"/>
         where id = #{id}
@@ -83,7 +84,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
 
     <delete id="deleteUserVerificationByIds" parameterType="String">
-        delete from user_verification where id in 
+        delete from user_verification where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>

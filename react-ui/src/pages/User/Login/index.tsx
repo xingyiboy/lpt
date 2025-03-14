@@ -440,7 +440,7 @@ const Login: React.FC = () => {
                   if (!result) {
                     return;
                   }
-                  message.success('获取验证码成功！验证码为：1234');
+                  message.error('暂未开发该功能');
                 }}
               />
             </>

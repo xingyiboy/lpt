@@ -104,11 +104,6 @@ const VerificationTableList: React.FC = () => {
 
   const columns: ProColumns<API.System.Verification>[] = [
     {
-      title: <FormattedMessage id="system.verification.id" defaultMessage="编号" />,
-      dataIndex: 'id',
-      valueType: 'text',
-    },
-    {
       title: <FormattedMessage id="system.verification.riskType" defaultMessage="风险类型" />,
       dataIndex: 'riskType',
       valueType: 'select',
@@ -126,6 +121,11 @@ const VerificationTableList: React.FC = () => {
         return <DictTag enums={verificationTypeOptions} value={record.verificationId} />;
       },
     },
+    // {
+    //   title: <FormattedMessage id="system.verification.id" defaultMessage="编号" />,
+    //   dataIndex: 'id',
+    //   valueType: 'text',
+    // },
     {
       title: <FormattedMessage id="system.verification.sort" defaultMessage="排序" />,
       dataIndex: 'sort',
