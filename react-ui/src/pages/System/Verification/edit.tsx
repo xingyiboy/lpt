@@ -19,15 +19,17 @@ const VerificationForm: React.FC<VerificationFormProps> = (props) => {
   const [form] = Form.useForm();
 
   useEffect(() => {
-    form.resetFields();
-    form.setFieldsValue({
-      id: props.values.id,
-      userId: props.values.userId,
-      riskType: props.values.riskType,
-      verificationId: props.values.verificationId,
-      sort: props.values.sort,
-    });
-  }, [form, props]);
+    if (props.values) {
+      form.resetFields();
+      form.setFieldsValue({
+        id: props.values.id,
+        userId: props.values.userId,
+        riskType: props.values.riskType?.toString(),
+        verificationId: props.values.verificationId?.toString(),
+        sort: props.values.sort,
+      });
+    }
+  }, [form, props.values]);
 
   const intl = useIntl();
   const handleOk = () => {
