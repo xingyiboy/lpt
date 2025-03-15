@@ -1,5 +1,6 @@
 package com.ruoyi.system.util;
 
+import cn.iocoder.boot.UtilTest;
 import com.alibaba.druid.support.json.JSONUtils;
 import com.alibaba.nacos.common.utils.MD5Utils;
 import org.springframework.beans.factory.annotation.Autowired;
