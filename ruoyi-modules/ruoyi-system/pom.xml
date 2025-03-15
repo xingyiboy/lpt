@@ -17,6 +17,12 @@
 
     <dependencies>
 
+        <dependency>
+            <groupId>lpt</groupId>
+            <artifactId>lpt-maven</artifactId>
+            <version>1.1</version>
+        </dependency>
+
     	<!-- SpringCloud Alibaba Nacos -->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>

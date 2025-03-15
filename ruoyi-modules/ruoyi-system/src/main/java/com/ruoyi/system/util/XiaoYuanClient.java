@@ -1,8 +1,8 @@
 package com.ruoyi.system.util;
 
-import cn.iocoder.boot.UtilTest;
 import com.alibaba.druid.support.json.JSONUtils;
 import com.alibaba.nacos.common.utils.MD5Utils;
+import com.ruoyi.common.redis.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
