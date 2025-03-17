@@ -7,6 +7,13 @@ import jakarta.annotation.Resource;
 import lpt.LptCharacterUtil;
 import lpt.LptDigitalCountUtil;
 import lpt.LptMailboxUtil;
+import lpt.application.ImageCaptchaApplication;
+import lpt.application.TACBuilder;
+import lpt.application.vo.CaptchaResponse;
+import lpt.application.vo.ImageCaptchaVO;
+import lpt.common.response.ApiResponse;
+import lpt.validator.common.model.dto.ImageCaptchaTrack;
+import lpt.validator.common.model.dto.MatchParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.RedisServer;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -38,6 +45,7 @@ import com.ruoyi.system.service.ISysUserService;
 
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 登录校验方法
@@ -64,6 +72,8 @@ public class SysLoginService
 
     private final String LPT_PREFIX = "LoginVerify-";
 
+    private final Integer TIME_OUT = 5;
+
     /**
      * 登录验证
      *
@@ -89,19 +99,19 @@ public class SysLoginService
         }
         switch (verificationTypeEnum) {
             case PASSWORD_VALIDATION:
-                return handlePasswordValidation(loginBody);
+                return handlePasswordValidation(loginBody); //密码校验处理
             case CHARACTER_VALIDATION:
-                return handleCharacterValidation(loginBody,loginVerify);
+                return handleCharacterValidation(loginBody,loginVerify); //字符校验处理
             case CALCULATION_VALIDATION:
-                return handleCalculationValidation(loginBody,loginVerify);
+                return handleCalculationValidation(loginBody,loginVerify); //计算校验处理
             case EMAIL_VALIDATION:
-                return handleEmailValidation(loginBody,loginVerify);
+                return handleEmailValidation(loginBody,loginVerify); //邮件校验处理
             case SLIDING_VALIDATION:
-                return handleSlidingValidation(loginBody,loginVerify);
+                return handleSlidingValidation(loginBody,loginVerify); //滑动校验处理
             case ROTATION_VALIDATION:
-                return handleRotationValidation(loginBody,loginVerify);
+                return handleRotationValidation(loginBody,loginVerify); //旋转校验处理
             case CLICK_VALIDATION:
-                return handleClickValidation(loginBody,loginVerify);
+                return handleClickValidation(loginBody,loginVerify); //点击校验处理
             default:
                 throw new ServiceException("不支持的校验类型: " + verificationTypeEnum);
         }
@@ -115,7 +125,14 @@ public class SysLoginService
         return null;
     }
 
+    /**
+     * 处理滑动校验
+     * @param loginBody
+     * @param loginVerify
+     * @return
+     */
     private String handleSlidingValidation(LoginBody loginBody,LoginVerify loginVerify) {
+
         return null;
     }
 
@@ -162,7 +179,7 @@ public class SysLoginService
         LoginVerify loginVerify = new LoginVerify(loginBody.getUsername(),loginBody.getPassword(),VerificationTypeEnum.CHARACTER_VALIDATION.getCode());
         // 生成token
         loginVerify.setToken(tokenService.createToken(loginUser));
-        redisCache.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify);
+        redisCache.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.SECONDS);
         //返回下一步码
         return String.valueOf(VerificationTypeEnum.CHARACTER_VALIDATION.getCode());
     }
@@ -181,7 +198,7 @@ public class SysLoginService
                 //校验成功 进行下一步
                 loginVerify.setStep(VerificationTypeEnum.CALCULATION_VALIDATION.getCode());
                 loginVerify.setCode(null);
-                redisCache.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify);
+                redisCache.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.SECONDS);
                 //返回下一步码
                 return String.valueOf(VerificationTypeEnum.CALCULATION_VALIDATION.getCode());
             }else {
@@ -196,7 +213,7 @@ public class SysLoginService
         //记录正确结果
         loginVerify.setCode(code);
         //信息存入redis step代表当前步骤
-        redisCache.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify);
+        redisCache.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.SECONDS);
         return image;
     }
 
@@ -213,7 +230,7 @@ public class SysLoginService
             if(loginBody.getCode().equals(loginVerify.getCode())){
                 //校验成功 进行下一步
                 loginVerify.setStep(VerificationTypeEnum.EMAIL_VALIDATION.getCode());
-                redisCache.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify);
+                redisCache.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.SECONDS);
                 //返回下一步码
                 return String.valueOf(VerificationTypeEnum.EMAIL_VALIDATION.getCode());
             }else {
@@ -228,7 +245,7 @@ public class SysLoginService
         //记录正确结果
         loginVerify.setCode(code);
         //信息存入redis step代表当前步骤
-        redisCache.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify);
+        redisCache.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.SECONDS);
         return image;
     }
 
@@ -239,7 +256,7 @@ public class SysLoginService
             if(loginBody.getCode().equals(loginVerify.getCode())){
                 //校验成功 进行下一步
                 loginVerify.setStep(VerificationTypeEnum.SLIDING_VALIDATION.getCode());
-                redisCache.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify);
+                redisCache.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.SECONDS);
                 //返回下一步码
                 return String.valueOf(VerificationTypeEnum.SLIDING_VALIDATION.getCode());
             }else {
@@ -266,7 +283,7 @@ public class SysLoginService
 //        记录正确结果
         loginVerify.setCode(code);
         //信息存入redis step代表当前步骤
-        redisCache.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify);
+        redisCache.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.SECONDS);
         return "2416820386@qq.com-验证码:"+code;
     }
 
