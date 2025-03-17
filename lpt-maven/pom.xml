@@ -4,7 +4,7 @@
 
   <groupId>lpt</groupId>
   <artifactId>lpt-maven</artifactId>
-  <version>1.1</version>
+  <version>1.2</version>
   <packaging>jar</packaging>
 
   <name>lpt-maven</name>
@@ -15,11 +15,18 @@
   </properties>
 
   <dependencies>
-      <dependency>
-          <groupId>com.xingyuv</groupId>
-          <artifactId>captcha-plus</artifactId>
-          <version>1.0.8</version>
-      </dependency>
+    <!-- maven 导入 -->
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.12</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.30</version>
+    </dependency>
 
 <!--邮箱-->
     <dependency>

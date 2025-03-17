@@ -20,13 +20,13 @@ public class LptDigitalCountUtil {
      * 生成线段干扰数字计算验证码
      * @return
      */
-    public static Map<String, Object> getLineVerification(Integer codeCount,Integer interference){
-        LineCaptcha captcha = CaptchaUtil.createLineCaptcha(200, 100,codeCount,interference);
+    public static Map<String, Object> getLineVerification(Integer codeCount,Integer interference,Integer width,Integer height){
+        LineCaptcha captcha = CaptchaUtil.createLineCaptcha(width, height,codeCount,interference);
         captcha.setGenerator(new MathGenerator());
         captcha.createCode();
         Map<String, Object> map = new HashMap<>();
         map.put("code", calculateExpression(captcha.getCode()));
-        map.put("image", captcha.getImage());
+        map.put("image", captcha.getImageBase64Data());
         return map;
     }
 
@@ -34,13 +34,13 @@ public class LptDigitalCountUtil {
      * 生成圆圈干扰数字计算验证码
      * @return
      */
-    public static Map<String, Object> getCircleVerification(Integer codeCount,Integer interference){
-        CircleCaptcha captcha = CaptchaUtil.createCircleCaptcha(200, 100, codeCount, interference);
+    public static Map<String, Object> getCircleVerification(Integer codeCount,Integer interference,Integer width,Integer height){
+        CircleCaptcha captcha = CaptchaUtil.createCircleCaptcha(width, height, codeCount, interference);
         captcha.setGenerator(new MathGenerator());
         captcha.createCode();
         Map<String, Object> map = new HashMap<>();
         map.put("code", calculateExpression(captcha.getCode()));
-        map.put("image", captcha.getImage());
+        map.put("image", captcha.getImageBase64Data());
         return map;
     }
 
@@ -48,13 +48,13 @@ public class LptDigitalCountUtil {
      * 生成扭曲干扰数字计算验证码
      * @return
      */
-    public static Map<String, Object> getShearVerification(Integer codeCount,Integer interference){
-        ShearCaptcha captcha = CaptchaUtil.createShearCaptcha(200, 100, codeCount, interference);
+    public static Map<String, Object> getShearVerification(Integer codeCount,Integer interference,Integer width,Integer height){
+        ShearCaptcha captcha = CaptchaUtil.createShearCaptcha(width, height, codeCount, interference);
         captcha.setGenerator(new MathGenerator());
         captcha.createCode();
         Map<String, Object> map = new HashMap<>();
         map.put("code", calculateExpression(captcha.getCode()));
-        map.put("image", captcha.getImage());
+        map.put("image", captcha.getImageBase64Data());
         return map;
     }
 
