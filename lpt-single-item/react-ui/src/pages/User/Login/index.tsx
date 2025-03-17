@@ -1,7 +1,7 @@
 /*
  * @Date: 2025-03-16 16:12:47
  * @LastEditors: xingyi && 2416820386@qq.com
- * @LastEditTime: 2025-03-17 19:38:50
+ * @LastEditTime: 2025-03-17 19:50:39
  * @FilePath: \react-ui\src\pages\User\Login\index.tsx
  */
 import Footer from '@/components/Footer';
@@ -25,7 +25,7 @@ import { useEmotionCss } from '@ant-design/use-emotion-css';
 import { FormattedMessage, history, SelectLang, useIntl, useModel, Helmet } from '@umijs/max';
 import { Alert, Col, message, Row, Tabs, Image, Button, Modal } from 'antd';
 import Settings from '../../../../config/defaultSettings';
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { flushSync } from 'react-dom';
 import { clearSessionToken, setSessionToken } from '@/access';
 import ImageInputValidation from './components/ImageInputValidation';
@@ -102,6 +102,7 @@ const Login: React.FC = () => {
   const [captchaInput, setCaptchaInput] = useState('');
   const [showImageInputValidation, setShowImageInputValidation] = useState(false);
   const [showMailboxValidation, setShowMailboxValidation] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   // 使用 useRef 替代 useState 来存储最新值
   const loginValuesRef = useRef<API.LoginParams>();
@@ -140,9 +141,10 @@ const Login: React.FC = () => {
   };
 
   //处理点击校验
-  const handleSubmitVarify = useCallback(() => {
-    getCodeDataAndVerify(null, true);
+  const handleSubmitVarify = useCallback(async () => {
+    await getCodeDataAndVerify(null, true);
   }, [captchaInput]);
+
   //处理点击验证码
   const handleClickVarify = useCallback(() => {
     getCodeDataAndVerify();
@@ -153,6 +155,7 @@ const Login: React.FC = () => {
     async (values?: API.LoginParams, isVerify = false, Step = '') => {
       if (isVerify == true) {
         //校验
+
         const currentValues = values || loginValuesRef.current;
         if (currentValues == null) {
           return;
@@ -180,7 +183,7 @@ const Login: React.FC = () => {
             message.error('请先填写登录信息');
             return;
           }
-
+          setSubmitting(true);
           const response = await login({ ...currentValues });
           if (response.code === 200) {
             setCodeImgData(response.data);
@@ -201,6 +204,7 @@ const Login: React.FC = () => {
               default:
                 break;
             }
+            setSubmitting(false);
             // 存储到 ref
             loginValuesRef.current = currentValues;
           }
@@ -276,6 +280,24 @@ const Login: React.FC = () => {
   const loginType = type;
 
   useEffect(() => {}, []);
+
+  const modalFooter = useMemo(
+    () => [
+      <Button key="back" onClick={handleCancel} disabled={submitting}>
+        取消
+      </Button>,
+      <Button
+        key="submit"
+        type="primary"
+        loading={submitting}
+        disabled={submitting}
+        onClick={handleSubmitVarify}
+      >
+        {submitting ? '请等待...' : '提交验证'}
+      </Button>,
+    ],
+    [submitting, handleCancel, handleSubmitVarify],
+  );
 
   return (
     <div className={containerClassName}>
@@ -505,14 +527,7 @@ const Login: React.FC = () => {
         width={400}
         onCancel={handleCancel}
         destroyOnClose
-        footer={[
-          <Button key="back" onClick={handleCancel}>
-            取消
-          </Button>,
-          <Button key="submit" type="primary" loading={loading} onClick={handleSubmitVarify}>
-            提交验证
-          </Button>,
-        ]}
+        footer={modalFooter}
       >
         {showImageInputValidation && (
           <ImageInputValidation
