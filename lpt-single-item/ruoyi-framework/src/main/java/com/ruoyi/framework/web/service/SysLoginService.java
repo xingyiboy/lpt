@@ -218,6 +218,7 @@ public class SysLoginService
                 return String.valueOf(VerificationTypeEnum.EMAIL_VALIDATION.getCode());
             }else {
                 //校验失败 继续生成字符校验图片
+                return "验证码错误";
             }
         }
         //生成字符校验图片

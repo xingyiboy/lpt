@@ -1,7 +1,7 @@
 /*
  * @Date: 2025-03-16 16:12:47
  * @LastEditors: xingyi && 2416820386@qq.com
- * @LastEditTime: 2025-03-17 19:21:37
+ * @LastEditTime: 2025-03-17 19:38:50
  * @FilePath: \react-ui\src\pages\User\Login\index.tsx
  */
 import Footer from '@/components/Footer';
@@ -118,22 +118,18 @@ const Login: React.FC = () => {
     switch (step) {
       case '1':
         //执行字符校验
-
         message.success('验证成功，开始字符校验');
-        getCodeDataAndVerify(currentValues);
-        setShowImageInputValidation(true);
+        getCodeDataAndVerify(currentValues, false, '1');
         break;
       case '2':
         //执行数字计算校验
         message.success('验证成功，开始数字校验');
-        getCodeDataAndVerify(currentValues);
-        setShowImageInputValidation(true);
+        getCodeDataAndVerify(currentValues, false, '2');
         break;
       case '3':
         //执行邮箱校验
         message.success('验证成功，开始邮箱校验');
-        getCodeDataAndVerify(currentValues);
-        setShowMailboxValidation(true);
+        getCodeDataAndVerify(currentValues, false, '3');
         break;
       default:
         //错误重新获取验证码不能进行下一步
@@ -154,7 +150,7 @@ const Login: React.FC = () => {
 
   //获取验证码/校验验证码
   const getCodeDataAndVerify = useCallback(
-    async (values?: API.LoginParams, isVerify) => {
+    async (values?: API.LoginParams, isVerify = false, Step = '') => {
       if (isVerify == true) {
         //校验
         const currentValues = values || loginValuesRef.current;
@@ -171,13 +167,11 @@ const Login: React.FC = () => {
             getCodeDataAndVerify();
           }
         } else {
-          console.log(1111111);
           clearSessionToken();
           // 如果失败去设置用户错误信息
           setUserLoginState({ ...response, type });
         }
       } else {
-        console.log(3333);
         //获取验证码
         try {
           // 优先使用传入值，没有则使用存储的值
@@ -190,6 +184,23 @@ const Login: React.FC = () => {
           const response = await login({ ...currentValues });
           if (response.code === 200) {
             setCodeImgData(response.data);
+            switch (Step) {
+              case '1':
+                //执行字符校验
+                setShowImageInputValidation(true);
+                break;
+              case '2':
+                //执行数字计算校验
+                setShowImageInputValidation(true);
+                break;
+              case '3':
+                //执行邮箱校验
+                setShowImageInputValidation(false);
+                setShowMailboxValidation(true);
+                break;
+              default:
+                break;
+            }
             // 存储到 ref
             loginValuesRef.current = currentValues;
           }
