@@ -1,7 +1,7 @@
 /*
  * @Date: 2025-03-17 20:21:01
  * @LastEditors: xingyi && 2416820386@qq.com
- * @LastEditTime: 2025-03-18 17:51:59
+ * @LastEditTime: 2025-03-19 00:03:28
  * @FilePath: \lpt-single-item\react-ui\src\pages\User\Login\components\CaptchaModal.tsx
  */
 import { useEffect } from 'react';
@@ -16,14 +16,15 @@ interface CaptchaProps {
   onSuccess: (token: string) => void;
   onClose: () => void;
   username?: string;
+  uuid?: string;
 }
 
-const CaptchaModal = ({ onSuccess, onClose, username }: CaptchaProps) => {
+const CaptchaModal = ({ onSuccess, onClose, username,uuid }: CaptchaProps) => {
   useEffect(() => {
     const initCaptcha = () => {
       const config = {
-        requestCaptchaDataUrl: '/api/login?username=' + username,
-        validCaptchaUrl: '/api/login?username=' + username,
+        requestCaptchaDataUrl: '/api/login?username=' + username+'&uuid='+uuid,
+        validCaptchaUrl: '/api/login?username=' + username+'&uuid='+uuid,
         bindEl: '#captcha-box',
         validSuccess: (res: any, _: any, tac: any) => {
           onSuccess(res.msg);
@@ -50,7 +51,7 @@ const CaptchaModal = ({ onSuccess, onClose, username }: CaptchaProps) => {
       const container = document.getElementById('captcha-box');
       if (container) container.innerHTML = '';
     };
-  }, [onSuccess, onClose, username]);
+  }, [onSuccess, onClose, username,uuid]);
 
   return <div id="captcha-box" style={{ width: 320, margin: '0 auto' }} />;
 };

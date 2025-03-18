@@ -46,8 +46,9 @@ public class SysLoginController
      * @return 结果
      */
     @PostMapping("/login")
-    public Object login(@RequestBody LoginBody loginBody, String username, HttpSession session)
+    public Object login(@RequestBody LoginBody loginBody, String username,String uuid, HttpSession session)
     {
+        loginBody.setUuid(uuid);
         return loginService.login(loginBody,username,session);
     }
 

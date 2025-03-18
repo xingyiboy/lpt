@@ -1,7 +1,7 @@
 /*
  * @Date: 2025-03-16 16:12:47
  * @LastEditors: xingyi && 2416820386@qq.com
- * @LastEditTime: 2025-03-18 19:03:46
+ * @LastEditTime: 2025-03-19 00:04:58
  * @FilePath: \lpt-single-item\react-ui\src\pages\User\Login\index.tsx
  */
 import Footer from '@/components/Footer';
@@ -104,7 +104,6 @@ const Login: React.FC = () => {
   const [captchaInput, setCaptchaInput] = useState('');
 
   const [submitting, setSubmitting] = useState(false);
-  const [showCaptcha, setShowCaptcha] = useState(false);
 
   // 字符，数字 校验 对话框
   const [showImageInputValidation, setShowImageInputValidation] = useState(false);
@@ -113,9 +112,12 @@ const Login: React.FC = () => {
   //滑动、旋转、滑动还原、文字点选校验 对话框
   const [showBehaviorValidation, setShowBehaviorValidation] = useState(false);
 
-  const [getBehaviorURL, setGetBehaviorURL] = useState('');
-
   const [isRegister, setIsRegister] = useState(false);
+
+  // 使用 useRef 替代 useState 来存储最新值
+  const loginValuesRef = useRef<API.LoginParams>();
+
+  const uuid = useRef<String>();
 
   //关闭全部校验 对话框
   const closeAllValidation = () => {
@@ -141,9 +143,6 @@ const Login: React.FC = () => {
       document.body.removeChild(script);
     };
   }, []); // 空依赖数组，确保只加载一次
-
-  // 使用 useRef 替代 useState 来存储最新值
-  const loginValuesRef = useRef<API.LoginParams>();
 
   //处理下一步操作
   const handleSubmitCaptcha = async (step: string, values?: API.LoginParams = null) => {
@@ -318,11 +317,14 @@ const Login: React.FC = () => {
 
       if (response.code === 200) {
         if (isRegister) {
+          //注册
           message.success('注册成功，请登录');
           setIsRegister(false);
           return;
         }
-        handleSubmitCaptcha(response.data, values);
+        //登录
+        uuid.current = response.data.uuid;
+        handleSubmitCaptcha(response.data.step, values);
       } else {
         clearSessionToken();
         setUserLoginState({ ...response, type });
@@ -364,6 +366,10 @@ const Login: React.FC = () => {
           id: 'pages.login.success',
           defaultMessage: '登录成功！',
         });
+        if(Step == null){
+          message.error('错误！请重新登录');
+        }
+        
         const current = new Date();
         const expireTime = current.setTime(current.getTime() + 1000 * 12 * 60 * 60);
         setSessionToken(Step, Step, expireTime);
@@ -658,6 +664,7 @@ const Login: React.FC = () => {
             onSuccess={handleCaptchaSuccess}
             onClose={() => setOpen(false)}
             username={loginValuesRef.current.username}
+            uuid={uuid.current}
           />
         )}
       </Modal>

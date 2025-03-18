@@ -45,8 +45,10 @@ import com.ruoyi.framework.security.context.AuthenticationContextHolder;
 import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.system.service.ISysUserService;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -84,7 +86,7 @@ public class SysLoginService
      *
      * @return 结果
      */
-    public Object login(LoginBody loginBody, String username, HttpSession session)
+    public Object login(LoginBody loginBody, String username,HttpSession session)
     {
         VerificationTypeEnum verificationTypeEnum = null;
         //获取redis的数据
@@ -137,10 +139,17 @@ public class SysLoginService
             LptApiResponse<?> valid = application.matching(loginBody.getId(), new MatchParam(loginBody.getData()));
             if(valid.isSuccess()){
                 //校验成功 完成登录
+                if (loginVerify.getUuid().equals(loginBody.getUuid())){
+                    //返回token
+                    valid.setMsg(loginVerify.getToken());
+                    return valid;
+                }else {
+                    //校验失败 一般不会到这步
+                    LptApiResponse<?> error = new LptApiResponse<>();
+                    error.setMsg(null);
+                    return error;
+                }
 
-                //返回token
-                valid.setMsg(loginVerify.getToken());
-                return valid;
             }else {
                 return valid;
             }
@@ -289,7 +298,7 @@ public class SysLoginService
      * @param loginBody
      * @return
      */
-    private String handlePasswordValidation(LoginBody loginBody) {
+    private Object handlePasswordValidation(LoginBody loginBody) {
         // 登录前置校验 校验账号和密码
         loginPreCheck(loginBody.getUsername(), loginBody.getPassword());
         // 用户验证
@@ -327,9 +336,15 @@ public class SysLoginService
         LoginVerify loginVerify = new LoginVerify(loginBody.getUsername(),loginBody.getPassword(),VerificationTypeEnum.CHARACTER_VALIDATION.getCode());
         // 生成token
         loginVerify.setToken(tokenService.createToken(loginUser));
+        //生成UUID
+        loginVerify.setUuid(UUID.randomUUID().toString());
         redisCache.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.MINUTES);
         //返回下一步码
-        return String.valueOf(VerificationTypeEnum.CHARACTER_VALIDATION.getCode());
+        Map<String, String> map = new HashMap<>();
+        //用uuid存储然后最后登录成功再取出判断 防止有人直接请求最后结果导致直接登录
+        map.put("uuid",loginVerify.getUuid());
+        map.put("step",String.valueOf(VerificationTypeEnum.CHARACTER_VALIDATION.getCode()));
+        return map;
     }
 
     /**
