@@ -1,12 +1,15 @@
 /*
  * @Date: 2025-03-16 16:12:47
  * @LastEditors: xingyi && 2416820386@qq.com
- * @LastEditTime: 2025-03-18 18:30:53
+ * @LastEditTime: 2025-03-18 19:06:33
  * @FilePath: \lpt-single-item\react-ui\src\locales\en-US\pages.ts
  */
 export default {
   'pages.layouts.userLayout.title': 'LPT fully verifies the online experience',
+  'pages.login.hasAccount': 'have an account? Go and log in',
+  'pages.login.notAccount': 'No account? Go to Register',
   'pages.login.accountLogin.tab': 'Account Login',
+  'pages.register.accountLogin.tab': 'Account Register',
   'pages.login.accountLogin.errorMessage': 'Incorrect username/password',
   'pages.login.failure': 'Login failed, please try again!',
   'pages.login.success': 'Login successful!',

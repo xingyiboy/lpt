@@ -414,7 +414,7 @@ public class SysLoginService
         //生成6位验证码
         String code = generateCaptcha(6);
         SysUser sysUser = sysUserMapper.selectUserByUserName(loginVerify.getUsername());
-        if (sysUser.getEmail() != null) {
+        if (StringUtils.isNotBlank(sysUser.getEmail())) {
             //邮箱不为空
             //发送邮箱验证码
 
@@ -438,7 +438,7 @@ public class SysLoginService
         loginVerify.setCode(code);
         //信息存入redis step代表当前步骤
         redisCache.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.MINUTES);
-        return sysUser.getEmail()!=null ? sysUser.getEmail():"该账号暂无填写邮箱"+"-验证码:"+code;
+        return (StringUtils.isNotBlank(sysUser.getEmail()) ? sysUser.getEmail():"该账号暂无填写邮箱")+"-验证码:"+code;
     }
 
     /**

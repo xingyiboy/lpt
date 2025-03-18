@@ -6,7 +6,10 @@
  */
 export default {
   'pages.layouts.userLayout.title': '令牌通全验证在线体验',
+  'pages.login.hasAccount': '已有账号？去登录',
+  'pages.login.notAccount': '没有账号？去注册',
   'pages.login.accountLogin.tab': '账户密码登录',
+  'pages.register.accountLogin.tab': '账户密码注册',
   'pages.login.accountLogin.errorMessage': '错误的用户名和密码',
   'pages.login.failure': '登录失败，请重试！',
   'pages.login.success': '登录成功！',

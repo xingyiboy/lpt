@@ -1,11 +1,11 @@
 /*
  * @Date: 2025-03-16 16:12:47
  * @LastEditors: xingyi && 2416820386@qq.com
- * @LastEditTime: 2025-03-18 18:39:57
+ * @LastEditTime: 2025-03-18 19:03:46
  * @FilePath: \lpt-single-item\react-ui\src\pages\User\Login\index.tsx
  */
 import Footer from '@/components/Footer';
-import { login } from '@/services/system/auth';
+import { login, register } from '@/services/system/auth';
 import { getFakeCaptcha } from '@/services/ant-design-pro/login';
 import {
   AlipayCircleOutlined,
@@ -114,6 +114,8 @@ const Login: React.FC = () => {
   const [showBehaviorValidation, setShowBehaviorValidation] = useState(false);
 
   const [getBehaviorURL, setGetBehaviorURL] = useState('');
+
+  const [isRegister, setIsRegister] = useState(false);
 
   //关闭全部校验 对话框
   const closeAllValidation = () => {
@@ -311,24 +313,22 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (values: API.LoginParams) => {
     try {
-      // 登录
-      const response = await login({ ...values, step: 0 });
+      const apiMethod = isRegister ? register : login;
+      const response = await apiMethod({ ...values, step: 0 });
 
       if (response.code === 200) {
+        if (isRegister) {
+          message.success('注册成功，请登录');
+          setIsRegister(false);
+          return;
+        }
         handleSubmitCaptcha(response.data, values);
       } else {
-        console.log(response.msg);
         clearSessionToken();
-        // 如果失败去设置用户错误信息
         setUserLoginState({ ...response, type });
       }
     } catch (error) {
-      const defaultLoginFailureMessage = intl.formatMessage({
-        id: 'pages.login.failure',
-        defaultMessage: '登录失败，请重试！',
-      });
-      console.log(error);
-      message.error('登录失败，请重试！');
+      message.error(isRegister ? '注册失败，请重试！' : '登录失败，请重试！');
     }
   };
 
@@ -399,6 +399,12 @@ const Login: React.FC = () => {
         ];
   }, [submitting, handleCancel, handleSubmitVarify, showBehaviorValidation]); // 当showBehaviorValidation时关闭底部按钮
 
+  // 修改注册状态切换逻辑
+  const toggleRegister = () => {
+    setIsRegister(!isRegister);
+    setType('account'); // 强制切换到账户密码登录
+  };
+
   return (
     <div className={containerClassName}>
       <Helmet>
@@ -434,14 +440,23 @@ const Login: React.FC = () => {
         >
           <Tabs
             activeKey={type}
-            onChange={setType}
+            onChange={(key) => {
+              if (isRegister) {
+                // 注册模式下禁止切换tab
+                message.info('注册请使用账户密码方式');
+                return;
+              }
+              setType(key);
+            }}
             centered
             items={[
               {
                 key: 'account',
                 label: intl.formatMessage({
-                  id: 'pages.login.accountLogin.tab',
-                  defaultMessage: '账户密码登录',
+                  id: isRegister
+                    ? 'pages.register.accountLogin.tab'
+                    : 'pages.login.accountLogin.tab',
+                  defaultMessage: isRegister ? '账户注册' : '账户密码登录', // 根据状态修改标签
                 }),
               },
               {
@@ -450,6 +465,7 @@ const Login: React.FC = () => {
                   id: 'pages.login.phoneLogin.tab',
                   defaultMessage: '手机号登录',
                 }),
+                disabled: isRegister, // 注册时禁用手机登录
               },
             ]}
           />
@@ -603,12 +619,12 @@ const Login: React.FC = () => {
             <ProFormCheckbox noStyle name="autoLogin">
               <FormattedMessage id="pages.login.rememberMe" defaultMessage="自动登录" />
             </ProFormCheckbox>
-            <a
-              style={{
-                float: 'right',
-              }}
-            >
-              <FormattedMessage id="pages.login.forgotPassword" defaultMessage="忘记密码" />
+            <a style={{ float: 'right' }} onClick={toggleRegister}>
+              {isRegister ? (
+                <FormattedMessage id="pages.login.hasAccount" defaultMessage="已有账号？去登录" />
+              ) : (
+                <FormattedMessage id="pages.login.notAccount" defaultMessage="没有账号？去注册" />
+              )}
             </a>
           </div>
         </LoginForm>
