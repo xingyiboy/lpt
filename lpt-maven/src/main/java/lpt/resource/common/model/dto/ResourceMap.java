@@ -2,7 +2,6 @@ package lpt.resource.common.model.dto;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lpt.common.util.UUIDUtils;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -17,31 +16,25 @@ import java.util.function.BiConsumer;
 @Data
 @EqualsAndHashCode
 public class ResourceMap {
-    /** 唯一ID. */
-    private String id;
+
     private Map<String, Resource> resourceMap;
     private String tag;
 
     public ResourceMap(String tag) {
-        this(tag, 10);
+        this.tag = tag;
+        this.resourceMap = new HashMap<>();
     }
 
     public ResourceMap(String tag, int initialCapacity) {
-        this(UUIDUtils.getUUID(), tag, initialCapacity);
-    }
-
-    public ResourceMap(String id, String tag, int initialCapacity) {
         this.tag = tag;
         this.resourceMap = new HashMap<>(initialCapacity);
-        this.id = id;
     }
 
     public ResourceMap(int initialCapacity) {
-        this(null, initialCapacity);
+        this.resourceMap = new HashMap<>(initialCapacity);
     }
 
     public ResourceMap() {
-        this(null);
     }
 
     private Map<String, Resource> getResourceMapOfCreate() {

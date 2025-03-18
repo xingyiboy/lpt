@@ -1,15 +1,15 @@
 package lpt.application;
 
-import lpt.application.vo.CaptchaResponse;
-import lpt.application.vo.ImageCaptchaVO;
+import lpt.application.vo.LptCaptchaResponse;
+import lpt.application.vo.LptImageCaptchaVO;
 import lpt.cache.CacheStore;
-import lpt.common.response.ApiResponse;
+import lpt.common.response.LptApiResponse;
 import lpt.generator.ImageCaptchaGenerator;
 import lpt.generator.common.model.dto.GenerateParam;
 import lpt.interceptor.CaptchaInterceptor;
 import lpt.resource.ImageCaptchaResourceManager;
 import lpt.validator.ImageCaptchaValidator;
-import lpt.validator.common.model.dto.ImageCaptchaTrack;
+import lpt.validator.common.model.dto.LptImageCaptchaTrack;
 import lpt.validator.common.model.dto.MatchParam;
 
 /**
@@ -17,47 +17,47 @@ import lpt.validator.common.model.dto.MatchParam;
  * @date 2022/3/2 14:22
  * @Description 用于SliderCaptchaApplication增加附属功能
  */
-public class FilterImageCaptchaApplication implements ImageCaptchaApplication {
+public class FilterImageCaptchaApplication implements LptImageCaptchaApplication {
 
 
-    protected ImageCaptchaApplication target;
+    protected LptImageCaptchaApplication target;
 
-    public FilterImageCaptchaApplication(ImageCaptchaApplication target) {
+    public FilterImageCaptchaApplication(LptImageCaptchaApplication target) {
         this.target = target;
     }
 
     @Override
-    public CaptchaResponse<ImageCaptchaVO> generateCaptcha() {
+    public LptCaptchaResponse<LptImageCaptchaVO> generateCaptcha() {
         return target.generateCaptcha();
     }
 
     @Override
-    public CaptchaResponse<ImageCaptchaVO> generateCaptcha(String type) {
+    public LptCaptchaResponse<LptImageCaptchaVO> generateCaptcha(String type) {
         return target.generateCaptcha(type);
     }
 
     @Override
-    public CaptchaResponse<ImageCaptchaVO> generateCaptcha(CaptchaImageType captchaImageType) {
-        return target.generateCaptcha(captchaImageType);
+    public LptCaptchaResponse<LptImageCaptchaVO> generateCaptcha(LptCaptchaImageType lptCaptchaImageType) {
+        return target.generateCaptcha(lptCaptchaImageType);
     }
 
     @Override
-    public CaptchaResponse<ImageCaptchaVO> generateCaptcha(String type, CaptchaImageType captchaImageType) {
-        return target.generateCaptcha(type, captchaImageType);
+    public LptCaptchaResponse<LptImageCaptchaVO> generateCaptcha(String type, LptCaptchaImageType lptCaptchaImageType) {
+        return target.generateCaptcha(type, lptCaptchaImageType);
     }
 
     @Override
-    public CaptchaResponse<ImageCaptchaVO> generateCaptcha(GenerateParam param) {
+    public LptCaptchaResponse<LptImageCaptchaVO> generateCaptcha(GenerateParam param) {
         return target.generateCaptcha(param);
     }
 
     @Override
-    public ApiResponse<?> matching(String id, MatchParam matchParam) {
+    public LptApiResponse<?> matching(String id, MatchParam matchParam) {
         return target.matching(id, matchParam);
     }
 
     @Override
-    public ApiResponse<?> matching(String id, ImageCaptchaTrack track) {
+    public LptApiResponse<?> matching(String id, LptImageCaptchaTrack track) {
         return target.matching(id, track);
     }
 

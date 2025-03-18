@@ -5,7 +5,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import lpt.common.AnyMap;
 import lpt.common.constant.CaptchaTypeConstant;
-import lpt.common.response.ApiResponse;
+import lpt.common.response.LptApiResponse;
 import lpt.common.response.ApiResponseStatusConstant;
 import lpt.common.util.CaptchaTypeClassifier;
 import lpt.common.util.CollectionUtils;
@@ -15,7 +15,7 @@ import lpt.generator.common.model.dto.ImageCaptchaInfo;
 import lpt.validator.ImageCaptchaValidator;
 import lpt.validator.SliderCaptchaPercentageValidator;
 import lpt.validator.common.constant.TrackTypeConstant;
-import lpt.validator.common.model.dto.ImageCaptchaTrack;
+import lpt.validator.common.model.dto.LptImageCaptchaTrack;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -154,86 +154,86 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator, Slide
     }
 
     @Override
-    public ApiResponse<?> valid(ImageCaptchaTrack imageCaptchaTrack, AnyMap imageCaptchaValidData) {
+    public LptApiResponse<?> valid(LptImageCaptchaTrack lptImageCaptchaTrack, AnyMap imageCaptchaValidData) {
         // 读容错值
         Float tolerant = imageCaptchaValidData.getFloat(TOLERANT_KEY, defaultTolerant);
         // 读验证码类型
         String type = imageCaptchaValidData.getString(TYPE_KEY, CaptchaTypeConstant.SLIDER);
         // 验证前
         // 在验证前必须读取 容错值 和验证码类型
-        ApiResponse<?> beforeValid = beforeValid(imageCaptchaTrack, imageCaptchaValidData, tolerant, type);
+        LptApiResponse<?> beforeValid = beforeValid(lptImageCaptchaTrack, imageCaptchaValidData, tolerant, type);
         if (!beforeValid.isSuccess()) {
             return beforeValid;
         }
-        Integer bgImageWidth = imageCaptchaTrack.getBgImageWidth();
+        Integer bgImageWidth = lptImageCaptchaTrack.getBgImageWidth();
         if (bgImageWidth == null || bgImageWidth < 1) {
             // 没有背景图片宽度
-            return ApiResponse.ofCheckError("验证码背景图片宽度参数错误");
+            return LptApiResponse.ofCheckError("验证码背景图片宽度参数错误");
         }
-        List<ImageCaptchaTrack.Track> trackList = imageCaptchaTrack.getTrackList();
+        List<LptImageCaptchaTrack.Track> trackList = lptImageCaptchaTrack.getTrackList();
         if (CollectionUtils.isEmpty(trackList)) {
             // 没有滑动轨迹
-            return ApiResponse.ofCheckError("没有解析到滑动轨迹");
+            return LptApiResponse.ofCheckError("没有解析到滑动轨迹");
         }
         // 验证
-        ApiResponse<?> response;
-        boolean valid = doValid(imageCaptchaTrack, imageCaptchaValidData, tolerant, type);
-        return afterValid(valid, imageCaptchaTrack, imageCaptchaValidData, tolerant, type);
+        LptApiResponse<?> response;
+        boolean valid = doValid(lptImageCaptchaTrack, imageCaptchaValidData, tolerant, type);
+        return afterValid(valid, lptImageCaptchaTrack, imageCaptchaValidData, tolerant, type);
     }
 
     /**
      * 验证前
      *
-     * @param imageCaptchaTrack sliderCaptchaTrack
+     * @param lptImageCaptchaTrack sliderCaptchaTrack
      * @param captchaValidData  captchaValidData
      * @param tolerant          tolerant
      * @param type              type
      * @return boolean
      */
-    public ApiResponse<?> beforeValid(ImageCaptchaTrack imageCaptchaTrack, AnyMap captchaValidData, Float tolerant, String type) {
-        return ApiResponse.ofSuccess();
+    public LptApiResponse<?> beforeValid(LptImageCaptchaTrack lptImageCaptchaTrack, AnyMap captchaValidData, Float tolerant, String type) {
+        return LptApiResponse.ofSuccess();
     }
 
     /**
      * 验证后
      *
-     * @param imageCaptchaTrack sliderCaptchaTrack
+     * @param lptImageCaptchaTrack sliderCaptchaTrack
      * @param captchaValidData  captchaValidData
      * @param tolerant          tolerant
      * @param type              type
      * @return boolean
      */
-    public ApiResponse<?> afterValid(Boolean basicValid, ImageCaptchaTrack imageCaptchaTrack, AnyMap captchaValidData, Float tolerant, String type) {
+    public LptApiResponse<?> afterValid(Boolean basicValid, LptImageCaptchaTrack lptImageCaptchaTrack, AnyMap captchaValidData, Float tolerant, String type) {
         if (!basicValid) {
-            return ApiResponse.ofMessage(ApiResponseStatusConstant.BASIC_CHECK_FAIL);
+            return LptApiResponse.ofMessage(ApiResponseStatusConstant.BASIC_CHECK_FAIL);
         }
-        return ApiResponse.ofSuccess();
+        return LptApiResponse.ofSuccess();
     }
 
-    public boolean doValid(ImageCaptchaTrack imageCaptchaTrack,
+    public boolean doValid(LptImageCaptchaTrack lptImageCaptchaTrack,
                            AnyMap imageCaptchaValidData,
                            Float tolerant,
                            String type) {
         if (CaptchaTypeClassifier.isSliderCaptcha(type)) {
             // 滑动类型验证码
-            return doValidSliderCaptcha(imageCaptchaTrack, imageCaptchaValidData, tolerant, type);
+            return doValidSliderCaptcha(lptImageCaptchaTrack, imageCaptchaValidData, tolerant, type);
         } else if (CaptchaTypeClassifier.isClickCaptcha(type)) {
             // 点选类型验证码
-            return doValidClickCaptcha(imageCaptchaTrack, imageCaptchaValidData, tolerant, type);
+            return doValidClickCaptcha(lptImageCaptchaTrack, imageCaptchaValidData, tolerant, type);
         } else if (CaptchaTypeClassifier.isJigsawCaptcha(type)) {
             // 拼图类型验证码
-            return doValidJigsawCaptcha(imageCaptchaTrack, imageCaptchaValidData, tolerant, type);
+            return doValidJigsawCaptcha(lptImageCaptchaTrack, imageCaptchaValidData, tolerant, type);
         }
         // 不支持的类型
         log.warn("校验验证码警告， 不支持的验证码类型:{}, 请手动扩展 cloud.tianai.captcha.validator.impl.SimpleImageCaptchaValidator.doValid 进行校验扩展", type);
         return false;
     }
 
-    public boolean doValidJigsawCaptcha(ImageCaptchaTrack imageCaptchaTrack, AnyMap imageCaptchaValidData, Float tolerant, String type) {
-        if (imageCaptchaTrack.getData() == null || !(imageCaptchaTrack.getData() instanceof String)) {
+    public boolean doValidJigsawCaptcha(LptImageCaptchaTrack lptImageCaptchaTrack, AnyMap imageCaptchaValidData, Float tolerant, String type) {
+        if (lptImageCaptchaTrack.getData() == null || !(lptImageCaptchaTrack.getData() instanceof String)) {
             throw new IllegalArgumentException("拼图验证码必须传data数据，且必须是字符串类型逗号分隔数据");
         }
-        String posArr = (String) imageCaptchaTrack.getData();
+        String posArr = (String) lptImageCaptchaTrack.getData();
         String successPosStr = imageCaptchaValidData.getString(PERCENTAGE_KEY, null);
         return successPosStr.equals(posArr);
     }
@@ -241,13 +241,13 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator, Slide
     /**
      * 校验点选验证码
      *
-     * @param imageCaptchaTrack     sliderCaptchaTrack
+     * @param lptImageCaptchaTrack     sliderCaptchaTrack
      * @param imageCaptchaValidData imageCaptchaValidData
      * @param tolerant              tolerant
      * @param type                  type
      * @return boolean
      */
-    public boolean doValidClickCaptcha(ImageCaptchaTrack imageCaptchaTrack,
+    public boolean doValidClickCaptcha(LptImageCaptchaTrack lptImageCaptchaTrack,
                                        AnyMap imageCaptchaValidData,
                                        Float tolerant,
                                        String type) {
@@ -256,12 +256,12 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator, Slide
             return false;
         }
         String[] splitArr = validStr.split(";");
-        List<ImageCaptchaTrack.Track> trackList = imageCaptchaTrack.getTrackList();
+        List<LptImageCaptchaTrack.Track> trackList = lptImageCaptchaTrack.getTrackList();
         if (trackList.size() < splitArr.length) {
             return false;
         }
         // 取出点击事件的轨迹数据
-        List<ImageCaptchaTrack.Track> clickTrackList = trackList
+        List<LptImageCaptchaTrack.Track> clickTrackList = trackList
                 .stream()
                 .filter(t -> TrackTypeConstant.CLICK.equalsIgnoreCase(t.getType()))
                 .collect(Collectors.toList());
@@ -271,14 +271,14 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator, Slide
         StringBuilder sb = new StringBuilder();
         List<Double> percentages = new ArrayList<>();
         for (int i = 0; i < splitArr.length; i++) {
-            ImageCaptchaTrack.Track track = clickTrackList.get(i);
+            LptImageCaptchaTrack.Track track = clickTrackList.get(i);
             String posStr = splitArr[i];
             String[] posArr = posStr.split(",");
             float xPercentage = Float.parseFloat(posArr[0]);
             float yPercentage = Float.parseFloat(posArr[1]);
 
-            float calcXPercentage = calcPercentage(track.getX(), imageCaptchaTrack.getBgImageWidth());
-            float calcYPercentage = calcPercentage(track.getY(), imageCaptchaTrack.getBgImageHeight());
+            float calcXPercentage = calcPercentage(track.getX(), lptImageCaptchaTrack.getBgImageWidth());
+            float calcYPercentage = calcPercentage(track.getY(), lptImageCaptchaTrack.getBgImageHeight());
             if (!checkPercentage(calcXPercentage, xPercentage, tolerant)
                     || !checkPercentage(calcYPercentage, yPercentage, tolerant)) {
                 return false;
@@ -296,13 +296,13 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator, Slide
     /**
      * 校验滑动验证码
      *
-     * @param imageCaptchaTrack     sliderCaptchaTrack
+     * @param lptImageCaptchaTrack     sliderCaptchaTrack
      * @param imageCaptchaValidData imageCaptchaValidData
      * @param tolerant              tolerant
      * @param type                  type
      * @return boolean
      */
-    public boolean doValidSliderCaptcha(ImageCaptchaTrack imageCaptchaTrack,
+    public boolean doValidSliderCaptcha(LptImageCaptchaTrack lptImageCaptchaTrack,
                                         AnyMap imageCaptchaValidData,
                                         Float tolerant,
                                         String type) {
@@ -311,12 +311,12 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator, Slide
             // 没读取到百分比
             return false;
         }
-        List<ImageCaptchaTrack.Track> trackList = imageCaptchaTrack.getTrackList();
-        ImageCaptchaTrack.Track firstTrack = trackList.get(0);
+        List<LptImageCaptchaTrack.Track> trackList = lptImageCaptchaTrack.getTrackList();
+        LptImageCaptchaTrack.Track firstTrack = trackList.get(0);
         // 取最后一个滑动轨迹
-        ImageCaptchaTrack.Track lastTrack = trackList.get(trackList.size() - 1);
+        LptImageCaptchaTrack.Track lastTrack = trackList.get(trackList.size() - 1);
         // 计算百分比
-        float calcPercentage = calcPercentage(lastTrack.getX() - firstTrack.getX(), imageCaptchaTrack.getBgImageWidth());
+        float calcPercentage = calcPercentage(lastTrack.getX() - firstTrack.getX(), lptImageCaptchaTrack.getBgImageWidth());
         // 校验百分比
         boolean percentage = checkPercentage(calcPercentage, oriPercentage, tolerant);
         if (percentage) {

@@ -1,6 +1,7 @@
 package lpt.resource;
 
 import lpt.common.constant.CaptchaTypeConstant;
+import lpt.common.constant.CommonConstant;
 import lpt.resource.common.model.dto.Resource;
 import lpt.resource.common.model.dto.ResourceMap;
 
@@ -8,7 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import static lpt.common.constant.CommonConstant.DEFAULT_TAG;
 import static lpt.generator.impl.StandardSliderImageCaptchaGenerator.TEMPLATE_ACTIVE_IMAGE_NAME;
 import static lpt.generator.impl.StandardSliderImageCaptchaGenerator.TEMPLATE_FIXED_IMAGE_NAME;
 
@@ -47,12 +47,12 @@ public class DefaultBuiltInResources {
         // 滑动验证
         String finalPathPrefix = pathPrefix;
         defaultTemplateResource.put(CaptchaTypeConstant.SLIDER, resourceStore -> {
-            ResourceMap template1 = new ResourceMap(DEFAULT_TAG, 4);
+            ResourceMap template1 = new ResourceMap(CommonConstant.DEFAULT_TAG, 4);
             template1.put(TEMPLATE_ACTIVE_IMAGE_NAME, new Resource(type, finalPathPrefix.concat("/slider_1/active.png")));
             template1.put(TEMPLATE_FIXED_IMAGE_NAME, new Resource(type, finalPathPrefix.concat("/slider_1/fixed.png")));
             resourceStore.addTemplate(CaptchaTypeConstant.SLIDER, template1);
 
-            ResourceMap template2 = new ResourceMap(DEFAULT_TAG, 4);
+            ResourceMap template2 = new ResourceMap(CommonConstant.DEFAULT_TAG, 4);
             template2.put(TEMPLATE_ACTIVE_IMAGE_NAME, new Resource(type, finalPathPrefix.concat("/slider_2/active.png")));
             template2.put(TEMPLATE_FIXED_IMAGE_NAME, new Resource(type, finalPathPrefix.concat("/slider_2/fixed.png")));
             resourceStore.addTemplate(CaptchaTypeConstant.SLIDER, template2);
@@ -61,7 +61,7 @@ public class DefaultBuiltInResources {
         // 旋转验证
         defaultTemplateResource.put(CaptchaTypeConstant.ROTATE, resourceStore -> {
             // 添加一些系统的 模板文件
-            ResourceMap template1 = new ResourceMap(DEFAULT_TAG, 4);
+            ResourceMap template1 = new ResourceMap(CommonConstant.DEFAULT_TAG, 4);
             template1.put(TEMPLATE_ACTIVE_IMAGE_NAME, new Resource(type, finalPathPrefix.concat("/rotate_1/active.png")));
             template1.put(TEMPLATE_FIXED_IMAGE_NAME, new Resource(type, finalPathPrefix.concat("/rotate_1/fixed.png")));
             resourceStore.addTemplate(CaptchaTypeConstant.ROTATE, template1);

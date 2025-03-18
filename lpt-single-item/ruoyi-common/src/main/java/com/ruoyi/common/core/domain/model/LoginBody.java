@@ -1,5 +1,7 @@
 package com.ruoyi.common.core.domain.model;
 
+import lpt.validator.common.model.dto.LptImageCaptchaTrack;
+
 /**
  * 用户登录对象
  *
@@ -21,6 +23,25 @@ public class LoginBody
      * 登录步骤
      */
     private Integer Step;
+
+    private String id;
+    private LptImageCaptchaTrack data;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public LptImageCaptchaTrack getData() {
+        return data;
+    }
+
+    public void setData(LptImageCaptchaTrack data) {
+        this.data = data;
+    }
 
     public String getCode() {
         return code;

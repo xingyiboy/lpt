@@ -9,7 +9,7 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ImageCaptchaVO implements Serializable {
+public class LptImageCaptchaVO implements Serializable {
     /** 验证码类型.*/
     private String type;
     /** 背景图.*/

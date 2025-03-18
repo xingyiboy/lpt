@@ -1,12 +1,18 @@
+/*
+ * @Date: 2025-03-16 16:12:47
+ * @LastEditors: xingyi && 2416820386@qq.com
+ * @LastEditTime: 2025-03-18 18:43:18
+ * @FilePath: \lpt-single-item\react-ui\src\locales\zh-CN\pages.ts
+ */
 export default {
-  'pages.layouts.userLayout.title': 'Ant Design 是西湖区最具影响力的 Web 设计规范',
+  'pages.layouts.userLayout.title': '令牌通全验证在线体验',
   'pages.login.accountLogin.tab': '账户密码登录',
-  'pages.login.accountLogin.errorMessage': '错误的用户名和密码(admin/admin123)',
+  'pages.login.accountLogin.errorMessage': '错误的用户名和密码',
   'pages.login.failure': '登录失败，请重试！',
   'pages.login.success': '登录成功！',
-  'pages.login.username.placeholder': '用户名: admin',
+  'pages.login.username.placeholder': '用户名: ',
   'pages.login.username.required': '用户名是必填项！',
-  'pages.login.password.placeholder': '密码: admin123',
+  'pages.login.password.placeholder': '密码: ',
   'pages.login.password.required': '密码是必填项！',
   'pages.login.phoneLogin.tab': '手机号登录',
   'pages.login.phoneLogin.errorMessage': '验证码错误',

@@ -1,3 +1,9 @@
+/*
+ * @Date: 2025-03-16 16:12:47
+ * @LastEditors: xingyi && 2416820386@qq.com
+ * @LastEditTime: 2025-03-18 18:26:39
+ * @FilePath: \lpt-single-item\react-ui\config\config.ts
+ */
 // https://umijs.org/config/
 import { defineConfig } from '@umijs/max';
 import { join } from 'path';
@@ -76,7 +82,7 @@ export default defineConfig({
    * @name layout 插件
    * @doc https://umijs.org/docs/max/layout-menu
    */
-  title: 'Ant Design Pro',
+  title: 'LPT',
   layout: {
     locale: true,
     ...defaultSettings,

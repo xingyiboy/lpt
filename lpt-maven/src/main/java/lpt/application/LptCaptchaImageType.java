@@ -8,14 +8,14 @@ import lombok.Getter;
  * @Description 验证码图片类型
  */
 @Getter
-public enum CaptchaImageType {
+public enum LptCaptchaImageType {
 
     /** webp类型. */
     WEBP,
     /** jpg+png类型. */
     JPEG_PNG;
 
-    public static CaptchaImageType getType(String bgImageType, String sliderImageType) {
+    public static LptCaptchaImageType getType(String bgImageType, String sliderImageType) {
         if ("webp".equalsIgnoreCase(bgImageType) && "webp".equalsIgnoreCase(sliderImageType)) {
             return WEBP;
         }

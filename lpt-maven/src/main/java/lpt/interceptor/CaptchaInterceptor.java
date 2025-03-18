@@ -1,9 +1,9 @@
 package lpt.interceptor;
 
-import lpt.application.vo.CaptchaResponse;
-import lpt.application.vo.ImageCaptchaVO;
+import lpt.application.vo.LptCaptchaResponse;
+import lpt.application.vo.LptImageCaptchaVO;
 import lpt.common.AnyMap;
-import lpt.common.response.ApiResponse;
+import lpt.common.response.LptApiResponse;
 import lpt.generator.AbstractImageCaptchaGenerator;
 import lpt.generator.common.model.dto.CaptchaExchange;
 import lpt.generator.common.model.dto.GenerateParam;
@@ -41,34 +41,34 @@ public interface CaptchaInterceptor {
         return new Context(getName(), null, -1, 1, EmptyCaptchaInterceptor.INSTANCE);
     }
 
-    default CaptchaResponse<ImageCaptchaVO> beforeGenerateCaptcha(Context context, String type, GenerateParam param) {
+    default LptCaptchaResponse<LptImageCaptchaVO> beforeGenerateCaptcha(Context context, String type, GenerateParam param) {
         return null;
     }
 
-    default CaptchaResponse<ImageCaptchaVO> beforeGenerateImageCaptchaValidData(Context context, String type, ImageCaptchaInfo imageCaptchaInfo) {
+    default LptCaptchaResponse<LptImageCaptchaVO> beforeGenerateImageCaptchaValidData(Context context, String type, ImageCaptchaInfo imageCaptchaInfo) {
         return null;
     }
 
     default void afterGenerateImageCaptchaValidData(Context context, String type, ImageCaptchaInfo imageCaptchaInfo, AnyMap validData) {
     }
 
-    default void afterGenerateCaptcha(Context context, String type, ImageCaptchaInfo imageCaptchaInfo, CaptchaResponse<ImageCaptchaVO> captchaResponse) {
+    default void afterGenerateCaptcha(Context context, String type, ImageCaptchaInfo imageCaptchaInfo, LptCaptchaResponse<LptImageCaptchaVO> lptCaptchaResponse) {
     }
 
-    default ApiResponse<?> beforeValid(Context context, String type, MatchParam matchParam, AnyMap validData) {
+    default LptApiResponse<?> beforeValid(Context context, String type, MatchParam matchParam, AnyMap validData) {
         Object preReturn = context.getPreReturnData();
         if (preReturn != null) {
-            return (ApiResponse<?>) preReturn;
+            return (LptApiResponse<?>) preReturn;
         }
-        return ApiResponse.ofSuccess();
+        return LptApiResponse.ofSuccess();
     }
 
-    default ApiResponse<?> afterValid(Context context, String type, MatchParam matchParam, AnyMap validData, ApiResponse<?> basicValid) {
+    default LptApiResponse<?> afterValid(Context context, String type, MatchParam matchParam, AnyMap validData, LptApiResponse<?> basicValid) {
         Object preReturn = context.getPreReturnData();
         if (preReturn != null) {
-            return (ApiResponse<?>) preReturn;
+            return (LptApiResponse<?>) preReturn;
         }
-        return ApiResponse.ofSuccess();
+        return LptApiResponse.ofSuccess();
     }
 
     default ImageCaptchaInfo beforeGenerateCaptchaImage(Context context, CaptchaExchange captchaExchange, AbstractImageCaptchaGenerator generator) {

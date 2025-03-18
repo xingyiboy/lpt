@@ -14,11 +14,11 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CaptchaResponse<T> implements Serializable {
+public class LptCaptchaResponse<T> implements Serializable {
     private String id;
     private T captcha;
 
-    public static <T> CaptchaResponse<T> of(String id, T data) {
-        return new CaptchaResponse<T>(id, data);
+    public static <T> LptCaptchaResponse<T> of(String id, T data) {
+        return new LptCaptchaResponse<T>(id, data);
     }
 }

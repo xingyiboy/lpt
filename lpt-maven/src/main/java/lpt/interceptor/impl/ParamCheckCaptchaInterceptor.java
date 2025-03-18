@@ -1,12 +1,12 @@
 package lpt.interceptor.impl;
 
 import lpt.common.AnyMap;
-import lpt.common.response.ApiResponse;
+import lpt.common.response.LptApiResponse;
 import lpt.common.util.CollectionUtils;
 import lpt.common.util.ObjectUtils;
 import lpt.interceptor.CaptchaInterceptor;
 import lpt.interceptor.Context;
-import lpt.validator.common.model.dto.ImageCaptchaTrack;
+import lpt.validator.common.model.dto.LptImageCaptchaTrack;
 import lpt.validator.common.model.dto.MatchParam;
 
 /**
@@ -16,9 +16,9 @@ import lpt.validator.common.model.dto.MatchParam;
  */
 public class ParamCheckCaptchaInterceptor implements CaptchaInterceptor {
     @Override
-    public ApiResponse<?> beforeValid(Context context, String type, MatchParam matchParam, AnyMap validData) {
+    public LptApiResponse<?> beforeValid(Context context, String type, MatchParam matchParam, AnyMap validData) {
         checkParam(matchParam.getTrack());
-        return ApiResponse.ofSuccess();
+        return LptApiResponse.ofSuccess();
     }
 
     @Override
@@ -26,23 +26,23 @@ public class ParamCheckCaptchaInterceptor implements CaptchaInterceptor {
         return "param_check";
     }
 
-    public void checkParam(ImageCaptchaTrack imageCaptchaTrack) {
-        if (ObjectUtils.isEmpty(imageCaptchaTrack.getBgImageWidth())) {
+    public void checkParam(LptImageCaptchaTrack lptImageCaptchaTrack) {
+        if (ObjectUtils.isEmpty(lptImageCaptchaTrack.getBgImageWidth())) {
             throw new IllegalArgumentException("bgImageWidth must not be null");
         }
-        if (ObjectUtils.isEmpty(imageCaptchaTrack.getBgImageHeight())) {
+        if (ObjectUtils.isEmpty(lptImageCaptchaTrack.getBgImageHeight())) {
             throw new IllegalArgumentException("bgImageHeight must not be null");
         }
-        if (ObjectUtils.isEmpty(imageCaptchaTrack.getStartTime())) {
+        if (ObjectUtils.isEmpty(lptImageCaptchaTrack.getStartTime())) {
             throw new IllegalArgumentException("startTime must not be null");
         }
-        if (ObjectUtils.isEmpty(imageCaptchaTrack.getStopTime())) {
+        if (ObjectUtils.isEmpty(lptImageCaptchaTrack.getStopTime())) {
             throw new IllegalArgumentException("stopTime must not be null");
         }
-        if (CollectionUtils.isEmpty(imageCaptchaTrack.getTrackList())) {
+        if (CollectionUtils.isEmpty(lptImageCaptchaTrack.getTrackList())) {
             throw new IllegalArgumentException("trackList must not be null");
         }
-        for (ImageCaptchaTrack.Track track : imageCaptchaTrack.getTrackList()) {
+        for (LptImageCaptchaTrack.Track track : lptImageCaptchaTrack.getTrackList()) {
             Float x = track.getX();
             Float y = track.getY();
             Float t = track.getT();

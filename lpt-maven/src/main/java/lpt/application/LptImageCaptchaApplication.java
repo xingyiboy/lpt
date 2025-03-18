@@ -1,16 +1,16 @@
 package lpt.application;
 
 
-import lpt.application.vo.CaptchaResponse;
-import lpt.application.vo.ImageCaptchaVO;
+import lpt.application.vo.LptCaptchaResponse;
+import lpt.application.vo.LptImageCaptchaVO;
 import lpt.cache.CacheStore;
-import lpt.common.response.ApiResponse;
+import lpt.common.response.LptApiResponse;
 import lpt.generator.ImageCaptchaGenerator;
 import lpt.generator.common.model.dto.GenerateParam;
 import lpt.interceptor.CaptchaInterceptor;
 import lpt.resource.ImageCaptchaResourceManager;
 import lpt.validator.ImageCaptchaValidator;
-import lpt.validator.common.model.dto.ImageCaptchaTrack;
+import lpt.validator.common.model.dto.LptImageCaptchaTrack;
 import lpt.validator.common.model.dto.MatchParam;
 
 /**
@@ -18,48 +18,48 @@ import lpt.validator.common.model.dto.MatchParam;
  * @Date 2020/5/29 8:33
  * @Description 滑块验证码应用程序
  */
-public interface ImageCaptchaApplication {
+public interface LptImageCaptchaApplication {
 
     /**
      * 生成滑块验证码
      *
      * @return
      */
-    CaptchaResponse<ImageCaptchaVO> generateCaptcha();
+    LptCaptchaResponse<LptImageCaptchaVO> generateCaptcha();
 
     /**
      * 生成滑块验证码
      *
      * @param type type类型
-     * @return CaptchaResponse<SliderCaptchaVO>
+     * @return LptCaptchaResponse<SliderCaptchaVO>
      */
-    CaptchaResponse<ImageCaptchaVO> generateCaptcha(String type);
+    LptCaptchaResponse<LptImageCaptchaVO> generateCaptcha(String type);
 
     /**
      * 生成滑块验证码
      *
-     * @param captchaImageType 要生成webp还是jpg类型的图片
-     * @return CaptchaResponse<SliderCaptchaVO>
+     * @param lptCaptchaImageType 要生成webp还是jpg类型的图片
+     * @return LptCaptchaResponse<SliderCaptchaVO>
      */
-    CaptchaResponse<ImageCaptchaVO> generateCaptcha(CaptchaImageType captchaImageType);
+    LptCaptchaResponse<LptImageCaptchaVO> generateCaptcha(LptCaptchaImageType lptCaptchaImageType);
 
     /**
      * 生成验证码
      *
      * @param type             type
-     * @param captchaImageType CaptchaImageType
-     * @return CaptchaResponse<ImageCaptchaVO>
+     * @param lptCaptchaImageType LptCaptchaImageType
+     * @return LptCaptchaResponse<LptImageCaptchaVO>
      */
-    CaptchaResponse<ImageCaptchaVO> generateCaptcha(String type, CaptchaImageType captchaImageType);
+    LptCaptchaResponse<LptImageCaptchaVO> generateCaptcha(String type, LptCaptchaImageType lptCaptchaImageType);
 
 
     /**
      * 生成滑块验证码
      *
      * @param param param
-     * @return CaptchaResponse<SliderCaptchaVO>
+     * @return LptCaptchaResponse<SliderCaptchaVO>
      */
-    CaptchaResponse<ImageCaptchaVO> generateCaptcha(GenerateParam param);
+    LptCaptchaResponse<LptImageCaptchaVO> generateCaptcha(GenerateParam param);
 
     /**
      * 匹配
@@ -68,19 +68,19 @@ public interface ImageCaptchaApplication {
      * @param matchParam 匹配数据，包含鼠标轨迹，设备信息等
      * @return 匹配成功返回true， 否则返回false
      */
-    ApiResponse<?> matching(String id, MatchParam matchParam);
+    LptApiResponse<?> matching(String id, MatchParam matchParam);
 
     /**
-     * 兼容一下旧版本，新版本建议使用 {@link ImageCaptchaApplication#matching(String, MatchParam)}
+     * 兼容一下旧版本，新版本建议使用 {@link LptImageCaptchaApplication#matching(String, MatchParam)}
      *
      * @param id    验证码的ID
      * @param track 轨迹数据
      * @return 匹配成功返回true， 否则返回false
      */
-    ApiResponse<?> matching(String id, ImageCaptchaTrack track);
+    LptApiResponse<?> matching(String id, LptImageCaptchaTrack track);
 
     /**
-     * 兼容一下旧版本，新版本建议使用 {@link ImageCaptchaApplication#matching(String, MatchParam)}
+     * 兼容一下旧版本，新版本建议使用 {@link LptImageCaptchaApplication#matching(String, MatchParam)}
      *
      * @param id         id
      * @param percentage 百分比数据

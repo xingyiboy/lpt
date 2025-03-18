@@ -1,12 +1,12 @@
 package lpt.interceptor.impl;
 
 import lpt.common.AnyMap;
-import lpt.common.response.ApiResponse;
+import lpt.common.response.LptApiResponse;
 import lpt.common.response.CodeDefinition;
 import lpt.common.util.CaptchaTypeClassifier;
 import lpt.interceptor.CaptchaInterceptor;
 import lpt.interceptor.Context;
-import lpt.validator.common.model.dto.ImageCaptchaTrack;
+import lpt.validator.common.model.dto.LptImageCaptchaTrack;
 import lpt.validator.common.model.dto.MatchParam;
 
 import java.util.List;
@@ -25,20 +25,20 @@ public class BasicTrackCaptchaInterceptor implements CaptchaInterceptor {
     }
 
     @Override
-    public ApiResponse<?> afterValid(Context context, String type, MatchParam matchData, AnyMap validData, ApiResponse<?> basicValid) {
+    public LptApiResponse<?> afterValid(Context context, String type, MatchParam matchData, AnyMap validData, LptApiResponse<?> basicValid) {
         if (!basicValid.isSuccess()) {
             return context.getGroup().afterValid(context, type, matchData, validData, basicValid);
         }
         if (!CaptchaTypeClassifier.isSliderCaptcha(type)) {
             // 不是滑动验证码的话暂时跳过，点选验证码行为轨迹还没做
-            return ApiResponse.ofSuccess();
+            return LptApiResponse.ofSuccess();
         }
-        ImageCaptchaTrack imageCaptchaTrack = matchData.getTrack();
+        LptImageCaptchaTrack lptImageCaptchaTrack = matchData.getTrack();
         // 进行行为轨迹检测
-        long startSlidingTime = imageCaptchaTrack.getStartTime().getTime();
-        long endSlidingTime = imageCaptchaTrack.getStopTime().getTime();
-        Integer bgImageWidth = imageCaptchaTrack.getBgImageWidth();
-        List<ImageCaptchaTrack.Track> trackList = imageCaptchaTrack.getTrackList();
+        long startSlidingTime = lptImageCaptchaTrack.getStartTime().getTime();
+        long endSlidingTime = lptImageCaptchaTrack.getStopTime().getTime();
+        Integer bgImageWidth = lptImageCaptchaTrack.getBgImageWidth();
+        List<LptImageCaptchaTrack.Track> trackList = lptImageCaptchaTrack.getTrackList();
         // 这里只进行基本检测, 用一些简单算法进行校验，如有需要可扩展
         // 检测1: 滑动时间如果小于300毫秒 返回false
         // 检测2: 轨迹数据要是少于背10，或者大于背景宽度的五倍 返回false
@@ -51,23 +51,23 @@ public class BasicTrackCaptchaInterceptor implements CaptchaInterceptor {
         // 检测1
         if (startSlidingTime + 300 > endSlidingTime) {
             context.end();
-            return ApiResponse.ofMessage(DEFINITION);
+            return LptApiResponse.ofMessage(DEFINITION);
         }
         // 检测2
         if (trackList.size() < 10 || trackList.size() > bgImageWidth * 5) {
             context.end();
-            return ApiResponse.ofMessage(DEFINITION);
+            return LptApiResponse.ofMessage(DEFINITION);
         }
         // 检测3
-        ImageCaptchaTrack.Track firstTrack = trackList.get(0);
+        LptImageCaptchaTrack.Track firstTrack = trackList.get(0);
         if (firstTrack.getX() > 10 || firstTrack.getX() < -10 || firstTrack.getY() > 10 || firstTrack.getY() < -10) {
             context.end();
-            return ApiResponse.ofMessage(DEFINITION);
+            return LptApiResponse.ofMessage(DEFINITION);
         }
         int check4 = 0;
         int check7 = 0;
         for (int i = 1; i < trackList.size(); i++) {
-            ImageCaptchaTrack.Track track = trackList.get(i);
+            LptImageCaptchaTrack.Track track = trackList.get(i);
             float x = track.getX();
             float y = track.getY();
             // check4
@@ -79,33 +79,33 @@ public class BasicTrackCaptchaInterceptor implements CaptchaInterceptor {
                 check7++;
             }
             // check5
-            ImageCaptchaTrack.Track preTrack = trackList.get(i - 1);
+            LptImageCaptchaTrack.Track preTrack = trackList.get(i - 1);
             if ((track.getX() - preTrack.getX()) > 50 || (track.getY() - preTrack.getY()) > 50) {
                 context.end();
-                return ApiResponse.ofMessage(DEFINITION);
+                return LptApiResponse.ofMessage(DEFINITION);
             }
         }
         if (check4 == trackList.size() || check7 > 200) {
             context.end();
-            return ApiResponse.ofMessage(DEFINITION);
+            return LptApiResponse.ofMessage(DEFINITION);
         }
 
         // check6
         int splitPos = (int) (trackList.size() * 0.7);
-        ImageCaptchaTrack.Track splitPostTrack = trackList.get(splitPos - 1);
-        ImageCaptchaTrack.Track lastTrack = trackList.get(trackList.size() - 1);
+        LptImageCaptchaTrack.Track splitPostTrack = trackList.get(splitPos - 1);
+        LptImageCaptchaTrack.Track lastTrack = trackList.get(trackList.size() - 1);
         // bugfix: wuhaochao
-        ImageCaptchaTrack.Track stepOneFirstTrack = trackList.get(0);
-        ImageCaptchaTrack.Track stepOneTwoTrack = trackList.get(splitPos);
+        LptImageCaptchaTrack.Track stepOneFirstTrack = trackList.get(0);
+        LptImageCaptchaTrack.Track stepOneTwoTrack = trackList.get(splitPos);
         float posTime = splitPostTrack.getT() - stepOneFirstTrack.getT();
         double startAvgPosTime = posTime / (float) splitPos;
         double endAvgPosTime = (lastTrack.getT() - stepOneTwoTrack.getT()) / (float) (trackList.size() - splitPos);
         boolean check = endAvgPosTime > startAvgPosTime;
         if (check) {
-            return ApiResponse.ofSuccess();
+            return LptApiResponse.ofSuccess();
         }
         context.end();
-        return ApiResponse.ofMessage(DEFINITION);
+        return LptApiResponse.ofMessage(DEFINITION);
     }
 
 }

@@ -8,6 +8,7 @@ import lpt.generator.AbstractImageCaptchaGenerator;
 import lpt.generator.ImageCaptchaGenerator;
 import lpt.generator.ImageCaptchaGeneratorProvider;
 import lpt.generator.ImageTransform;
+import lpt.generator.common.FontWrapper;
 import lpt.generator.common.model.dto.CaptchaExchange;
 import lpt.generator.common.model.dto.GenerateParam;
 import lpt.generator.common.model.dto.ImageCaptchaInfo;
@@ -15,6 +16,7 @@ import lpt.generator.impl.provider.CommonImageCaptchaGeneratorProvider;
 import lpt.resource.ImageCaptchaResourceManager;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -28,9 +30,9 @@ public class MultiImageCaptchaGenerator extends AbstractImageCaptchaGenerator {
     protected Map<String, ImageCaptchaGenerator> imageCaptchaGeneratorMap = new ConcurrentHashMap<>(4);
     protected Map<String, ImageCaptchaGeneratorProvider> imageCaptchaGeneratorProviderMap = new HashMap<>(4);
     // 点选类验证码字体
-//    @Setter
-//    @Getter
-//    protected List<FontWrapper> fontWrappers;
+    @Setter
+    @Getter
+    protected List<FontWrapper> fontWrappers;
     @Setter
     @Getter
     private String defaultCaptcha = CaptchaTypeConstant.SLIDER;
@@ -53,7 +55,8 @@ public class MultiImageCaptchaGenerator extends AbstractImageCaptchaGenerator {
         // 拼接验证码
         addImageCaptchaGeneratorProvider(new CommonImageCaptchaGeneratorProvider(CaptchaTypeConstant.CONCAT, StandardConcatImageCaptchaGenerator::new));
         // 点选文字验证码
-        addImageCaptchaGeneratorProvider(new CommonImageCaptchaGeneratorProvider(CaptchaTypeConstant.WORD_IMAGE_CLICK, StandardWordClickImageCaptchaGenerator::new));
+        addImageCaptchaGeneratorProvider(new CommonImageCaptchaGeneratorProvider(CaptchaTypeConstant.WORD_IMAGE_CLICK, (r, t, i) ->
+                new StandardWordClickImageCaptchaGenerator(r, t, i, fontWrappers)));
     }
 
     public void addImageCaptchaGeneratorProvider(ImageCaptchaGeneratorProvider provider) {

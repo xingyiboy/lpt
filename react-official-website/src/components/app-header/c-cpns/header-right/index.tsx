@@ -1,7 +1,7 @@
 /*
  * @Date: 2025-03-14 19:17:24
  * @LastEditors: xingyi && 2416820386@qq.com
- * @LastEditTime: 2025-03-14 21:40:59
+ * @LastEditTime: 2025-03-18 00:34:28
  * @FilePath: \react-official-website\src\components\app-header\c-cpns\header-right\index.tsx
  */
 import React, { memo, useEffect, useState } from 'react'
@@ -32,7 +32,11 @@ const HeaderRight: FC<IProps> = () => {
   }
   // 跳转函数
   const handleInterfaceClick = () => {
-    window.open('http://113.45.31.128/user/login', '_blank') // _blank 会在新标签页中打开
+    window.open('http://113.45.31.128:99/user/login', '_blank') // _blank 会在新标签页中打开
+  }
+
+  const handleOnlineClick = () => {
+    window.open('http://113.45.31.128:9999/user/login', '_blank') // _blank 会在新标签页中打开
   }
 
   return (
@@ -42,7 +46,9 @@ const HeaderRight: FC<IProps> = () => {
         <span className="btn" onClick={handleInterfaceClick}>
           接口系统
         </span>
-        <span className="btn">在线体验</span>
+        <span className="btn" onClick={handleOnlineClick}>
+          在线体验
+        </span>
         <span className="btn">GitHub</span>
       </div>
     </RightWrapper>

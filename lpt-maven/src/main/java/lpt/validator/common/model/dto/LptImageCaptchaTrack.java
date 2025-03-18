@@ -14,7 +14,7 @@ import java.util.List;
  * @Description 图片验证码滑动轨迹
  */
 @Data
-public class ImageCaptchaTrack {
+public class LptImageCaptchaTrack {
 
     /** 背景图片宽度. */
     private Integer bgImageWidth;

@@ -1,13 +1,13 @@
 package lpt.application;
 
 import lombok.extern.slf4j.Slf4j;
-import lpt.application.vo.CaptchaResponse;
-import lpt.application.vo.ImageCaptchaVO;
+import lpt.application.vo.LptCaptchaResponse;
+import lpt.application.vo.LptImageCaptchaVO;
 import lpt.cache.CacheStore;
 import lpt.common.AnyMap;
 import lpt.common.constant.CaptchaTypeConstant;
 import lpt.common.exception.ImageCaptchaException;
-import lpt.common.response.ApiResponse;
+import lpt.common.response.LptApiResponse;
 import lpt.common.response.ApiResponseStatusConstant;
 import lpt.common.util.CollectionUtils;
 import lpt.generator.ImageCaptchaGenerator;
@@ -18,7 +18,7 @@ import lpt.interceptor.CaptchaInterceptor;
 import lpt.interceptor.EmptyCaptchaInterceptor;
 import lpt.resource.ImageCaptchaResourceManager;
 import lpt.validator.ImageCaptchaValidator;
-import lpt.validator.common.model.dto.ImageCaptchaTrack;
+import lpt.validator.common.model.dto.LptImageCaptchaTrack;
 import lpt.validator.common.model.dto.MatchParam;
 import lpt.validator.impl.SimpleImageCaptchaValidator;
 
@@ -32,9 +32,7 @@ import java.util.concurrent.TimeUnit;
  * @Description 默认的 图片验证码应用程序
  */
 @Slf4j
-public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
-
-
+public class DefaultImageCaptchaApplication implements LptImageCaptchaApplication {
     private CaptchaInterceptor captchaInterceptor;
     /** 图片验证码生成器. */
     private ImageCaptchaGenerator captchaGenerator;
@@ -80,39 +78,39 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
     }
 
     @Override
-    public CaptchaResponse<ImageCaptchaVO> generateCaptcha() {
+    public LptCaptchaResponse<LptImageCaptchaVO> generateCaptcha() {
         // 生成滑块验证码
         return generateCaptcha(CaptchaTypeConstant.SLIDER);
     }
 
     @Override
-    public CaptchaResponse<ImageCaptchaVO> generateCaptcha(String type) {
+    public LptCaptchaResponse<LptImageCaptchaVO> generateCaptcha(String type) {
         GenerateParam generateParam = new GenerateParam();
         generateParam.setType(type);
         return generateCaptcha(generateParam);
     }
 
     @Override
-    public CaptchaResponse<ImageCaptchaVO> generateCaptcha(GenerateParam param) {
-        CaptchaResponse<ImageCaptchaVO> captchaResponse = beforeGenerateCaptcha(param);
-        if (captchaResponse != null) {
-            return captchaResponse;
+    public LptCaptchaResponse<LptImageCaptchaVO> generateCaptcha(GenerateParam param) {
+        LptCaptchaResponse<LptImageCaptchaVO> lptCaptchaResponse = beforeGenerateCaptcha(param);
+        if (lptCaptchaResponse != null) {
+            return lptCaptchaResponse;
         }
         ImageCaptchaInfo imageCaptchaInfo = getImageCaptchaGenerator().generateCaptchaImage(param);
-        captchaResponse = convertToCaptchaResponse(imageCaptchaInfo);
-        afterGenerateCaptcha(imageCaptchaInfo, captchaResponse);
-        return captchaResponse;
+        lptCaptchaResponse = convertToCaptchaResponse(imageCaptchaInfo);
+        afterGenerateCaptcha(imageCaptchaInfo, lptCaptchaResponse);
+        return lptCaptchaResponse;
     }
 
     @Override
-    public CaptchaResponse<ImageCaptchaVO> generateCaptcha(CaptchaImageType captchaImageType) {
-        return generateCaptcha(CaptchaTypeConstant.SLIDER, captchaImageType);
+    public LptCaptchaResponse<LptImageCaptchaVO> generateCaptcha(LptCaptchaImageType lptCaptchaImageType) {
+        return generateCaptcha(CaptchaTypeConstant.SLIDER, lptCaptchaImageType);
     }
 
     @Override
-    public CaptchaResponse<ImageCaptchaVO> generateCaptcha(String type, CaptchaImageType captchaImageType) {
+    public LptCaptchaResponse<LptImageCaptchaVO> generateCaptcha(String type, LptCaptchaImageType lptCaptchaImageType) {
         GenerateParam param = new GenerateParam();
-        if (CaptchaImageType.WEBP.equals(captchaImageType)) {
+        if (LptCaptchaImageType.WEBP.equals(lptCaptchaImageType)) {
             param.setBackgroundFormatName("webp");
             param.setTemplateFormatName("webp");
         } else {
@@ -124,14 +122,14 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
     }
 
 
-    public CaptchaResponse<ImageCaptchaVO> convertToCaptchaResponse(ImageCaptchaInfo imageCaptchaInfo) {
+    public LptCaptchaResponse<LptImageCaptchaVO> convertToCaptchaResponse(ImageCaptchaInfo imageCaptchaInfo) {
         if (imageCaptchaInfo == null) {
             // 要是生成失败
             throw new ImageCaptchaException("生成验证码失败，验证码生成为空");
         }
         // 生成ID
         String id = generatorId(imageCaptchaInfo);
-        CaptchaResponse<ImageCaptchaVO> response = beforeGenerateImageCaptchaValidData(imageCaptchaInfo);
+        LptCaptchaResponse<LptImageCaptchaVO> response = beforeGenerateImageCaptchaValidData(imageCaptchaInfo);
         if (response != null) {
             return response;
         }
@@ -142,7 +140,7 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
             // 存到缓存里
             cacheVerification(id, imageCaptchaInfo.getType(), validData);
         }
-        ImageCaptchaVO verificationVO = new ImageCaptchaVO();
+        LptImageCaptchaVO verificationVO = new LptImageCaptchaVO();
         verificationVO.setType(imageCaptchaInfo.getType());
         verificationVO.setBackgroundImage(imageCaptchaInfo.getBackgroundImage());
         verificationVO.setTemplateImage(imageCaptchaInfo.getTemplateImage());
@@ -153,21 +151,21 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
         verificationVO.setTemplateImageWidth(imageCaptchaInfo.getTemplateImageWidth());
         verificationVO.setTemplateImageHeight(imageCaptchaInfo.getTemplateImageHeight());
         verificationVO.setData(imageCaptchaInfo.getData() == null ? null : imageCaptchaInfo.getData().getViewData());
-        return CaptchaResponse.of(id, verificationVO);
+        return LptCaptchaResponse.of(id, verificationVO);
     }
 
 
     @Override
-    public ApiResponse<?> matching(String id, MatchParam matchParam) {
+    public LptApiResponse<?> matching(String id, MatchParam matchParam) {
         AnyMap validData = getVerification(id);
         if (validData == null) {
-            return ApiResponse.ofMessage(ApiResponseStatusConstant.EXPIRED);
+            return LptApiResponse.ofMessage(ApiResponseStatusConstant.EXPIRED);
         }
-        ApiResponse<?> response = beforeValid(id, matchParam, validData);
+        LptApiResponse<?> response = beforeValid(id, matchParam, validData);
         if (!response.isSuccess()) {
             return response;
         }
-        ApiResponse<?> basicValid = getImageCaptchaValidator().valid(matchParam.getTrack(), validData);
+        LptApiResponse<?> basicValid = getImageCaptchaValidator().valid(matchParam.getTrack(), validData);
         response = afterValid(id, matchParam, validData, basicValid);
         if (!response.isSuccess()) {
             return response;
@@ -176,7 +174,7 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
     }
 
     @Override
-    public ApiResponse<?> matching(String id, ImageCaptchaTrack track) {
+    public LptApiResponse<?> matching(String id, LptImageCaptchaTrack track) {
         return matching(id, new MatchParam(track, null));
     }
 
@@ -262,8 +260,7 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
 
     @Override
     public void setCaptchaInterceptor(CaptchaInterceptor captchaInterceptor) {
-        this.captchaInterceptor = captchaInterceptor;
-        this.captchaGenerator.setInterceptor(captchaInterceptor);
+        this.captchaGenerator = captchaGenerator;
     }
 
     @Override
@@ -288,15 +285,15 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
 
     // ============== 一些模板方法 ================
 
-    private void afterGenerateCaptcha(ImageCaptchaInfo imageCaptchaInfo, CaptchaResponse<ImageCaptchaVO> captchaResponse) {
-        captchaInterceptor.afterGenerateCaptcha(captchaInterceptor.createContext(), imageCaptchaInfo.getType(), imageCaptchaInfo, captchaResponse);
+    private void afterGenerateCaptcha(ImageCaptchaInfo imageCaptchaInfo, LptCaptchaResponse<LptImageCaptchaVO> lptCaptchaResponse) {
+        captchaInterceptor.afterGenerateCaptcha(captchaInterceptor.createContext(), imageCaptchaInfo.getType(), imageCaptchaInfo, lptCaptchaResponse);
     }
 
-    private CaptchaResponse<ImageCaptchaVO> beforeGenerateCaptcha(GenerateParam param) {
+    private LptCaptchaResponse<LptImageCaptchaVO> beforeGenerateCaptcha(GenerateParam param) {
         return captchaInterceptor.beforeGenerateCaptcha(captchaInterceptor.createContext(), param.getType(), param);
     }
 
-    private CaptchaResponse<ImageCaptchaVO> beforeGenerateImageCaptchaValidData(ImageCaptchaInfo imageCaptchaInfo) {
+    private LptCaptchaResponse<LptImageCaptchaVO> beforeGenerateImageCaptchaValidData(ImageCaptchaInfo imageCaptchaInfo) {
         return captchaInterceptor.beforeGenerateImageCaptchaValidData(captchaInterceptor.createContext(), imageCaptchaInfo.getType(), imageCaptchaInfo);
     }
 
@@ -304,11 +301,11 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
         captchaInterceptor.afterGenerateImageCaptchaValidData(captchaInterceptor.createContext(), imageCaptchaInfo.getType(), imageCaptchaInfo, validData);
     }
 
-    private ApiResponse<?> beforeValid(String id, MatchParam matchParam, AnyMap validData) {
+    private LptApiResponse<?> beforeValid(String id, MatchParam matchParam, AnyMap validData) {
         return captchaInterceptor.beforeValid(captchaInterceptor.createContext(), getCaptchaTypeById(id), matchParam, validData);
     }
 
-    private ApiResponse<?> afterValid(String id, MatchParam matchParam, AnyMap validData, ApiResponse<?> basicValid) {
+    private LptApiResponse<?> afterValid(String id, MatchParam matchParam, AnyMap validData, LptApiResponse<?> basicValid) {
         return captchaInterceptor.afterValid(captchaInterceptor.createContext(), getCaptchaTypeById(id), matchParam, validData, basicValid);
     }
 

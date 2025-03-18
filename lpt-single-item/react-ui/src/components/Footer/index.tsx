@@ -1,3 +1,9 @@
+/*
+ * @Date: 2025-03-16 16:12:47
+ * @LastEditors: xingyi && 2416820386@qq.com
+ * @LastEditTime: 2025-03-18 18:27:16
+ * @FilePath: \lpt-single-item\react-ui\src\components\Footer\index.tsx
+ */
 import { GithubOutlined } from '@ant-design/icons';
 import { DefaultFooter } from '@ant-design/pro-components';
 import React from 'react';
@@ -10,21 +16,9 @@ const Footer: React.FC = () => {
       }}
       links={[
         {
-          key: 'Ant Design Pro',
-          title: 'Ant Design Pro',
-          href: 'https://pro.ant.design',
-          blankTarget: true,
-        },
-        {
-          key: 'github',
-          title: <GithubOutlined />,
-          href: 'https://github.com/ant-design/ant-design-pro',
-          blankTarget: true,
-        },
-        {
-          key: 'Ant Design',
-          title: 'Ant Design',
-          href: 'https://ant.design',
+          key: 'LPT',
+          title: 'LPT',
+          href: 'http://113.45.31.128/home',
           blankTarget: true,
         },
       ]}

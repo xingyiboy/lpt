@@ -1,9 +1,9 @@
 package lpt.validator;
 
 import lpt.common.AnyMap;
-import lpt.common.response.ApiResponse;
+import lpt.common.response.LptApiResponse;
 import lpt.generator.common.model.dto.ImageCaptchaInfo;
-import lpt.validator.common.model.dto.ImageCaptchaTrack;
+import lpt.validator.common.model.dto.LptImageCaptchaTrack;
 
 /**
  * @Author: 天爱有情
@@ -23,9 +23,9 @@ public interface ImageCaptchaValidator {
     /**
      * 校验用户滑动滑块是否正确
      *
-     * @param imageCaptchaTrack      包含了滑动轨迹，展示的图片宽高，滑动时间等参数
+     * @param lptImageCaptchaTrack      包含了滑动轨迹，展示的图片宽高，滑动时间等参数
      * @param imageCaptchaValidData generateImageCaptchaValidData(生成的数据)
-     * @return ApiResponse<?>
+     * @return LptApiResponse<?>
      */
-    ApiResponse<?> valid(ImageCaptchaTrack imageCaptchaTrack, AnyMap imageCaptchaValidData);
+    LptApiResponse<?> valid(LptImageCaptchaTrack lptImageCaptchaTrack, AnyMap imageCaptchaValidData);
 }

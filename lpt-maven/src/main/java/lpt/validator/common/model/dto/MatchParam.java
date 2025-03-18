@@ -12,18 +12,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MatchParam {
     /** 轨迹信息. */
-    private ImageCaptchaTrack track;
+    private LptImageCaptchaTrack track;
     /** 检测到的设备信息. */
     private Drives drives;
     /** 留一个扩展属性. */
     private Object extendData;
 
 
-    public MatchParam(ImageCaptchaTrack track) {
+    public MatchParam(LptImageCaptchaTrack track) {
         this.track = track;
     }
 
-    public MatchParam(ImageCaptchaTrack track, Drives drives) {
+    public MatchParam(LptImageCaptchaTrack track, Drives drives) {
         this.track = track;
         this.drives = drives;
     }

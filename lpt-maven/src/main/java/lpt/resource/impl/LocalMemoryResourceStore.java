@@ -3,7 +3,7 @@ package lpt.resource.impl;
 import lpt.common.constant.CommonConstant;
 import lpt.common.util.CollectionUtils;
 import lpt.common.util.ObjectUtils;
-import lpt.resource.AbstractResourceStore;
+import lpt.resource.ResourceStore;
 import lpt.resource.common.model.dto.Resource;
 import lpt.resource.common.model.dto.ResourceMap;
 
@@ -15,7 +15,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @date 2021/8/7 15:43
  * @Description 默认的资源存储
  */
-public class LocalMemoryResourceStore extends AbstractResourceStore {
+public class LocalMemoryResourceStore implements ResourceStore {
     private static final String TYPE_TAG_SPLIT_FLAG = "|";
 
     /** 用于检索 type和tag. */
@@ -23,7 +23,7 @@ public class LocalMemoryResourceStore extends AbstractResourceStore {
     private Map<String, List<Resource>> resourceTagMap = new HashMap<>(2);
 
     @Override
-    public void doAddResource(String type, Resource resource) {
+    public void addResource(String type, Resource resource) {
         if (ObjectUtils.isEmpty(resource.getTag())) {
             resource.setTag(CommonConstant.DEFAULT_TAG);
         }
@@ -31,7 +31,7 @@ public class LocalMemoryResourceStore extends AbstractResourceStore {
     }
 
     @Override
-    public void doAddTemplate(String type, ResourceMap template) {
+    public void addTemplate(String type, ResourceMap template) {
         if (ObjectUtils.isEmpty(template.getTag())) {
             template.setTag(CommonConstant.DEFAULT_TAG);
         }
@@ -39,77 +39,7 @@ public class LocalMemoryResourceStore extends AbstractResourceStore {
     }
 
     @Override
-    public Resource doDeleteResource(String type, String id) {
-        for (Map.Entry<String, List<Resource>> entry : resourceTagMap.entrySet()) {
-            String k = entry.getKey();
-            List<Resource> v = entry.getValue();
-            String splitType = splitTypeTag(k)[0];
-            if (splitType.equals(type)) {
-                Iterator<Resource> iterator = v.iterator();
-                while (iterator.hasNext()) {
-                    Resource next = iterator.next();
-                    if (next.getId().equals(id)) {
-                        iterator.remove();
-                        return next;
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public ResourceMap doDeleteTemplate(String type, String id) {
-        for (Map.Entry<String, List<ResourceMap>> entry : templateResourceTagMap.entrySet()) {
-            String k = entry.getKey();
-            List<ResourceMap> v = entry.getValue();
-            String splitType = splitTypeTag(k)[0];
-            if (splitType.equals(type)) {
-                Iterator<ResourceMap> iterator = v.iterator();
-                while (iterator.hasNext()) {
-                    ResourceMap next = iterator.next();
-                    if (next.getId().equals(id)) {
-                        iterator.remove();
-                        return next;
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public List<Resource> listResourcesByTypeAndTag(String type, String tag) {
-        if (!ObjectUtils.isEmpty(tag)) {
-            return resourceTagMap.get(mergeTypeAndTag(type, tag));
-        }
-        List<Resource> resourceList = new ArrayList<>();
-        resourceTagMap.forEach((k, v) -> {
-            String splitType = splitTypeTag(k)[0];
-            if (splitType.equals(type)) {
-                resourceList.addAll(v);
-            }
-        });
-        return resourceList;
-    }
-
-    @Override
-    public List<ResourceMap> listTemplatesByTypeAndTag(String type, String tag) {
-        if (!ObjectUtils.isEmpty(tag)) {
-            return templateResourceTagMap.get(mergeTypeAndTag(type, tag));
-        }
-        List<ResourceMap> resourceMapList = new ArrayList<>();
-        templateResourceTagMap.forEach((k, v) -> {
-            String splitType = splitTypeTag(k)[0];
-            if (splitType.equals(type)) {
-                resourceMapList.addAll(v);
-            }
-        });
-        return resourceMapList;
-    }
-
-    @Override
-    public Resource doRandomGetResourceByTypeAndTag(String type, String tag) {
+    public Resource randomGetResourceByTypeAndTag(String type, String tag) {
         List<Resource> resources = resourceTagMap.get(mergeTypeAndTag(type, tag));
         if (CollectionUtils.isEmpty(resources)) {
             throw new IllegalStateException("随机获取资源错误，store中资源为空, type:" + type + ",tag:" + tag);
@@ -118,20 +48,11 @@ public class LocalMemoryResourceStore extends AbstractResourceStore {
             return resources.get(0);
         }
         int randomIndex = ThreadLocalRandom.current().nextInt(resources.size());
-        try {
-            return resources.get(randomIndex);
-        } catch (IndexOutOfBoundsException e) {
-            try {
-                Thread.sleep(0);
-            } catch (InterruptedException ex) {
-                // ignore
-            }
-            return doRandomGetResourceByTypeAndTag(type, tag);
-        }
+        return resources.get(randomIndex);
     }
 
     @Override
-    public ResourceMap doRandomGetTemplateByTypeAndTag(String type, String tag) {
+    public ResourceMap randomGetTemplateByTypeAndTag(String type, String tag) {
         List<ResourceMap> templateList = templateResourceTagMap.get(mergeTypeAndTag(type, tag));
         if (CollectionUtils.isEmpty(templateList)) {
             throw new IllegalStateException("随机获取模板错误，store中模板为空, type:" + type + ",tag:" + tag);
@@ -140,16 +61,7 @@ public class LocalMemoryResourceStore extends AbstractResourceStore {
             return templateList.get(0);
         }
         int randomIndex = ThreadLocalRandom.current().nextInt(templateList.size());
-        try {
-            return templateList.get(randomIndex);
-        } catch (IndexOutOfBoundsException e) {
-            try {
-                Thread.sleep(0);
-            } catch (InterruptedException ex) {
-                // ignore
-            }
-            return doRandomGetTemplateByTypeAndTag(type, tag);
-        }
+        return templateList.get(randomIndex);
     }
 
     public String mergeTypeAndTag(String type, String tag) {
@@ -159,17 +71,13 @@ public class LocalMemoryResourceStore extends AbstractResourceStore {
         return type + TYPE_TAG_SPLIT_FLAG + tag;
     }
 
-    public String[] splitTypeTag(String k) {
-        return k.split("\\" + TYPE_TAG_SPLIT_FLAG);
-    }
-
 
     public void clearResources(String type, String tag) {
         resourceTagMap.remove(mergeTypeAndTag(type, tag));
     }
 
     @Override
-    public void doClearAllResources() {
+    public void clearAllResources() {
         resourceTagMap.clear();
     }
 
@@ -195,7 +103,7 @@ public class LocalMemoryResourceStore extends AbstractResourceStore {
 
 
     @Override
-    public void doClearAllTemplates() {
+    public void clearAllTemplates() {
         templateResourceTagMap.clear();
     }
 

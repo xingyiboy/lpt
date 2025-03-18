@@ -2,12 +2,14 @@ package com.ruoyi.web.controller.system;
 
 import java.util.List;
 import java.util.Set;
+import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.redis.RedisCache;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysMenu;
 import com.ruoyi.common.core.domain.entity.SysUser;
@@ -34,6 +36,9 @@ public class SysLoginController
     @Autowired
     private SysPermissionService permissionService;
 
+    @Autowired
+    private RedisCache redisCache;
+
     /**
      * 登录方法
      *
@@ -41,13 +46,9 @@ public class SysLoginController
      * @return 结果
      */
     @PostMapping("/login")
-    public AjaxResult login(@RequestBody LoginBody loginBody)
+    public Object login(@RequestBody LoginBody loginBody, String username, HttpSession session)
     {
-        AjaxResult ajax = AjaxResult.success();
-        // 生成令牌
-        String data = loginService.login(loginBody);
-        ajax.put("data", data);
-        return ajax;
+        return loginService.login(loginBody,username,session);
     }
 
     /**

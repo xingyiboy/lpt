@@ -1,11 +1,17 @@
 package lpt.resource.impl;
 
-import lombok.Getter;
-import lpt.resource.*;
+import lpt.resource.ImageCaptchaResourceManager;
+import lpt.resource.ResourceProvider;
+import lpt.resource.ResourceStore;
 import lpt.resource.common.model.dto.Resource;
 import lpt.resource.common.model.dto.ResourceMap;
+import lpt.resource.impl.provider.ClassPathResourceProvider;
+import lpt.resource.impl.provider.FileResourceProvider;
+import lpt.resource.impl.provider.URLResourceProvider;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -18,16 +24,15 @@ public class DefaultImageCaptchaResourceManager implements ImageCaptchaResourceM
     /** 资源存储. */
     private ResourceStore resourceStore;
     /** 资源转换 转换为stream流. */
-    @Getter
-    private ResourceProviders resourceProviders;
+    private final List<ResourceProvider> resourceProviderList = new ArrayList<>(8);
+
 
     public DefaultImageCaptchaResourceManager() {
         init();
     }
 
-    public DefaultImageCaptchaResourceManager(ResourceStore resourceStore, ResourceProviders resourceProviders) {
+    public DefaultImageCaptchaResourceManager(ResourceStore resourceStore) {
         this.resourceStore = resourceStore;
-        this.resourceProviders = resourceProviders;
         init();
     }
 
@@ -35,9 +40,10 @@ public class DefaultImageCaptchaResourceManager implements ImageCaptchaResourceM
         if (this.resourceStore == null) {
             this.resourceStore = new LocalMemoryResourceStore();
         }
-        // 在这里临时加上字体缓存器
-        resourceStore.addListener(FontCache.getInstance());
-        resourceStore.init(this);
+        // 注入一些默认的提供者
+        registerResourceProvider(new URLResourceProvider());
+        registerResourceProvider(new ClassPathResourceProvider());
+        registerResourceProvider(new FileResourceProvider());
     }
 
     @Override
@@ -60,22 +66,33 @@ public class DefaultImageCaptchaResourceManager implements ImageCaptchaResourceM
 
     @Override
     public InputStream getResourceInputStream(Resource resource) {
-        return resourceProviders.getResourceInputStream(resource);
+        for (ResourceProvider resourceProvider : resourceProviderList) {
+            if (resourceProvider.supported(resource.getType())) {
+                InputStream resourceInputStream = resourceProvider.getResourceInputStream(resource);
+                if (resourceInputStream == null) {
+                    throw new IllegalArgumentException("滑块验证码 ResourceProvider 读到的图片资源为空,providerName=["
+                            + resourceProvider.getName() + "], resource=[" + resource + "]");
+                }
+                return resourceInputStream;
+            }
+        }
+        throw new IllegalStateException("没有找到Resource [" + resource.getType() + "]对应的资源提供者");
     }
 
     @Override
     public List<ResourceProvider> listResourceProviders() {
-        return resourceProviders.listResourceProviders();
+        return Collections.unmodifiableList(resourceProviderList);
     }
 
     @Override
     public void registerResourceProvider(ResourceProvider resourceProvider) {
-        resourceProviders.registerResourceProvider(resourceProvider);
+        deleteResourceProviderByName(resourceProvider.getName());
+        resourceProviderList.add(resourceProvider);
     }
 
     @Override
     public boolean deleteResourceProviderByName(String name) {
-        return resourceProviders.deleteResourceProviderByName(name);
+        return resourceProviderList.removeIf(r -> r.getName().equals(name));
     }
 
     @Override

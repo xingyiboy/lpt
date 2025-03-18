@@ -1,18 +1,20 @@
 package com.ruoyi.framework.web.service;
 
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.domain.model.LoginBody;
 import com.ruoyi.framework.web.Enum.VerificationTypeEnum;
 import com.ruoyi.framework.web.domain.LoginVerify;
+import com.ruoyi.system.mapper.SysUserMapper;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpSession;
 import lpt.LptCharacterUtil;
 import lpt.LptDigitalCountUtil;
 import lpt.LptMailboxUtil;
-import lpt.application.ImageCaptchaApplication;
-import lpt.application.TACBuilder;
-import lpt.application.vo.CaptchaResponse;
-import lpt.application.vo.ImageCaptchaVO;
-import lpt.common.response.ApiResponse;
-import lpt.validator.common.model.dto.ImageCaptchaTrack;
+import lpt.application.LptImageCaptchaApplication;
+import lpt.application.LptTACBuilder;
+import lpt.application.vo.LptCaptchaResponse;
+import lpt.application.vo.LptImageCaptchaVO;
+import lpt.common.response.LptApiResponse;
 import lpt.validator.common.model.dto.MatchParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.RedisServer;
@@ -65,6 +67,9 @@ public class SysLoginService
     private RedisCache redisCache;
 
     @Autowired
+    private SysUserMapper sysUserMapper;
+
+    @Autowired
     private ISysUserService userService;
 
     @Autowired
@@ -72,14 +77,14 @@ public class SysLoginService
 
     private final String LPT_PREFIX = "LoginVerify-";
 
-    private final Integer TIME_OUT = 5;
+    private final Integer TIME_OUT = 10;
 
     /**
      * 登录验证
      *
      * @return 结果
      */
-    public String login(LoginBody loginBody)
+    public Object login(LoginBody loginBody, String username, HttpSession session)
     {
         VerificationTypeEnum verificationTypeEnum = null;
         //获取redis的数据
@@ -90,6 +95,10 @@ public class SysLoginService
             loginVerify = null;
         }else {
             loginVerify = redisCache.getCacheObject(LPT_PREFIX + loginBody.getUsername());
+            if (loginVerify == null && username!=null) {
+                loginVerify = redisCache.getCacheObject(LPT_PREFIX + username);
+                loginBody.setUsername(username);
+            }
         }
         if(loginVerify==null){
             //第一次请求 直接设为密码校验
@@ -99,30 +108,137 @@ public class SysLoginService
         }
         switch (verificationTypeEnum) {
             case PASSWORD_VALIDATION:
-                return handlePasswordValidation(loginBody); //密码校验处理
+                return R.ok(handlePasswordValidation(loginBody)); //密码校验处理
             case CHARACTER_VALIDATION:
-                return handleCharacterValidation(loginBody,loginVerify); //字符校验处理
+                return R.ok(handleCharacterValidation(loginBody,loginVerify)); //字符校验处理
             case CALCULATION_VALIDATION:
-                return handleCalculationValidation(loginBody,loginVerify); //计算校验处理
+                return R.ok(handleCalculationValidation(loginBody,loginVerify)); //计算校验处理
             case EMAIL_VALIDATION:
-                return handleEmailValidation(loginBody,loginVerify); //邮件校验处理
+                return R.ok(handleEmailValidation(loginBody,loginVerify)); //邮件校验处理
             case SLIDING_VALIDATION:
-                return handleSlidingValidation(loginBody,loginVerify); //滑动校验处理
+                return handleSlidingValidation(loginBody,loginVerify,session); //滑动校验处理
             case ROTATION_VALIDATION:
-                return handleRotationValidation(loginBody,loginVerify); //旋转校验处理
+                return handleRotationValidation(loginBody,loginVerify,session); //旋转校验处理
             case CLICK_VALIDATION:
-                return handleClickValidation(loginBody,loginVerify); //点击校验处理
+                return handleClickValidation(loginBody,loginVerify,session); //点击校验处理
+            case CONCAT_VALIDATION:
+                return handleConcatValidation(loginBody,loginVerify,session); //滑动还原验证码
             default:
                 throw new ServiceException("不支持的校验类型: " + verificationTypeEnum);
         }
     }
 
-    private String handleClickValidation(LoginBody loginBody,LoginVerify loginVerify) {
-        return null;
+    //滑动还原验证码
+    private Object handleConcatValidation(LoginBody loginBody, LoginVerify loginVerify, HttpSession session) {
+        //判断是否开始校验
+        if(loginBody.getId()!=null){
+            //校验
+            LptImageCaptchaApplication application = (LptImageCaptchaApplication) session.getAttribute("captchaApplication-"+loginBody.getUsername());
+            LptApiResponse<?> valid = application.matching(loginBody.getId(), new MatchParam(loginBody.getData()));
+            if(valid.isSuccess()){
+                //校验成功 完成登录
+
+                //返回token
+                valid.setMsg(loginVerify.getToken());
+                return valid;
+            }else {
+                return valid;
+            }
+        }
+        //生成字符校验图片
+        LptImageCaptchaApplication application = LptTACBuilder.builder()
+                .addDefaultTemplate()
+                // expire 设置验证码的过期时间 ， default 为默认过期时间 为 10秒, WORD_IMAGE_CLICK文字点选验证码的过期时间为 60秒
+                .expire("default", 10000L)
+                .expire("WORD_IMAGE_CLICK", 60000L)
+                // 设置背景图， 这里为 SLIDER WORD_IMAGE_CLICK ROTATE CONCAT 各设置了一张背景图
+                .addResource("SLIDER", new lpt.resource.common.model.dto.Resource("classpath", "META-INF/cut-image/resource/1.jpg"))
+                .addResource("WORD_IMAGE_CLICK", new lpt.resource.common.model.dto.Resource("classpath", "META-INF/cut-image/resource/1.jpg"))
+                .addResource("ROTATE", new lpt.resource.common.model.dto.Resource("classpath", "META-INF/cut-image/resource/1.jpg"))
+                .addResource("CONCAT", new lpt.resource.common.model.dto.Resource("classpath", "META-INF/cut-image/resource/1.jpg"))
+                .build();
+        // 生成验证码数据， 可以将该数据直接返回给前端 ，
+        // 支持生成 滑动验证码(SLIDER)、旋转验证码(ROTATE)、滑动还原验证码(CONCAT)、文字点选验证码(WORD_IMAGE_CLICK)
+        LptCaptchaResponse<LptImageCaptchaVO> res = application.generateCaptcha("CONCAT");
+        //记录session
+        session.setAttribute("captchaApplication-"+loginBody.getUsername(), application);
+        return res;
     }
 
-    private String handleRotationValidation(LoginBody loginBody,LoginVerify loginVerify) {
-        return null;
+    //点击校验处理
+    private Object handleClickValidation(LoginBody loginBody,LoginVerify loginVerify,HttpSession session) {
+        //判断是否开始校验
+        if(loginBody.getId()!=null){
+            //校验
+            LptImageCaptchaApplication application = (LptImageCaptchaApplication) session.getAttribute("captchaApplication-"+loginBody.getUsername());
+            LptApiResponse<?> valid = application.matching(loginBody.getId(), new MatchParam(loginBody.getData()));
+            if(valid.isSuccess()){
+                //校验成功 进行下一步
+                loginVerify.setStep(VerificationTypeEnum.CONCAT_VALIDATION.getCode());
+                redisCache.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.MINUTES);
+                //返回下一步码
+                valid.setMsg(String.valueOf(VerificationTypeEnum.CONCAT_VALIDATION.getCode()));
+                return valid;
+            }else {
+                return valid;
+            }
+        }
+        //生成字符校验图片
+        LptImageCaptchaApplication application = LptTACBuilder.builder()
+                .addDefaultTemplate()
+                // expire 设置验证码的过期时间 ， default 为默认过期时间 为 10秒, WORD_IMAGE_CLICK文字点选验证码的过期时间为 60秒
+                .expire("default", 10000L)
+                .expire("WORD_IMAGE_CLICK", 60000L)
+                // 设置背景图， 这里为 SLIDER WORD_IMAGE_CLICK ROTATE CONCAT 各设置了一张背景图
+                .addResource("SLIDER", new lpt.resource.common.model.dto.Resource("classpath", "META-INF/cut-image/resource/1.jpg"))
+                .addResource("WORD_IMAGE_CLICK", new lpt.resource.common.model.dto.Resource("classpath", "META-INF/cut-image/resource/1.jpg"))
+                .addResource("ROTATE", new lpt.resource.common.model.dto.Resource("classpath", "META-INF/cut-image/resource/1.jpg"))
+                .addResource("CONCAT", new lpt.resource.common.model.dto.Resource("classpath", "META-INF/cut-image/resource/1.jpg"))
+                .build();
+        // 生成验证码数据， 可以将该数据直接返回给前端 ，
+        // 支持生成 滑动验证码(SLIDER)、旋转验证码(ROTATE)、滑动还原验证码(CONCAT)、文字点选验证码(WORD_IMAGE_CLICK)
+        LptCaptchaResponse<LptImageCaptchaVO> res = application.generateCaptcha("WORD_IMAGE_CLICK");
+        //记录session
+        session.setAttribute("captchaApplication-"+loginBody.getUsername(), application);
+        return res;
+    }
+
+    //旋转校验处理
+    private Object handleRotationValidation(LoginBody loginBody,LoginVerify loginVerify,HttpSession session) {
+        //判断是否开始校验
+        if(loginBody.getId()!=null){
+            //校验
+            LptImageCaptchaApplication application = (LptImageCaptchaApplication) session.getAttribute("captchaApplication-"+loginBody.getUsername());
+            LptApiResponse<?> valid = application.matching(loginBody.getId(), new MatchParam(loginBody.getData()));
+            if(valid.isSuccess()){
+                //校验成功 进行下一步
+                loginVerify.setStep(VerificationTypeEnum.CLICK_VALIDATION.getCode());
+                redisCache.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.MINUTES);
+                //返回下一步码
+                valid.setMsg(String.valueOf(VerificationTypeEnum.CLICK_VALIDATION.getCode()));
+                return valid;
+            }else {
+                return valid;
+            }
+        }
+        //生成字符校验图片
+        LptImageCaptchaApplication application = LptTACBuilder.builder()
+                .addDefaultTemplate()
+                // expire 设置验证码的过期时间 ， default 为默认过期时间 为 10秒, WORD_IMAGE_CLICK文字点选验证码的过期时间为 60秒
+                .expire("default", 10000L)
+                .expire("WORD_IMAGE_CLICK", 60000L)
+                // 设置背景图， 这里为 SLIDER WORD_IMAGE_CLICK ROTATE CONCAT 各设置了一张背景图
+                .addResource("SLIDER", new lpt.resource.common.model.dto.Resource("classpath", "META-INF/cut-image/resource/1.jpg"))
+                .addResource("WORD_IMAGE_CLICK", new lpt.resource.common.model.dto.Resource("classpath", "META-INF/cut-image/resource/1.jpg"))
+                .addResource("ROTATE", new lpt.resource.common.model.dto.Resource("classpath", "META-INF/cut-image/resource/1.jpg"))
+                .addResource("CONCAT", new lpt.resource.common.model.dto.Resource("classpath", "META-INF/cut-image/resource/1.jpg"))
+                .build();
+        // 生成验证码数据， 可以将该数据直接返回给前端 ，
+        // 支持生成 滑动验证码(SLIDER)、旋转验证码(ROTATE)、滑动还原验证码(CONCAT)、文字点选验证码(WORD_IMAGE_CLICK)
+        LptCaptchaResponse<LptImageCaptchaVO> res = application.generateCaptcha("ROTATE");
+        //记录session
+        session.setAttribute("captchaApplication-"+loginBody.getUsername(), application);
+        return res;
     }
 
     /**
@@ -131,9 +247,41 @@ public class SysLoginService
      * @param loginVerify
      * @return
      */
-    private String handleSlidingValidation(LoginBody loginBody,LoginVerify loginVerify) {
-
-        return null;
+    private Object handleSlidingValidation(LoginBody loginBody,LoginVerify loginVerify,HttpSession session) {
+        //判断是否开始校验
+        if(loginBody.getId()!=null){
+            //校验
+            LptImageCaptchaApplication application = (LptImageCaptchaApplication) session.getAttribute("captchaApplication-"+loginBody.getUsername());
+            LptApiResponse<?> valid = application.matching(loginBody.getId(), new MatchParam(loginBody.getData()));
+            if(valid.isSuccess()){
+                //校验成功 进行下一步
+                loginVerify.setStep(VerificationTypeEnum.ROTATION_VALIDATION.getCode());
+                redisCache.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.MINUTES);
+                //返回下一步码
+                valid.setMsg(String.valueOf(VerificationTypeEnum.ROTATION_VALIDATION.getCode()));
+                return valid;
+            }else {
+                return valid;
+            }
+        }
+        //生成字符校验图片
+        LptImageCaptchaApplication application = LptTACBuilder.builder()
+                .addDefaultTemplate()
+                // expire 设置验证码的过期时间 ， default 为默认过期时间 为 10秒, WORD_IMAGE_CLICK文字点选验证码的过期时间为 60秒
+                .expire("default", 10000L)
+                .expire("WORD_IMAGE_CLICK", 60000L)
+                // 设置背景图， 这里为 SLIDER WORD_IMAGE_CLICK ROTATE CONCAT 各设置了一张背景图
+                .addResource("SLIDER", new lpt.resource.common.model.dto.Resource("classpath", "META-INF/cut-image/resource/1.jpg"))
+                .addResource("WORD_IMAGE_CLICK", new lpt.resource.common.model.dto.Resource("classpath", "META-INF/cut-image/resource/1.jpg"))
+                .addResource("ROTATE", new lpt.resource.common.model.dto.Resource("classpath", "META-INF/cut-image/resource/1.jpg"))
+                .addResource("CONCAT", new lpt.resource.common.model.dto.Resource("classpath", "META-INF/cut-image/resource/1.jpg"))
+                .build();
+        // 生成验证码数据， 可以将该数据直接返回给前端 ，
+        // 支持生成 滑动验证码(SLIDER)、旋转验证码(ROTATE)、滑动还原验证码(CONCAT)、文字点选验证码(WORD_IMAGE_CLICK)
+        LptCaptchaResponse<LptImageCaptchaVO> res = application.generateCaptcha("SLIDER");
+        //记录session
+        session.setAttribute("captchaApplication-"+loginBody.getUsername(), application);
+        return res;
     }
 
     /**
@@ -179,7 +327,7 @@ public class SysLoginService
         LoginVerify loginVerify = new LoginVerify(loginBody.getUsername(),loginBody.getPassword(),VerificationTypeEnum.CHARACTER_VALIDATION.getCode());
         // 生成token
         loginVerify.setToken(tokenService.createToken(loginUser));
-        redisCache.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.SECONDS);
+        redisCache.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.MINUTES);
         //返回下一步码
         return String.valueOf(VerificationTypeEnum.CHARACTER_VALIDATION.getCode());
     }
@@ -198,7 +346,7 @@ public class SysLoginService
                 //校验成功 进行下一步
                 loginVerify.setStep(VerificationTypeEnum.CALCULATION_VALIDATION.getCode());
                 loginVerify.setCode(null);
-                redisCache.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.SECONDS);
+                redisCache.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.MINUTES);
                 //返回下一步码
                 return String.valueOf(VerificationTypeEnum.CALCULATION_VALIDATION.getCode());
             }else {
@@ -213,7 +361,7 @@ public class SysLoginService
         //记录正确结果
         loginVerify.setCode(code);
         //信息存入redis step代表当前步骤
-        redisCache.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.SECONDS);
+        redisCache.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.MINUTES);
         return image;
     }
 
@@ -230,7 +378,7 @@ public class SysLoginService
             if(loginBody.getCode().equals(loginVerify.getCode())){
                 //校验成功 进行下一步
                 loginVerify.setStep(VerificationTypeEnum.EMAIL_VALIDATION.getCode());
-                redisCache.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.SECONDS);
+                redisCache.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.MINUTES);
                 //返回下一步码
                 return String.valueOf(VerificationTypeEnum.EMAIL_VALIDATION.getCode());
             }else {
@@ -245,7 +393,7 @@ public class SysLoginService
         //记录正确结果
         loginVerify.setCode(code);
         //信息存入redis step代表当前步骤
-        redisCache.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.SECONDS);
+        redisCache.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.MINUTES);
         return image;
     }
 
@@ -256,35 +404,41 @@ public class SysLoginService
             if(loginBody.getCode().equals(loginVerify.getCode())){
                 //校验成功 进行下一步
                 loginVerify.setStep(VerificationTypeEnum.SLIDING_VALIDATION.getCode());
-                redisCache.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.SECONDS);
+                redisCache.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.MINUTES);
                 //返回下一步码
                 return String.valueOf(VerificationTypeEnum.SLIDING_VALIDATION.getCode());
             }else {
                 //校验失败 继续生成字符校验图片
             }
         }
-        //发送邮箱验证码
+        //生成6位验证码
         String code = generateCaptcha(6);
-        LptMailboxUtil.send("smtp.qq.com",465,true,"2832914238@qq.com","zedgqaxuwhnldgab","2416820386@qq.com","令牌通验证码","尊敬的用户，您好！\n" +
-                "\n" +
-                "您正在进行邮箱验证操作，您的验证码是：\n" +
-                "\n" +
-                ""+code+"\n" +
-                "\n" +
-                "该验证码仅有效5分钟，请尽快完成验证。如果您没有进行相关操作，可能是有人误操作，请忽略此邮件。\n" +
-                "\n" +
-                "感谢您的使用！\n" +
-                "\n" +
-                "若有任何疑问，请联系我们的客服团队，我们将竭诚为您服务。\n" +
-                "\n" +
-                "祝您使用愉快！\n" +
-                "\n" +
-                "【令牌通】团队");
-//        记录正确结果
+        SysUser sysUser = sysUserMapper.selectUserByUserName(loginVerify.getUsername());
+        if (sysUser.getEmail() != null) {
+            //邮箱不为空
+            //发送邮箱验证码
+
+            LptMailboxUtil.send("smtp.qq.com",465,true,"2832914238@qq.com","zedgqaxuwhnldgab",sysUser.getEmail(),"令牌通验证码","尊敬的用户，您好！\n" +
+                    "\n" +
+                    "您正在进行邮箱验证操作，您的验证码是：\n" +
+                    "\n" +
+                    ""+code+"\n" +
+                    "\n" +
+                    "该验证码仅有效5分钟，请尽快完成验证。如果您没有进行相关操作，可能是有人误操作，请忽略此邮件。\n" +
+                    "\n" +
+                    "感谢您的使用！\n" +
+                    "\n" +
+                    "若有任何疑问，请联系我们的客服团队，我们将竭诚为您服务。\n" +
+                    "\n" +
+                    "祝您使用愉快！\n" +
+                    "\n" +
+                    "【令牌通】团队");
+        }
+        //记录正确结果
         loginVerify.setCode(code);
         //信息存入redis step代表当前步骤
-        redisCache.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.SECONDS);
-        return "2416820386@qq.com-验证码:"+code;
+        redisCache.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.MINUTES);
+        return sysUser.getEmail()!=null ? sysUser.getEmail():"该账号暂无填写邮箱"+"-验证码:"+code;
     }
 
     /**
@@ -303,18 +457,6 @@ public class SysLoginService
         }
 
         return captcha.toString();
-    }
-
-
-
-    /**
-     * 登录成功返回token
-     * @param username
-     * @param password
-     * @return
-     */
-    public String loginSuccess(String username, String password){
-        return null;
     }
 
 

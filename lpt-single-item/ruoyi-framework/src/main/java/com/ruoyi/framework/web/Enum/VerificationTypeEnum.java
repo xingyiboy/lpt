@@ -7,7 +7,10 @@ public enum VerificationTypeEnum {
     EMAIL_VALIDATION(3, "邮箱校验"),
     SLIDING_VALIDATION(4, "滑动校验"),
     ROTATION_VALIDATION(5, "旋转校验"),
-    CLICK_VALIDATION(6, "点击校验");
+    CLICK_VALIDATION(6, "点击校验"),
+    CONCAT_VALIDATION(7, "滑动还原校验");
+
+
 
     private final int code;
     private final String description;

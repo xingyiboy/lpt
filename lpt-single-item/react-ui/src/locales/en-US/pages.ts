@@ -1,15 +1,20 @@
+/*
+ * @Date: 2025-03-16 16:12:47
+ * @LastEditors: xingyi && 2416820386@qq.com
+ * @LastEditTime: 2025-03-18 18:30:53
+ * @FilePath: \lpt-single-item\react-ui\src\locales\en-US\pages.ts
+ */
 export default {
-  'pages.layouts.userLayout.title':
-    'Ant Design is the most influential web design specification in Xihu district',
+  'pages.layouts.userLayout.title': 'LPT fully verifies the online experience',
   'pages.login.accountLogin.tab': 'Account Login',
-  'pages.login.accountLogin.errorMessage': 'Incorrect username/password(admin/admin123)',
+  'pages.login.accountLogin.errorMessage': 'Incorrect username/password',
   'pages.login.failure': 'Login failed, please try again!',
   'pages.login.success': 'Login successful!',
-  'pages.login.username.placeholder': 'Username: admin',
+  'pages.login.username.placeholder': 'Username: ',
   'pages.login.username.required': 'Please input your username!',
-  'pages.login.password.placeholder': 'Password: admin123',
+  'pages.login.password.placeholder': 'Password: ',
   'pages.login.password.required': 'Please input your password!',
-  'pages.login.phoneLogin.tab': 'Phone Login',
+  'pages.login.phoneLogin.tab': 'Register Account',
   'pages.login.phoneLogin.errorMessage': 'Verification Code Error',
   'pages.login.phoneNumber.placeholder': 'Phone Number',
   'pages.login.phoneNumber.required': 'Please input your phone number!',

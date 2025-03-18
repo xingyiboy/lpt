@@ -1,8 +1,8 @@
 /*
  * @Date: 2025-03-16 16:12:47
  * @LastEditors: xingyi && 2416820386@qq.com
- * @LastEditTime: 2025-03-17 19:50:39
- * @FilePath: \react-ui\src\pages\User\Login\index.tsx
+ * @LastEditTime: 2025-03-18 18:39:57
+ * @FilePath: \lpt-single-item\react-ui\src\pages\User\Login\index.tsx
  */
 import Footer from '@/components/Footer';
 import { login } from '@/services/system/auth';
@@ -30,6 +30,8 @@ import { flushSync } from 'react-dom';
 import { clearSessionToken, setSessionToken } from '@/access';
 import ImageInputValidation from './components/ImageInputValidation';
 import MailboxValidation from './components/MailboxValidation';
+import CaptchaModal from './components/CaptchaModal';
+import load from './components/load.min.js';
 
 const ActionIcons = () => {
   const langClassName = useEmotionCss(({ token }) => {
@@ -100,9 +102,43 @@ const Login: React.FC = () => {
   const [type, setType] = useState<string>('account');
   const { initialState, setInitialState } = useModel('@@initialState');
   const [captchaInput, setCaptchaInput] = useState('');
-  const [showImageInputValidation, setShowImageInputValidation] = useState(false);
-  const [showMailboxValidation, setShowMailboxValidation] = useState(false);
+
   const [submitting, setSubmitting] = useState(false);
+  const [showCaptcha, setShowCaptcha] = useState(false);
+
+  // 字符，数字 校验 对话框
+  const [showImageInputValidation, setShowImageInputValidation] = useState(false);
+  // 邮箱校验 对话框
+  const [showMailboxValidation, setShowMailboxValidation] = useState(false);
+  //滑动、旋转、滑动还原、文字点选校验 对话框
+  const [showBehaviorValidation, setShowBehaviorValidation] = useState(false);
+
+  const [getBehaviorURL, setGetBehaviorURL] = useState('');
+
+  //关闭全部校验 对话框
+  const closeAllValidation = () => {
+    setShowImageInputValidation(false);
+    setShowMailboxValidation(false);
+    setShowBehaviorValidation(false);
+  };
+
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = load;
+    script.async = true;
+    script.onload = () => {
+      // 加载完成后执行的初始化函数
+      if (window.initLoadFunction) {
+        window.initLoadFunction(); // 假设该脚本中有一个全局初始化函数
+      }
+    };
+    document.body.appendChild(script);
+
+    // Clean up: 组件卸载时移除脚本
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []); // 空依赖数组，确保只加载一次
 
   // 使用 useRef 替代 useState 来存储最新值
   const loginValuesRef = useRef<API.LoginParams>();
@@ -132,23 +168,29 @@ const Login: React.FC = () => {
         message.success('验证成功，开始邮箱校验');
         getCodeDataAndVerify(currentValues, false, '3');
         break;
+      case '4':
+        //执行滑动操作
+        message.success('验证成功，开始滑动验证');
+        getCodeDataAndVerify(currentValues, false, '4');
       default:
         //错误重新获取验证码不能进行下一步
-        message.error(response.data);
         getCodeDataAndVerify(currentValues);
         break;
     }
   };
 
-  //处理点击校验
+  //处理点击提交
   const handleSubmitVarify = useCallback(async () => {
     await getCodeDataAndVerify(null, true);
   }, [captchaInput]);
 
   //处理点击验证码
   const handleClickVarify = useCallback(() => {
+    if (submitting) {
+      return;
+    }
     getCodeDataAndVerify();
-  }, [captchaInput]);
+  }, [captchaInput, submitting]);
 
   //获取验证码/校验验证码
   const getCodeDataAndVerify = useCallback(
@@ -185,21 +227,29 @@ const Login: React.FC = () => {
           }
           setSubmitting(true);
           const response = await login({ ...currentValues });
+
           if (response.code === 200) {
             setCodeImgData(response.data);
             switch (Step) {
               case '1':
                 //执行字符校验
+                closeAllValidation();
                 setShowImageInputValidation(true);
                 break;
               case '2':
                 //执行数字计算校验
+                closeAllValidation();
                 setShowImageInputValidation(true);
                 break;
               case '3':
                 //执行邮箱校验
-                setShowImageInputValidation(false);
+                closeAllValidation();
                 setShowMailboxValidation(true);
+                break;
+              case '4':
+                //执行滑动校验
+                closeAllValidation();
+                setShowBehaviorValidation(true);
                 break;
               default:
                 break;
@@ -207,6 +257,11 @@ const Login: React.FC = () => {
             setSubmitting(false);
             // 存储到 ref
             loginValuesRef.current = currentValues;
+          }
+          //滑动校验复位
+          if (response.id != null) {
+            closeAllValidation();
+            setShowBehaviorValidation(true);
           }
         } catch (error) {
           message.error('获取验证码失败');
@@ -273,31 +328,76 @@ const Login: React.FC = () => {
         defaultMessage: '登录失败，请重试！',
       });
       console.log(error);
-      message.error(defaultLoginFailureMessage);
+      message.error('登录失败，请重试！');
     }
   };
+
+  // 行为验证成功回调
+  const handleCaptchaSuccess = (Step: string) => {
+    switch (Step) {
+      case '4':
+        closeAllValidation();
+        setShowBehaviorValidation(true);
+        message.success('验证成功，开始滑动验证');
+        break;
+      case '5':
+        //执行行为校验
+        closeAllValidation();
+        setShowBehaviorValidation(true);
+        message.success('验证成功，开始滑动验证');
+        break;
+      case '6':
+        //执行行为校验
+        closeAllValidation();
+        setShowBehaviorValidation(true);
+        message.success('验证成功，开始滑动验证');
+        break;
+      case '7':
+        //执行行为校验
+        closeAllValidation();
+        setShowBehaviorValidation(true);
+        message.success('验证成功，开始滑动验证');
+        break;
+      default:
+        //完成登录
+        const defaultLoginSuccessMessage = intl.formatMessage({
+          id: 'pages.login.success',
+          defaultMessage: '登录成功！',
+        });
+        const current = new Date();
+        const expireTime = current.setTime(current.getTime() + 1000 * 12 * 60 * 60);
+        setSessionToken(Step, Step, expireTime);
+        message.success(defaultLoginSuccessMessage);
+        fetchUserInfo();
+        const urlParams = new URL(window.location.href).searchParams;
+        history.push(urlParams.get('redirect') || '/');
+        return;
+        break;
+    }
+  };
+
   const { code } = userLoginState;
   const loginType = type;
 
-  useEffect(() => {}, []);
-
-  const modalFooter = useMemo(
-    () => [
-      <Button key="back" onClick={handleCancel} disabled={submitting}>
-        取消
-      </Button>,
-      <Button
-        key="submit"
-        type="primary"
-        loading={submitting}
-        disabled={submitting}
-        onClick={handleSubmitVarify}
-      >
-        {submitting ? '请等待...' : '提交验证'}
-      </Button>,
-    ],
-    [submitting, handleCancel, handleSubmitVarify],
-  );
+  const modalFooter = useMemo(() => {
+    // 当显示验证码弹窗时隐藏底部按钮
+    return showBehaviorValidation
+      ? null
+      : [
+          <Button key="back" onClick={handleCancel} disabled={submitting}>
+            取消
+          </Button>,
+          <Button
+            key="submit"
+            type="primary"
+            loading={submitting}
+            disabled={submitting}
+            onClick={handleSubmitVarify}
+          >
+            {submitting ? '请等待...' : '提交验证'}
+          </Button>,
+        ];
+  }, [submitting, handleCancel, handleSubmitVarify, showBehaviorValidation]); // 当showBehaviorValidation时关闭底部按钮
 
   return (
     <div className={containerClassName}>
@@ -322,20 +422,12 @@ const Login: React.FC = () => {
             minWidth: 280,
             maxWidth: '75vw',
           }}
-          logo={<img alt="logo" src="/logo.svg" />}
-          title="Ant Design"
+          logo={<img alt="logo" src="/favicon.ico" style={{ transform: 'scale(1.5)' }} />}
+          title="令牌通"
           subTitle={intl.formatMessage({ id: 'pages.layouts.userLayout.title' })}
           initialValues={{
             autoLogin: true,
           }}
-          actions={[
-            <FormattedMessage
-              key="loginWith"
-              id="pages.login.loginWith"
-              defaultMessage="其他登录方式"
-            />,
-            <ActionIcons key="icons" />,
-          ]}
           onFinish={async (values) => {
             await handleSubmit(values as API.LoginParams);
           }}
@@ -366,7 +458,7 @@ const Login: React.FC = () => {
             <LoginMessage
               content={intl.formatMessage({
                 id: 'pages.login.accountLogin.errorMessage',
-                defaultMessage: '账户或密码错误(admin/admin123)',
+                defaultMessage: '账户或密码错误',
               })}
             />
           )}
@@ -374,14 +466,14 @@ const Login: React.FC = () => {
             <>
               <ProFormText
                 name="username"
-                initialValue="admin"
+                initialValue=""
                 fieldProps={{
                   size: 'large',
                   prefix: <UserOutlined />,
                 }}
                 placeholder={intl.formatMessage({
                   id: 'pages.login.username.placeholder',
-                  defaultMessage: '用户名: admin',
+                  defaultMessage: '用户名: ',
                 })}
                 rules={[
                   {
@@ -397,14 +489,14 @@ const Login: React.FC = () => {
               />
               <ProFormText.Password
                 name="password"
-                initialValue="admin123"
+                initialValue=""
                 fieldProps={{
                   size: 'large',
                   prefix: <LockOutlined />,
                 }}
                 placeholder={intl.formatMessage({
                   id: 'pages.login.password.placeholder',
-                  defaultMessage: '密码: admin123',
+                  defaultMessage: '密码: ',
                 })}
                 rules={[
                   {
@@ -498,7 +590,7 @@ const Login: React.FC = () => {
                   if (!result) {
                     return;
                   }
-                  message.success('获取验证码成功！验证码为：1234');
+                  message.success('获取验证码成功！');
                 }}
               />
             </>
@@ -543,6 +635,13 @@ const Login: React.FC = () => {
             handleClickVarify={handleClickVarify}
             captchaInput={captchaInput}
             setCaptchaInput={setCaptchaInput}
+          />
+        )}
+        {showBehaviorValidation && (
+          <CaptchaModal
+            onSuccess={handleCaptchaSuccess}
+            onClose={() => setOpen(false)}
+            username={loginValuesRef.current.username}
           />
         )}
       </Modal>

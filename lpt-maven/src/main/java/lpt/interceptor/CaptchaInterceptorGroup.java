@@ -2,10 +2,10 @@ package lpt.interceptor;
 
 import lombok.Getter;
 import lombok.Setter;
-import lpt.application.vo.CaptchaResponse;
-import lpt.application.vo.ImageCaptchaVO;
+import lpt.application.vo.LptCaptchaResponse;
+import lpt.application.vo.LptImageCaptchaVO;
 import lpt.common.AnyMap;
-import lpt.common.response.ApiResponse;
+import lpt.common.response.LptApiResponse;
 import lpt.generator.AbstractImageCaptchaGenerator;
 import lpt.generator.common.model.dto.CaptchaExchange;
 import lpt.generator.common.model.dto.GenerateParam;
@@ -66,60 +66,60 @@ public class CaptchaInterceptorGroup implements CaptchaInterceptor {
     }
 
     @Override
-    public CaptchaResponse<ImageCaptchaVO> beforeGenerateCaptcha(Context context, String type, GenerateParam param) {
+    public LptCaptchaResponse<LptImageCaptchaVO> beforeGenerateCaptcha(Context context, String type, GenerateParam param) {
         context = createContextIfNecessary(context);
-        CaptchaResponse<ImageCaptchaVO> captchaResponse = null;
+        LptCaptchaResponse<LptImageCaptchaVO> lptCaptchaResponse = null;
         while (context.next() < context.getCount()) {
             CaptchaInterceptor interceptor = validators.get(context.getCurrent());
-            captchaResponse = interceptor.beforeGenerateCaptcha(context, type, param);
-            context.setPreReturnData(captchaResponse);
+            lptCaptchaResponse = interceptor.beforeGenerateCaptcha(context, type, param);
+            context.setPreReturnData(lptCaptchaResponse);
         }
-        return captchaResponse;
+        return lptCaptchaResponse;
     }
 
     @Override
-    public void afterGenerateCaptcha(Context context, String type, ImageCaptchaInfo imageCaptchaInfo, CaptchaResponse<ImageCaptchaVO> captchaResponse) {
+    public void afterGenerateCaptcha(Context context, String type, ImageCaptchaInfo imageCaptchaInfo, LptCaptchaResponse<LptImageCaptchaVO> lptCaptchaResponse) {
         context = createContextIfNecessary(context);
         while (context.next() < context.getCount()) {
             CaptchaInterceptor interceptor = validators.get(context.getCurrent());
-            interceptor.afterGenerateCaptcha(context, type, imageCaptchaInfo, captchaResponse);
+            interceptor.afterGenerateCaptcha(context, type, imageCaptchaInfo, lptCaptchaResponse);
         }
     }
 
     @Override
-    public ApiResponse<?> beforeValid(Context context, String type, MatchParam matchParam, AnyMap validData) {
+    public LptApiResponse<?> beforeValid(Context context, String type, MatchParam matchParam, AnyMap validData) {
         context = createContextIfNecessary(context);
-        ApiResponse<?> beforeValid = null;
+        LptApiResponse<?> beforeValid = null;
         while (context.next() < context.getCount()) {
             CaptchaInterceptor interceptor = validators.get(context.getCurrent());
             beforeValid = interceptor.beforeValid(context, type, matchParam, validData);
             context.setPreReturnData(beforeValid);
         }
-        return beforeValid == null ? ApiResponse.ofSuccess() : beforeValid;
+        return beforeValid == null ? LptApiResponse.ofSuccess() : beforeValid;
     }
 
     @Override
-    public ApiResponse<?> afterValid(Context context, String type, MatchParam matchParam, AnyMap validData, ApiResponse<?> basicValid) {
+    public LptApiResponse<?> afterValid(Context context, String type, MatchParam matchParam, AnyMap validData, LptApiResponse<?> basicValid) {
         context = createContextIfNecessary(context);
-        ApiResponse<?> valid = null;
+        LptApiResponse<?> valid = null;
         while (context.next() < context.getCount()) {
             CaptchaInterceptor interceptor = validators.get(context.getCurrent());
             valid = interceptor.afterValid(context, type, matchParam, validData, basicValid);
             context.setPreReturnData(valid);
         }
-        return valid == null ? ApiResponse.ofSuccess() : valid;
+        return valid == null ? LptApiResponse.ofSuccess() : valid;
     }
 
     @Override
-    public CaptchaResponse<ImageCaptchaVO> beforeGenerateImageCaptchaValidData(Context context, String type, ImageCaptchaInfo imageCaptchaInfo) {
+    public LptCaptchaResponse<LptImageCaptchaVO> beforeGenerateImageCaptchaValidData(Context context, String type, ImageCaptchaInfo imageCaptchaInfo) {
         context = createContextIfNecessary(context);
-        CaptchaResponse<ImageCaptchaVO> captchaResponse = null;
+        LptCaptchaResponse<LptImageCaptchaVO> lptCaptchaResponse = null;
         while (context.next() < context.getCount()) {
             CaptchaInterceptor interceptor = validators.get(context.getCurrent());
-            captchaResponse = interceptor.beforeGenerateImageCaptchaValidData(context, type, imageCaptchaInfo);
-            context.setPreReturnData(captchaResponse);
+            lptCaptchaResponse = interceptor.beforeGenerateImageCaptchaValidData(context, type, imageCaptchaInfo);
+            context.setPreReturnData(lptCaptchaResponse);
         }
-        return captchaResponse;
+        return lptCaptchaResponse;
 
 
     }
