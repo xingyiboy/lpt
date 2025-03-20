@@ -3,7 +3,7 @@ package lpt.faceDTO;
 
 import java.io.Serializable;
 
-public class FaceCompareRepVo implements Serializable {
+public class LptFaceCompareRepVo implements Serializable {
     /**向量的距离**/
 //    @ApiModelProperty(value="向量欧式距离:>=0", position = 1, required = true)
     private Float distance;

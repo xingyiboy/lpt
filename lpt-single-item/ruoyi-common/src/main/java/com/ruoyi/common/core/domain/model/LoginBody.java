@@ -27,8 +27,18 @@ public class LoginBody
     private String uuid;
 
     private String id;
+
     private LptImageCaptchaTrack data;
 
+    private String faceBase64;
+
+    public String getFaceBase64() {
+        return faceBase64;
+    }
+
+    public void setFaceBase64(String faceBase64) {
+        this.faceBase64 = faceBase64;
+    }
 
     public String getUuid() {
         return uuid;

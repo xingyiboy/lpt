@@ -1,33 +1,29 @@
 package lpt;
 
-import cn.hutool.core.lang.Console;
-import cn.hutool.http.Header;
-import cn.hutool.http.HttpRequest;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
-import lpt.faceDTO.FaceCompareRepVo;
-import lpt.faceDTO.FaceCompareReqVo;
+import lpt.faceDTO.LptFaceCompareRepVo;
+import lpt.faceDTO.LptFaceCompareReqVo;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Map;
 
 /**
  * @Description: 1v1人脸比对工具类
  * @author: huangguoshan
  * @date: 2025年03月20日 15:20
  */
-public class LptFaceComparison {
+public class LptFaceComparisonUtil {
     public static final String POST_URL = "http://113.45.31.128:18071/visual/compare/do";
 
     /**
      * 1v1比对
      * @return
      */
-    public static FaceCompareRepVo compareFace(FaceCompareReqVo faceCompareReqVo){
+    public static LptFaceCompareRepVo compareFace(LptFaceCompareReqVo lptFaceCompareReqVo){
         try {
             URL url = new URL(POST_URL);
             // 打开连接
@@ -38,7 +34,7 @@ public class LptFaceComparison {
             connection.setRequestProperty("Authorization", "Bearer <your-token>");  // 替换为实际的令牌
 
             // 要发送的数据（JSON格式）
-            String jsonInputString = JSONUtil.toJsonStr(faceCompareReqVo);
+            String jsonInputString = JSONUtil.toJsonStr(lptFaceCompareReqVo);
 
             // 发送请求数据
             try (OutputStream os = connection.getOutputStream()) {
@@ -60,14 +56,14 @@ public class LptFaceComparison {
                 // 解析 JSON 数据
                 JSONObject jsonObject = JSONUtil.parseObj(response);
                 String message = (String) jsonObject.get("message");
-                FaceCompareRepVo data = jsonObject.get("data", FaceCompareRepVo.class);
+                LptFaceCompareRepVo data = jsonObject.get("data", LptFaceCompareRepVo.class);
                 if(message.equals("success")){
                     return data;
                 }else {
                     //不成功 数据有误
-                    FaceCompareRepVo faceCompareRepVo = new FaceCompareRepVo();
-                    faceCompareRepVo.setMessage(message);
-                    return faceCompareRepVo;
+                    LptFaceCompareRepVo lptFaceCompareRepVo = new LptFaceCompareRepVo();
+                    lptFaceCompareRepVo.setMessage(message);
+                    return lptFaceCompareRepVo;
                 }
             }
 

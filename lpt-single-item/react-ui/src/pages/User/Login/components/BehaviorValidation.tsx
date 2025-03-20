@@ -1,8 +1,8 @@
 /*
  * @Date: 2025-03-17 20:21:01
  * @LastEditors: xingyi && 2416820386@qq.com
- * @LastEditTime: 2025-03-19 00:03:28
- * @FilePath: \lpt-single-item\react-ui\src\pages\User\Login\components\CaptchaModal.tsx
+ * @LastEditTime: 2025-03-20 21:51:23
+ * @FilePath: \react-ui\src\pages\User\Login\components\BehaviorValidation.tsx
  */
 import { useEffect } from 'react';
 
@@ -19,7 +19,7 @@ interface CaptchaProps {
   uuid?: string;
 }
 
-const CaptchaModal = ({ onSuccess, onClose, username,uuid }: CaptchaProps) => {
+const BehaviorValidation = ({ onSuccess, onClose, username,uuid }: CaptchaProps) => {
   useEffect(() => {
     const initCaptcha = () => {
       const config = {
@@ -56,4 +56,4 @@ const CaptchaModal = ({ onSuccess, onClose, username,uuid }: CaptchaProps) => {
   return <div id="captcha-box" style={{ width: 320, margin: '0 auto' }} />;
 };
 
-export default CaptchaModal;
+export default BehaviorValidation;

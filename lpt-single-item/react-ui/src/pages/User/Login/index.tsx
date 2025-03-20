@@ -1,7 +1,7 @@
 /*
  * @Date: 2025-03-16 16:12:47
  * @LastEditors: xingyi && 2416820386@qq.com
- * @LastEditTime: 2025-03-20 16:49:08
+ * @LastEditTime: 2025-03-20 22:03:37
  * @FilePath: \react-ui\src\pages\User\Login\index.tsx
  */
 import Footer from '@/components/Footer';
@@ -30,8 +30,9 @@ import { flushSync } from 'react-dom';
 import { clearSessionToken, setSessionToken } from '@/access';
 import ImageInputValidation from './components/ImageInputValidation';
 import MailboxValidation from './components/MailboxValidation';
-import CaptchaModal from './components/CaptchaModal';
+import BehaviorValidation from './components/BehaviorValidation';
 import load from './components/load.min.js';
+import FaceValidation from './components/FaceValidation';
 
 const ActionIcons = () => {
   const langClassName = useEmotionCss(({ token }) => {
@@ -109,8 +110,10 @@ const Login: React.FC = () => {
   const [showImageInputValidation, setShowImageInputValidation] = useState(false);
   // 邮箱校验 对话框
   const [showMailboxValidation, setShowMailboxValidation] = useState(false);
-  //滑动、旋转、滑动还原、文字点选校验 对话框
+  // 滑动、旋转、滑动还原、文字点选校验 对话框
   const [showBehaviorValidation, setShowBehaviorValidation] = useState(false);
+  // 人脸校验 对话框
+  const [showFaceValidation, setShowFaceValidation] = useState(false);
 
   const [isRegister, setIsRegister] = useState(false);
 
@@ -118,6 +121,25 @@ const Login: React.FC = () => {
   const loginValuesRef = useRef<API.LoginParams>();
 
   const uuid = useRef<String>();
+
+  const LoginSuccess = async (token: String) => {
+    console.log(token);
+    //完成登录
+    const defaultLoginSuccessMessage = intl.formatMessage({
+      id: 'pages.login.success',
+      defaultMessage: '登录成功！',
+    });
+    if (token == null) {
+      message.error('错误！请重新登录');
+    }
+    const current = new Date();
+    const expireTime = current.setTime(current.getTime() + 1000 * 12 * 60 * 60);
+    setSessionToken(token, token, expireTime);
+    message.success(defaultLoginSuccessMessage);
+    fetchUserInfo();
+    const urlParams = new URL(window.location.href).searchParams;
+    history.push(urlParams.get('redirect') || '/');
+  };
 
   //关闭全部校验 对话框
   const closeAllValidation = () => {
@@ -253,6 +275,10 @@ const Login: React.FC = () => {
                 setShowBehaviorValidation(true);
                 break;
               default:
+                //登录成功
+                if (Step.slice(0, 6) == 'token:') {
+                  LoginSuccess(Step.slice(6));
+                }
                 break;
             }
             setSubmitting(false);
@@ -340,44 +366,33 @@ const Login: React.FC = () => {
       case '4':
         closeAllValidation();
         setShowBehaviorValidation(true);
-        message.success('验证成功，开始滑动验证');
+        message.success('验证成功，开始滑动校验');
         break;
       case '5':
-        //执行行为校验
         closeAllValidation();
         setShowBehaviorValidation(true);
-        message.success('验证成功，开始滑动验证');
+        message.success('验证成功，开始旋转校验');
         break;
       case '6':
-        //执行行为校验
         closeAllValidation();
         setShowBehaviorValidation(true);
-        message.success('验证成功，开始滑动验证');
+        message.success('验证成功，开始点击校验');
         break;
       case '7':
-        //执行行为校验
         closeAllValidation();
         setShowBehaviorValidation(true);
-        message.success('验证成功，开始滑动验证');
+        message.success('验证成功，开始滑动还原校验');
+        break;
+      case '8':
+        closeAllValidation();
+        setShowFaceValidation(true);
+        message.success('验证成功，开始人脸校验');
         break;
       default:
-        //完成登录
-        const defaultLoginSuccessMessage = intl.formatMessage({
-          id: 'pages.login.success',
-          defaultMessage: '登录成功！',
-        });
-        if(Step == null){
-          message.error('错误！请重新登录');
+        //登录成功
+        if (Step.slice(0, 6) == 'token:') {
+          LoginSuccess(Step.slice(6));
         }
-        
-        const current = new Date();
-        const expireTime = current.setTime(current.getTime() + 1000 * 12 * 60 * 60);
-        setSessionToken(Step, Step, expireTime);
-        message.success(defaultLoginSuccessMessage);
-        fetchUserInfo();
-        const urlParams = new URL(window.location.href).searchParams;
-        history.push(urlParams.get('redirect') || '/');
-        return;
         break;
     }
   };
@@ -387,7 +402,7 @@ const Login: React.FC = () => {
 
   const modalFooter = useMemo(() => {
     // 当显示验证码弹窗时隐藏底部按钮
-    return showBehaviorValidation
+    return showBehaviorValidation || showFaceValidation
       ? null
       : [
           <Button key="back" onClick={handleCancel} disabled={submitting}>
@@ -403,13 +418,15 @@ const Login: React.FC = () => {
             {submitting ? '请等待...' : '提交验证'}
           </Button>,
         ];
-  }, [submitting, handleCancel, handleSubmitVarify, showBehaviorValidation]); // 当showBehaviorValidation时关闭底部按钮
+  }, [submitting, handleCancel, handleSubmitVarify, showBehaviorValidation, showFaceValidation]); // 当showBehaviorValidation和showFaceValidation时关闭底部按钮
 
   // 修改注册状态切换逻辑
   const toggleRegister = () => {
     setIsRegister(!isRegister);
     setType('account'); // 强制切换到账户密码登录
   };
+
+  const [showCameraCapture, setShowCameraCapture] = useState(false);
 
   return (
     <div className={containerClassName}>
@@ -669,9 +686,16 @@ const Login: React.FC = () => {
           />
         )}
         {showBehaviorValidation && (
-          <CaptchaModal
+          <BehaviorValidation
             onSuccess={handleCaptchaSuccess}
             onClose={() => setOpen(false)}
+            username={loginValuesRef.current.username}
+            uuid={uuid.current}
+          />
+        )}
+        {showFaceValidation && (
+          <FaceValidation
+            onSuccess={handleCaptchaSuccess}
             username={loginValuesRef.current.username}
             uuid={uuid.current}
           />

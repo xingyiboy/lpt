@@ -8,7 +8,8 @@ public enum VerificationTypeEnum {
     SLIDING_VALIDATION(4, "滑动校验"),
     ROTATION_VALIDATION(5, "旋转校验"),
     CLICK_VALIDATION(6, "点击校验"),
-    CONCAT_VALIDATION(7, "滑动还原校验");
+    CONCAT_VALIDATION(7, "滑动还原校验"),
+    FACE_VALIDATION(8, "人脸校验");
 
 
 

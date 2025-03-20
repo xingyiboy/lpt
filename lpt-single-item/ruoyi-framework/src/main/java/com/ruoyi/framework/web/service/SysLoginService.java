@@ -9,12 +9,15 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpSession;
 import lpt.LptCharacterUtil;
 import lpt.LptDigitalCountUtil;
+import lpt.LptFaceComparisonUtil;
 import lpt.LptMailboxUtil;
 import lpt.application.LptImageCaptchaApplication;
 import lpt.application.LptTACBuilder;
 import lpt.application.vo.LptCaptchaResponse;
 import lpt.application.vo.LptImageCaptchaVO;
 import lpt.common.response.LptApiResponse;
+import lpt.faceDTO.LptFaceCompareRepVo;
+import lpt.faceDTO.LptFaceCompareReqVo;
 import lpt.validator.common.model.dto.MatchParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.RedisServer;
@@ -86,7 +89,7 @@ public class SysLoginService
      *
      * @return 结果
      */
-    public Object login(LoginBody loginBody, String username,HttpSession session)
+    public Object login(LoginBody loginBody, String username , HttpSession session)
     {
         VerificationTypeEnum verificationTypeEnum = null;
         //获取redis的数据
@@ -125,8 +128,41 @@ public class SysLoginService
                 return handleClickValidation(loginBody,loginVerify,session); //点击校验处理
             case CONCAT_VALIDATION:
                 return handleConcatValidation(loginBody,loginVerify,session); //滑动还原验证码
+            case FACE_VALIDATION:
+                return R.ok(handleFaceValidation(loginBody,loginVerify,session)); //人脸校验处理
             default:
                 throw new ServiceException("不支持的校验类型: " + verificationTypeEnum);
+        }
+    }
+    //人脸校验
+    private String handleFaceValidation(LoginBody loginBody, LoginVerify loginVerify, HttpSession session) {
+        SysUser sysUser = sysUserMapper.selectUserByUserName(loginVerify.getUsername());
+        if(StringUtils.isNotBlank(sysUser.getFaceBase64())){
+            //有人脸
+            LptFaceCompareReqVo lptFaceCompareReqVo = new LptFaceCompareReqVo();
+            lptFaceCompareReqVo.setImageBase64A(sysUser.getFaceBase64());
+            lptFaceCompareReqVo.setImageBase64B(loginBody.getFaceBase64());
+            LptFaceCompareRepVo lptFaceCompareRepVo = LptFaceComparisonUtil.compareFace(lptFaceCompareReqVo);
+            if(lptFaceCompareRepVo.getMessage()==null){
+                //校验成功 大于50的概率认为他是本人
+                if(lptFaceCompareRepVo.getConfidence()>50){
+                    //关掉redis
+                    redisCache.deleteObject(LPT_PREFIX + loginVerify.getUsername());
+                    //返回token 登录成功
+                    return "token:"+loginVerify.getToken();
+                }else {
+                    return "人脸相似度太低，请重新上传";
+                }
+            }else {
+                //校验异常
+                if(lptFaceCompareRepVo.getMessage().equals("Image B is not face")){
+                    return "此照片不是人脸，请重新上传";
+                }
+                return lptFaceCompareRepVo.getMessage();
+            }
+        }else {
+            //没有人脸 直接验证通过
+            return "token:"+loginVerify.getToken();
         }
     }
 
@@ -138,18 +174,12 @@ public class SysLoginService
             LptImageCaptchaApplication application = (LptImageCaptchaApplication) session.getAttribute("captchaApplication-"+loginBody.getUsername());
             LptApiResponse<?> valid = application.matching(loginBody.getId(), new MatchParam(loginBody.getData()));
             if(valid.isSuccess()){
-                //校验成功 完成登录
-                if (loginVerify.getUuid().equals(loginBody.getUuid())){
-                    //返回token
-                    valid.setMsg(loginVerify.getToken());
-                    return valid;
-                }else {
-                    //校验失败 一般不会到这步
-                    LptApiResponse<?> error = new LptApiResponse<>();
-                    error.setMsg(null);
-                    return error;
-                }
-
+                //校验成功 进行下一步
+                loginVerify.setStep(VerificationTypeEnum.FACE_VALIDATION.getCode());
+                redisCache.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.MINUTES);
+                //返回下一步码
+                valid.setMsg(String.valueOf(VerificationTypeEnum.FACE_VALIDATION.getCode()));
+                return valid;
             }else {
                 return valid;
             }

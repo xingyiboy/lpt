@@ -5,6 +5,7 @@ import {
   UserOutlined,
   MobileOutlined,
   ManOutlined,
+  PictureOutlined,
 } from '@ant-design/icons';
 import { Card, Col, Divider, List, Row } from 'antd';
 import React, { useState } from 'react';
@@ -19,33 +20,24 @@ import { PageLoading } from '@ant-design/pro-components';
 const operationTabList = [
   {
     key: 'base',
-    tab: (
-      <span>
-        基本资料
-      </span>
-    ),
+    tab: <span>基本资料</span>,
   },
   {
     key: 'password',
-    tab: (
-      <span>
-        重置密码
-      </span>
-    ),
+    tab: <span>重置密码</span>,
   },
 ];
 
 export type tabKeyType = 'base' | 'password';
 
 const Center: React.FC = () => {
-  
   const [tabKey, setTabKey] = useState<tabKeyType>('base');
-  
+
   const [cropperModalOpen, setCropperModalOpen] = useState<boolean>(false);
-  
+
   //  获取用户信息
   const { data: userInfo, loading } = useRequest(async () => {
-    return { data: await getUserInfo()};
+    return { data: await getUserInfo() };
   });
   if (loading) {
     return <div>loading...</div>;
@@ -60,6 +52,7 @@ const Center: React.FC = () => {
     email,
     sex,
     dept,
+    faceBase64,
   }: Partial<API.CurrentUser>) => {
     return (
       <List>
@@ -118,6 +111,21 @@ const Center: React.FC = () => {
           </div>
           <div>{dept?.deptName}</div>
         </List.Item>
+        <List.Item>
+          <div>
+            <PictureOutlined
+              style={{
+                marginRight: 8,
+              }}
+            />
+            人脸信息
+          </div>
+          <div>
+            {faceBase64 && (
+              <img src={faceBase64} style={{ maxWidth: 100, maxHeight: 100 }} alt="人脸图片" />
+            )}
+          </div>
+        </List.Item>
       </List>
     );
   };
@@ -141,14 +149,15 @@ const Center: React.FC = () => {
     <div>
       <Row gutter={[16, 24]}>
         <Col lg={8} md={24}>
-          <Card
-            title="个人信息"
-            bordered={false}
-            loading={loading}
-          >
+          <Card title="个人信息" bordered={false} loading={loading}>
             {!loading && (
-              <div style={{ textAlign: "center"}}>
-                <div className={styles.avatarHolder} onClick={()=>{setCropperModalOpen(true)}}>
+              <div style={{ textAlign: 'center' }}>
+                <div
+                  className={styles.avatarHolder}
+                  onClick={() => {
+                    setCropperModalOpen(true);
+                  }}
+                >
                   <img alt="" src={currentUser.avatar} />
                 </div>
                 {renderUserInfo(currentUser)}
@@ -188,7 +197,7 @@ const Center: React.FC = () => {
       </Row>
       <AvatarCropper
         onFinished={() => {
-          setCropperModalOpen(false);     
+          setCropperModalOpen(false);
         }}
         open={cropperModalOpen}
         data={currentUser.avatar}

@@ -1,11 +1,8 @@
 package lpt.faceDTO;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
 
-public class FaceCompareReqVo implements Serializable {
+public class LptFaceCompareReqVo implements Serializable {
 
     /**图像Base64编码值**/
 //    @NotNull(message = "imageBase64A cannot be empty")
