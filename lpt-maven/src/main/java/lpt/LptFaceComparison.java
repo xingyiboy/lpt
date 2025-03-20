@@ -23,7 +23,6 @@ import java.util.Map;
 public class LptFaceComparison {
     public static final String POST_URL = "http://113.45.31.128:18071/visual/compare/do";
 
-
     /**
      * 1v1比对
      * @return
@@ -64,12 +63,16 @@ public class LptFaceComparison {
                 FaceCompareRepVo data = jsonObject.get("data", FaceCompareRepVo.class);
                 if(message.equals("success")){
                     return data;
+                }else {
+                    //不成功 数据有误
+                    FaceCompareRepVo faceCompareRepVo = new FaceCompareRepVo();
+                    faceCompareRepVo.setMessage(message);
+                    return faceCompareRepVo;
                 }
             }
 
         } catch (Exception e) {
             return null;
         }
-        return null;
     }
 }

@@ -14,6 +14,16 @@ public class FaceCompareRepVo implements Serializable {
 //    @ApiModelProperty(value="人脸信息,参数needFaceInfo=false时，值为null", position = 3, required = false)
     private CompareFace faceInfo;
 
+    private String message;
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
     public Float getDistance() {
         return distance;
     }

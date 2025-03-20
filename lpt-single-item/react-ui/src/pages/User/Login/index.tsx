@@ -1,8 +1,8 @@
 /*
  * @Date: 2025-03-16 16:12:47
  * @LastEditors: xingyi && 2416820386@qq.com
- * @LastEditTime: 2025-03-19 00:04:58
- * @FilePath: \lpt-single-item\react-ui\src\pages\User\Login\index.tsx
+ * @LastEditTime: 2025-03-20 16:49:08
+ * @FilePath: \react-ui\src\pages\User\Login\index.tsx
  */
 import Footer from '@/components/Footer';
 import { login, register } from '@/services/system/auth';
@@ -439,6 +439,15 @@ const Login: React.FC = () => {
           subTitle={intl.formatMessage({ id: 'pages.layouts.userLayout.title' })}
           initialValues={{
             autoLogin: true,
+          }}
+          submitter={{
+            searchConfig: {
+              submitText: isRegister ? '注册' : '登录',
+            },
+            submitButtonProps: {
+              block: true,
+              size: 'large',
+            },
           }}
           onFinish={async (values) => {
             await handleSubmit(values as API.LoginParams);
