@@ -2,8 +2,6 @@ package com.ruoyi.system.util;
 
 import com.alibaba.druid.support.json.JSONUtils;
 import com.alibaba.nacos.common.utils.MD5Utils;
-import com.ruoyi.common.redis.service.RedisService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
@@ -22,7 +20,7 @@ import java.util.*;
  * 校园接口对接
  */
 @Component
-public class XiaoYuanClient {
+public class SignUtil {
 
     private static final RestTemplate restTemplate = new RestTemplate();
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -32,19 +30,13 @@ public class XiaoYuanClient {
      */
     private final String appSecret;
     private final String aesIv;
-    private final String appId;
-    private final String schoolno;
 
-    public XiaoYuanClient(
+    public SignUtil(
             @Value("${signature.appSecret}") String appSecret,
-            @Value("${signature.aesIv}") String aesIv,
-            @Value("${signature.appId}") String appId,
-            @Value("${signature.schoolno}") String schoolno
+            @Value("${signature.aesIv}") String aesIv
     ) {
         this.appSecret = appSecret;
         this.aesIv = aesIv;
-        this.appId = appId;
-        this.schoolno = schoolno;
     }
 
     /**
@@ -191,9 +183,7 @@ public class XiaoYuanClient {
 
             // 3. 构建请求参数Map
             Map<String, String> params = new HashMap<>();
-            params.put("appid", appId);
             params.put("timestamp", timestamp);
-            params.put("schoolno", schoolno);
             params.put("data", jsonString);
 
             // 4. 生成签名

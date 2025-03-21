@@ -1,7 +1,7 @@
 /*
  * @Date: 2025-03-16 16:12:47
  * @LastEditors: xingyi && 2416820386@qq.com
- * @LastEditTime: 2025-03-20 22:03:37
+ * @LastEditTime: 2025-03-21 00:25:10
  * @FilePath: \react-ui\src\pages\User\Login\index.tsx
  */
 import Footer from '@/components/Footer';
@@ -146,6 +146,7 @@ const Login: React.FC = () => {
     setShowImageInputValidation(false);
     setShowMailboxValidation(false);
     setShowBehaviorValidation(false);
+    setShowFaceValidation(false);
   };
 
   useEffect(() => {

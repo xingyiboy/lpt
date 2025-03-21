@@ -135,7 +135,7 @@ public class SysLoginService
         }
     }
     //人脸校验
-    private String handleFaceValidation(LoginBody loginBody, LoginVerify loginVerify, HttpSession session) {
+    private  String  handleFaceValidation(LoginBody loginBody, LoginVerify loginVerify, HttpSession session) {
         SysUser sysUser = sysUserMapper.selectUserByUserName(loginVerify.getUsername());
         if(StringUtils.isNotBlank(sysUser.getFaceBase64())){
             //有人脸

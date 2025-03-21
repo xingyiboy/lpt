@@ -3,9 +3,11 @@ package com.ruoyi.system.controller;
 import java.util.List;
 import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.ruoyi.common.security.utils.SecurityUtils;
 import com.ruoyi.system.api.domain.SysUser;
+import com.ruoyi.system.domain.dto.LoginBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,6 +39,17 @@ public class LptMemberController extends BaseController
 {
     @Autowired
     private ILptMemberService lptMemberService;
+
+    /**
+     * 成员登录接口
+     * @param
+     * @return
+     */
+    @PostMapping("/login")
+    public Object login(@RequestBody LoginBody loginBody, String username, String uuid, HttpSession session){
+        loginBody.setUuid(uuid);
+        return lptMemberService.login(loginBody,username,session);
+    }
 
     /**
      * 查询成员列表

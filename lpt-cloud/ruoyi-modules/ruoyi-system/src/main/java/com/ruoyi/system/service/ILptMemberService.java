@@ -2,6 +2,9 @@ package com.ruoyi.system.service;
 
 import java.util.List;
 import com.ruoyi.system.domain.LptMember;
+import com.ruoyi.system.domain.dto.LoginBody;
+
+import javax.servlet.http.HttpSession;
 
 /**
  * 成员Service接口
@@ -65,4 +68,13 @@ public interface ILptMemberService
      * @return
      */
     public int resetLptMemberPwd(LptMember lptMember);
+
+    /**
+     * 登录
+     * @param loginBody
+     * @param username
+     * @param session
+     * @return
+     */
+    Object login(LoginBody loginBody, String username, HttpSession session);
 }

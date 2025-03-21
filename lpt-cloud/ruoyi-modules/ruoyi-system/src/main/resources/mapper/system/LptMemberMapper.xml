@@ -3,7 +3,7 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.system.mapper.LptMemberMapper">
-    
+
     <resultMap type="LptMember" id="LptMemberResult">
         <result property="id"    column="id"    />
         <result property="createBy"    column="create_by"    />
@@ -20,15 +20,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="loginIp"    column="login_ip"    />
         <result property="facility"    column="facility"    />
         <result property="riskNumber"    column="risk_number"    />
+        <result property="faceBase64"    column="faceBase64"    />
     </resultMap>
 
     <sql id="selectLptMemberVo">
-        select id, create_by, create_time, update_by, update_time, remark, user_id, username, password, salt, is_release, mailbox, login_ip, facility, risk_number from lpt_member
+        select id, create_by, create_time, update_by, update_time, remark, user_id, username, password, salt, is_release, mailbox, login_ip, facility, risk_number,faceBase64 from lpt_member
     </sql>
 
     <select id="selectLptMemberList" parameterType="LptMember" resultMap="LptMemberResult">
         <include refid="selectLptMemberVo"/>
-        <where>  
+        <where>
             <if test="userId != null "> and user_id = #{userId}</if>
             <if test="username != null  and username != ''"> and username like concat('%', #{username}, '%')</if>
             <if test="password != null  and password != ''"> and password like concat('%', #{password}, '%')</if>
@@ -40,10 +41,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="riskNumber != null "> and risk_number = #{riskNumber}</if>
         </where>
     </select>
-    
+
     <select id="selectLptMemberById" parameterType="Long" resultMap="LptMemberResult">
         <include refid="selectLptMemberVo"/>
         where id = #{id}
+    </select>
+
+    <select id="selectLptMemberByUsername" parameterType="String" resultMap="LptMemberResult">
+        <include refid="selectLptMemberVo"/>
+        where username = #{username}
     </select>
 
     <insert id="insertLptMember" parameterType="LptMember" useGeneratedKeys="true" keyProperty="id">
@@ -63,6 +69,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="loginIp != null">login_ip,</if>
             <if test="facility != null">facility,</if>
             <if test="riskNumber != null">risk_number,</if>
+            <if test="faceBase64 != null">faceBase64,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="createBy != null">#{createBy},</if>
@@ -79,6 +86,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="loginIp != null">#{loginIp},</if>
             <if test="facility != null">#{facility},</if>
             <if test="riskNumber != null">#{riskNumber},</if>
+            <if test="faceBase64 != null">#{faceBase64},</if>
          </trim>
     </insert>
 
@@ -99,6 +107,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="loginIp != null">login_ip = #{loginIp},</if>
             <if test="facility != null">facility = #{facility},</if>
             <if test="riskNumber != null">risk_number = #{riskNumber},</if>
+            <if test="faceBase64 != null">faceBase64 = #{faceBase64},</if>
         </trim>
         where id = #{id}
     </update>
@@ -108,7 +117,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
 
     <delete id="deleteLptMemberByIds" parameterType="String">
-        delete from lpt_member where id in 
+        delete from lpt_member where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>

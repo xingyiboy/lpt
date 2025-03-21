@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button, Modal } from 'antd';
 import { message } from 'antd';
-import { CameraOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
+import { CameraOutlined, CheckOutlined, CloseOutlined, SyncOutlined } from '@ant-design/icons';
 import { login } from '@/services/system/auth';
 
 const FaceValidation = ({ onSuccess, username, uuid }: { onSuccess: (base64: string) => void }) => {
@@ -10,6 +10,7 @@ const FaceValidation = ({ onSuccess, username, uuid }: { onSuccess: (base64: str
   const [captured, setCaptured] = useState<string>();
   const [loading, setLoading] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
+  const [cameraError, setCameraError] = useState(false);
 
   const handleClickOk = async (captured) => {
     //处理点击确认
@@ -32,6 +33,7 @@ const FaceValidation = ({ onSuccess, username, uuid }: { onSuccess: (base64: str
     let isMounted = true;
     const initCamera = async () => {
       try {
+        setCameraError(false);
         // 先停止原有流
         if (stream) {
           stream.getTracks().forEach((track) => track.stop());
@@ -52,14 +54,18 @@ const FaceValidation = ({ onSuccess, username, uuid }: { onSuccess: (base64: str
               });
             };
 
-            videoRef.current.play().catch(() => {
-              console.log('需要用户交互才能播放');
+            videoRef.current.play().catch((error) => {
+              console.log('需要用户交互才能播放:', error);
               document.addEventListener('click', playVideo);
             });
           }
         }
       } catch (error) {
         console.error('摄像头访问失败:', error);
+        if (isMounted) {
+          setCameraError(true);
+          message.error('摄像头访问失败，请检查权限和设备');
+        }
       }
     };
 
@@ -71,7 +77,13 @@ const FaceValidation = ({ onSuccess, username, uuid }: { onSuccess: (base64: str
         stream.getTracks().forEach((track) => track.stop());
       }
     };
-  }, [retryCount, onSuccess, username, uuid]);
+  }, [retryCount]);
+
+  // 新增手动重新获取摄像头
+  const handleRefreshCamera = () => {
+    setRetryCount((prev) => prev + 1);
+    setCameraError(false);
+  };
 
   // 拍照处理
   const capturePhoto = () => {
@@ -120,26 +132,45 @@ const FaceValidation = ({ onSuccess, username, uuid }: { onSuccess: (base64: str
     <div style={{ textAlign: 'center' }}>
       {!captured ? (
         <>
-          <video
-            ref={videoRef}
-            autoPlay
-            playsInline
-            style={{
-              width: '100%',
-              maxHeight: '400px',
-              border: '1px solid #ddd',
-              borderRadius: 4,
-            }}
-          />
-          <Button
-            type="primary"
-            icon={<CameraOutlined />}
-            onClick={capturePhoto}
-            loading={loading}
-            style={{ marginTop: 16 }}
-          >
-            拍照
-          </Button>
+          {cameraError ? (
+            <div style={{ color: 'red', marginBottom: 16 }}>
+              摄像头不可用
+              <Button type="link" onClick={handleRefreshCamera} style={{ marginLeft: 8 }}>
+                重试
+              </Button>
+            </div>
+          ) : (
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              style={{
+                width: '100%',
+                maxHeight: '400px',
+                border: '1px solid #ddd',
+                borderRadius: 4,
+              }}
+            />
+          )}
+          <div style={{ marginTop: 16 }}>
+            <Button
+              type="primary"
+              icon={<CameraOutlined />}
+              onClick={capturePhoto}
+              loading={loading}
+              disabled={cameraError}
+            >
+              拍照
+            </Button>
+            <Button
+              type="default"
+              icon={<SyncOutlined />}
+              onClick={handleRefreshCamera}
+              style={{ marginLeft: 8 }}
+            >
+              刷新摄像头
+            </Button>
+          </div>
         </>
       ) : (
         <>

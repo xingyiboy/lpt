@@ -7,7 +7,7 @@ import com.ruoyi.common.core.web.domain.BaseEntity;
 
 /**
  * 成员对象 lpt_member
- * 
+ *
  * @author xingyi
  * @date 2025-03-14
  */
@@ -54,93 +54,105 @@ public class LptMember extends BaseEntity
     @Excel(name = "风险因子")
     private Long riskNumber;
 
-    public void setId(Long id) 
+    /** 人脸图片Base64 */
+    @Excel(name = "人脸图片Base64")
+    private String faceBase64;
+
+    public String getFaceBase64() {
+        return faceBase64;
+    }
+
+    public void setFaceBase64(String faceBase64) {
+        this.faceBase64 = faceBase64;
+    }
+
+    public void setId(Long id)
     {
         this.id = id;
     }
 
-    public Long getId() 
+    public Long getId()
     {
         return id;
     }
-    public void setUserId(Long userId) 
+    public void setUserId(Long userId)
     {
         this.userId = userId;
     }
 
-    public Long getUserId() 
+    public Long getUserId()
     {
         return userId;
     }
-    public void setUsername(String username) 
+    public void setUsername(String username)
     {
         this.username = username;
     }
 
-    public String getUsername() 
+    public String getUsername()
     {
         return username;
     }
-    public void setPassword(String password) 
+    public void setPassword(String password)
     {
         this.password = password;
     }
 
-    public String getPassword() 
+    public String getPassword()
     {
         return password;
     }
-    public void setSalt(String salt) 
+    public void setSalt(String salt)
     {
         this.salt = salt;
     }
 
-    public String getSalt() 
+    public String getSalt()
     {
         return salt;
     }
-    public void setIsRelease(Integer isRelease) 
+    public void setIsRelease(Integer isRelease)
     {
         this.isRelease = isRelease;
     }
 
-    public Integer getIsRelease() 
+    public Integer getIsRelease()
     {
         return isRelease;
     }
-    public void setMailbox(String mailbox) 
+    public void setMailbox(String mailbox)
     {
         this.mailbox = mailbox;
     }
 
-    public String getMailbox() 
+    public String getMailbox()
     {
         return mailbox;
     }
-    public void setLoginIp(String loginIp) 
+    public void setLoginIp(String loginIp)
     {
         this.loginIp = loginIp;
     }
 
-    public String getLoginIp() 
+    public String getLoginIp()
     {
         return loginIp;
     }
-    public void setFacility(String facility) 
+    public void setFacility(String facility)
     {
         this.facility = facility;
     }
 
-    public String getFacility() 
+    public String getFacility()
     {
         return facility;
     }
-    public void setRiskNumber(Long riskNumber) 
+    public void setRiskNumber(Long riskNumber)
     {
         this.riskNumber = riskNumber;
     }
 
-    public Long getRiskNumber() 
+    public Long getRiskNumber()
     {
         return riskNumber;
     }
