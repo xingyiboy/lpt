@@ -57,7 +57,7 @@ const Login: React.FC = () => {
   const [captchaCode, setCaptchaCode] = useState<string>('');
   const [uuid, setUuid] = useState<string>('');
   const [form] = Form.useForm(); // 添加这行来创建表单实例
-  const [rememberMe, setRememberMe] = useState<boolean>(false);
+  const [rememberMe, setRememberMe] = useState<boolean>(true);
 
   const containerClassName = useEmotionCss(() => {
     return {

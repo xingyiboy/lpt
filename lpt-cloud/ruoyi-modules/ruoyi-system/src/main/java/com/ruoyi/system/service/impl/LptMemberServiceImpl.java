@@ -1,9 +1,5 @@
 package com.ruoyi.system.service.impl;
 
-import cn.hutool.json.JSONConfig;
-import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
-import com.alibaba.fastjson2.JSON;
 import com.ruoyi.common.core.constant.UserConstants;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.exception.ServiceException;
@@ -12,6 +8,7 @@ import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.ip.IpUtils;
 import com.ruoyi.common.redis.service.RedisService;
 import com.ruoyi.common.security.utils.SecurityUtils;
+import com.ruoyi.system.api.model.LoginUser;
 import com.ruoyi.system.domain.LptMember;
 import com.ruoyi.system.domain.UserVerification;
 import com.ruoyi.system.domain.lpt.Enum.RiskTypeEnum;
@@ -27,7 +24,6 @@ import lpt.LptCharacterUtil;
 import lpt.LptDigitalCountUtil;
 import lpt.LptFaceComparisonUtil;
 import lpt.LptMailboxUtil;
-import lpt.application.DefaultImageCaptchaApplication;
 import lpt.application.LptImageCaptchaApplication;
 import lpt.application.LptTACBuilder;
 import lpt.application.vo.LptCaptchaResponse;
@@ -35,7 +31,6 @@ import lpt.application.vo.LptImageCaptchaVO;
 import lpt.common.response.LptApiResponse;
 import lpt.faceDTO.LptFaceCompareRepVo;
 import lpt.faceDTO.LptFaceCompareReqVo;
-import lpt.validator.ImageCaptchaValidator;
 import lpt.validator.common.model.dto.MatchParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -65,8 +60,7 @@ public class LptMemberServiceImpl implements ILptMemberService
 
     private final String LPT_PREFIX = "LoginVerify-";
 
-    private final Long TIME_OUT = 10L
-            ;
+    private final Long TIME_OUT = 10L;
 
     /**
      * 查询成员
@@ -89,7 +83,9 @@ public class LptMemberServiceImpl implements ILptMemberService
     @Override
     public List<LptMember> selectLptMemberList(LptMember lptMember)
     {
-        lptMember.setUserId(SecurityUtils.getUserId());
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        Long userid = loginUser.getUserid();
+        lptMember.setUserId(userid);
         return lptMemberMapper.selectLptMemberList(lptMember);
     }
 
@@ -103,12 +99,17 @@ public class LptMemberServiceImpl implements ILptMemberService
     public int insertLptMember(LptMember lptMember)
     {
         lptMember.setCreateTime(DateUtils.getNowDate());
-        lptMember.setUserId(SecurityUtils.getUserId());
         // 生成随机盐值
         String salt = SaltUtils.generateSalt();
         // 设置初始密码为123456@lpt并加密
-        String password = SaltUtils.hashPasswordWithSHA256("123456@lpt", salt);
-        lptMember.setPassword(password);
+
+        if(lptMember.getPassword() == null){
+            String password = SaltUtils.hashPasswordWithSHA256("123456@lpt", salt);
+            lptMember.setPassword(password);
+        }else {
+            String password = SaltUtils.hashPasswordWithSHA256(lptMember.getPassword(), salt);
+            lptMember.setPassword(password);
+        }
         lptMember.setSalt(salt);
         return lptMemberMapper.insertLptMember(lptMember);
     }
@@ -185,7 +186,7 @@ public class LptMemberServiceImpl implements ILptMemberService
             //第一次请求 直接设为密码校验
             verificationTypeEnum = VerificationTypeEnum.fromCode(VerificationTypeEnum.PASSWORD_VALIDATION.getCode());
         }else {
-            verificationTypeEnum = VerificationTypeEnum.fromCode(loginVerify.getStep());
+            verificationTypeEnum = VerificationTypeEnum.fromCode(loginVerify.getUserVerifications().get(loginVerify.getStep()).getVerificationId());
         }
         switch (verificationTypeEnum) {
             case PASSWORD_VALIDATION:
@@ -210,10 +211,28 @@ public class LptMemberServiceImpl implements ILptMemberService
                 throw new ServiceException("不支持的校验类型: " + verificationTypeEnum);
         }
     }
+
+    /**
+     * 登录之前操作
+     * @return
+     */
+    public String loginBefore(LoginVerify loginVerify) {
+        //把登录IP和设备信息存入数据库 清空风险因子
+        LptMember serach = new LptMember();
+        serach.setUserId(loginVerify.getUserId());
+        serach.setUsername(loginVerify.getUsername());
+        LptMember lptMember = lptMemberMapper.selectLptMemberByUsername(serach);
+        lptMember.setLoginIp(loginVerify.getIp());
+        lptMember.setFacility(loginVerify.getDevice());
+        lptMember.setRiskNumber(loginVerify.getRiskNumber()-10);
+        lptMemberMapper.updateLptMember(lptMember);
+        return loginVerify.getToken();
+    }
+
     //人脸校验
     private  Object  handleFaceValidation(LoginBody loginBody, LoginVerify loginVerify) {
         LptMember getParmas = new LptMember();
-        getParmas.setUserId(loginBody.getUserId());
+        getParmas.setUserId(loginVerify.getUserId());
         getParmas.setUsername(loginBody.getUsername());
         LptMember lptMember = lptMemberMapper.selectLptMemberByUsername(getParmas);
         if(StringUtils.isNotBlank(lptMember.getFaceBase64())){
@@ -227,8 +246,20 @@ public class LptMemberServiceImpl implements ILptMemberService
                 if(lptFaceCompareRepVo.getConfidence()>50){
                     //关掉redis
                     redisService.deleteObject(LPT_PREFIX + loginVerify.getUsername());
-                    //返回token 登录成功
-                    return R.ok("token:"+loginVerify.getToken(),"success");
+                    //验证成功
+                    //判断
+                    if(loginVerify.getStep()+1==loginVerify.getUserVerifications().size()){
+                        //校验完成
+                        return R.ok(loginBefore(loginVerify),"success");
+                    }else {
+                        //还有下一步
+                        loginVerify.setStep(loginVerify.getStep()+1);
+                        //存redis
+                        redisService.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.MINUTES);
+                        //返回下一步码
+                        return R.ok(String.valueOf(loginVerify.getUserVerifications().get(loginVerify.getStep()).getVerificationId()),"success");
+                    }
+
                 }else {
                     return R.ok("人脸相似度太低，请重新上传");
                 }
@@ -241,7 +272,19 @@ public class LptMemberServiceImpl implements ILptMemberService
             }
         }else {
             //没有人脸 直接验证通过
-            return R.ok("token:"+loginVerify.getToken(),"success");
+            //验证成功
+            //判断
+            if(loginVerify.getStep()+1==loginVerify.getUserVerifications().size()){
+                //校验完成
+                return R.ok(loginBefore(loginVerify),"success");
+            }else {
+                //还有下一步
+                loginVerify.setStep(loginVerify.getStep()+1);
+                //存redis
+                redisService.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.MINUTES);
+                //返回下一步码
+                return R.ok(String.valueOf(loginVerify.getUserVerifications().get(loginVerify.getStep()).getVerificationId()),"success");
+            }
         }
     }
 
@@ -253,11 +296,18 @@ public class LptMemberServiceImpl implements ILptMemberService
             LptImageCaptchaApplication application = (LptImageCaptchaApplication) session.getAttribute("captchaApplication-"+loginBody.getUsername());
             LptApiResponse<?> valid = application.matching(loginBody.getId(), new MatchParam(loginBody.getData()));
             if(valid.isSuccess()){
-                //校验成功 进行下一步
-                loginVerify.setStep(VerificationTypeEnum.FACE_VALIDATION.getCode());
-                redisService.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.MINUTES);
-                //返回下一步码
-                valid.setMsg(String.valueOf(VerificationTypeEnum.FACE_VALIDATION.getCode()));
+                if(loginVerify.getStep()+1==loginVerify.getUserVerifications().size()){
+                    //校验完成
+                    valid.setMsg(loginBefore(loginVerify));
+                }else {
+                    //还有下一步
+                    loginVerify.setStep(loginVerify.getStep()+1);
+                    //删除校验码
+                    loginVerify.setCode(null);
+                    redisService.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.MINUTES);
+                    //返回下一步码
+                    valid.setMsg(String.valueOf(loginVerify.getUserVerifications().get(loginVerify.getStep()).getVerificationId()));
+                }
                 return valid;
             }else {
                 return valid;
@@ -291,11 +341,18 @@ public class LptMemberServiceImpl implements ILptMemberService
             LptImageCaptchaApplication application = (LptImageCaptchaApplication) session.getAttribute("captchaApplication-"+loginBody.getUsername());
             LptApiResponse<?> valid = application.matching(loginBody.getId(), new MatchParam(loginBody.getData()));
             if(valid.isSuccess()){
-                //校验成功 进行下一步
-                loginVerify.setStep(VerificationTypeEnum.CONCAT_VALIDATION.getCode());
-                redisService.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.MINUTES);
-                //返回下一步码
-                valid.setMsg(String.valueOf(VerificationTypeEnum.CONCAT_VALIDATION.getCode()));
+                if(loginVerify.getStep()+1==loginVerify.getUserVerifications().size()){
+                    //校验完成
+                    valid.setMsg(loginBefore(loginVerify));
+                }else {
+                    //还有下一步
+                    loginVerify.setStep(loginVerify.getStep()+1);
+                    //删除校验码
+                    loginVerify.setCode(null);
+                    redisService.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.MINUTES);
+                    //返回下一步码
+                    valid.setMsg(String.valueOf(loginVerify.getUserVerifications().get(loginVerify.getStep()).getVerificationId()));
+                }
                 return valid;
             }else {
                 return valid;
@@ -329,11 +386,18 @@ public class LptMemberServiceImpl implements ILptMemberService
             LptImageCaptchaApplication application = (LptImageCaptchaApplication) session.getAttribute("captchaApplication-"+loginBody.getUsername());
             LptApiResponse<?> valid = application.matching(loginBody.getId(), new MatchParam(loginBody.getData()));
             if(valid.isSuccess()){
-                //校验成功 进行下一步
-                loginVerify.setStep(VerificationTypeEnum.CLICK_VALIDATION.getCode());
-                redisService.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.MINUTES);
-                //返回下一步码
-                valid.setMsg(String.valueOf(VerificationTypeEnum.CLICK_VALIDATION.getCode()));
+                if(loginVerify.getStep()+1==loginVerify.getUserVerifications().size()){
+                    //校验完成
+                    valid.setMsg(loginBefore(loginVerify));
+                }else {
+                    //还有下一步
+                    loginVerify.setStep(loginVerify.getStep()+1);
+                    //删除校验码
+                    loginVerify.setCode(null);
+                    redisService.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.MINUTES);
+                    //返回下一步码
+                    valid.setMsg(String.valueOf(loginVerify.getUserVerifications().get(loginVerify.getStep()).getVerificationId()));
+                }
                 return valid;
             }else {
                 return valid;
@@ -372,11 +436,18 @@ public class LptMemberServiceImpl implements ILptMemberService
             LptImageCaptchaApplication application = (LptImageCaptchaApplication) session.getAttribute("captchaApplication-"+loginBody.getUsername());
             LptApiResponse<?> valid = application.matching(loginBody.getId(), new MatchParam(loginBody.getData()));
             if(valid.isSuccess()){
-                //校验成功 进行下一步
-                loginVerify.setStep(VerificationTypeEnum.ROTATION_VALIDATION.getCode());
-                redisService.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.MINUTES);
-                //返回下一步码
-                valid.setMsg(String.valueOf(VerificationTypeEnum.ROTATION_VALIDATION.getCode()));
+                if(loginVerify.getStep()+1==loginVerify.getUserVerifications().size()){
+                    //校验完成
+                    valid.setMsg(loginBefore(loginVerify));
+                }else {
+                    //还有下一步
+                    loginVerify.setStep(loginVerify.getStep()+1);
+                    //删除校验码
+                    loginVerify.setCode(null);
+                    redisService.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.MINUTES);
+                    //返回下一步码
+                    valid.setMsg(String.valueOf(loginVerify.getUserVerifications().get(loginVerify.getStep()).getVerificationId()));
+                }
                 return valid;
             }else {
                 return valid;
@@ -403,7 +474,7 @@ public class LptMemberServiceImpl implements ILptMemberService
     }
 
     /**
-     * 密码校验处理
+     * 密码校验处理(所有的初始都要经过密码校验)
      * @param loginBody
      * @return
      */
@@ -416,25 +487,67 @@ public class LptMemberServiceImpl implements ILptMemberService
         search.setUsername(loginBody.getUsername());
         LptMember lptMember = lptMemberMapper.selectLptMemberByUsername(search);
         //校验 盐值密码
-        if(!SaltUtils.verifyPasswordWithSHA256(loginBody.getPassword(), lptMember.getPassword(), lptMember.getSalt())){
+        if(!SaltUtils.verifyPasswordWithSHA256(loginBody.getPassword(), lptMember.getSalt(), lptMember.getPassword())){
             throw new ServiceException("密码错误");
         }
-        //验证密码完成
+        //校验密码完成
         //检测下一步 先默认全部低风险
         UserVerification userVerification = new UserVerification();
         userVerification.setUserId(loginBody.getUserId());
+        //默认低风险
         userVerification.setRiskType(RiskTypeEnum.LOW.getCode());
+        //判断IP
+        if(StringUtils.isNoneBlank(lptMember.getLoginIp())){
+            if(!loginBody.getIp().equals(lptMember.getLoginIp())){
+                //不同IP直接是高风险 加40因子
+                lptMember.setRiskNumber(lptMember.getRiskNumber()+20);
+            }
+        }
+        //判断登录设备
+        if(StringUtils.isNoneBlank(lptMember.getFacility())){
+            if (!loginBody.getDevice().equals(lptMember.getFacility())){
+                //不同设备直接是中风险 加20因子
+                lptMember.setRiskNumber(lptMember.getRiskNumber()+20);
+            }
+        }
+        if(lptMember.getRiskNumber()>=40){
+            //高风险
+            userVerification.setRiskType(RiskTypeEnum.HIGH.getCode());
+        }else if(lptMember.getRiskNumber()>=20){
+            //中风险
+            userVerification.setRiskType(RiskTypeEnum.MEDIUM.getCode());
+        }
+
         List<UserVerification> userVerifications = userVerificationMapper.selectUserVerificationList(userVerification);
-        //存入redis 进行下一步
-        LoginVerify loginVerify = new LoginVerify(loginBody.getUsername(),loginBody.getPassword(),VerificationTypeEnum.CHARACTER_VALIDATION.getCode());
+        //创建loginVerify
+        LoginVerify loginVerify = new LoginVerify(loginBody.getUsername(),loginBody.getPassword(),0,userVerifications,loginBody.getToken());
+        //判断IP
+        if(StringUtils.isNoneBlank(loginBody.getIp())){
+            loginVerify.setIp(loginBody.getIp());
+        }
+        //判断登录设备
+        if(StringUtils.isNoneBlank(loginBody.getDevice())){
+            loginVerify.setDevice(loginBody.getDevice());
+        }
+        loginVerify.setRiskNumber(lptMember.getRiskNumber());
+        //设置用户编号
+        loginVerify.setUserId(loginBody.getUserId());
         //生成UUID
         loginVerify.setUuid(UUID.randomUUID().toString());
+        //存入redis
         redisService.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.MINUTES);
         //返回下一步码
         Map<String, String> map = new HashMap<>();
         //用uuid存储然后最后登录成功再取出判断 防止有人直接请求最后结果导致直接登录
         map.put("uuid",loginVerify.getUuid());
-        map.put("step",String.valueOf(VerificationTypeEnum.CHARACTER_VALIDATION.getCode()));
+        //设置验证类型步骤码
+        if(userVerifications.size()==0){
+            //直接通过
+            map.put("step",loginBefore(loginVerify));
+        }else {
+            //下一步
+            map.put("step",String.valueOf(loginVerify.getUserVerifications().get(loginVerify.getStep()).getVerificationId()));
+        }
         return map;
     }
 
@@ -449,12 +562,19 @@ public class LptMemberServiceImpl implements ILptMemberService
         if(loginBody.getCode()!=null){
             //校验字符 是否和redis存入的一样
             if(loginBody.getCode().equals(loginVerify.getCode())){
-                //校验成功 进行下一步
-                loginVerify.setStep(VerificationTypeEnum.CALCULATION_VALIDATION.getCode());
-                loginVerify.setCode(null);
-                redisService.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.MINUTES);
-                //返回下一步码
-                return String.valueOf(VerificationTypeEnum.CALCULATION_VALIDATION.getCode());
+                //校验成功 开始判断
+                if(loginVerify.getStep()+1==loginVerify.getUserVerifications().size()){
+                    //校验完成
+                    return loginBefore(loginVerify);
+                }else {
+                    //还有下一步
+                    loginVerify.setStep(loginVerify.getStep()+1);
+                    //删除校验码
+                    loginVerify.setCode(null);
+                    redisService.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.MINUTES);
+                    //返回下一步码
+                    return String.valueOf(loginVerify.getUserVerifications().get(loginVerify.getStep()).getVerificationId());
+                }
             }else {
                 //校验失败 继续生成字符校验图片
                 return "验证码错误";
@@ -466,7 +586,7 @@ public class LptMemberServiceImpl implements ILptMemberService
         String code = (String) verification.get("code");
         //记录正确结果
         loginVerify.setCode(code);
-        //信息存入redis step代表当前步骤
+        //信息存入redis
         redisService.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.MINUTES);
         return image;
     }
@@ -482,11 +602,19 @@ public class LptMemberServiceImpl implements ILptMemberService
         if(loginBody.getCode()!=null){
             //校验字符 是否和redis存入的一样
             if(loginBody.getCode().equals(loginVerify.getCode())){
-                //校验成功 进行下一步
-                loginVerify.setStep(VerificationTypeEnum.EMAIL_VALIDATION.getCode());
-                redisService.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.MINUTES);
-                //返回下一步码
-                return String.valueOf(VerificationTypeEnum.EMAIL_VALIDATION.getCode());
+                //校验成功 开始判断
+                if(loginVerify.getStep()+1==loginVerify.getUserVerifications().size()){
+                    //校验完成
+                    return loginBefore(loginVerify);
+                }else {
+                    //还有下一步
+                    loginVerify.setStep(loginVerify.getStep()+1);
+                    //删除校验码
+                    loginVerify.setCode(null);
+                    redisService.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.MINUTES);
+                    //返回下一步码
+                    return String.valueOf(loginVerify.getUserVerifications().get(loginVerify.getStep()).getVerificationId());
+                }
             }else {
                 //校验失败 继续生成字符校验图片
                 return "验证码错误";
@@ -508,40 +636,52 @@ public class LptMemberServiceImpl implements ILptMemberService
         if(loginBody.getCode()!=null){
             //校验字符 是否和redis存入的一样
             if(loginBody.getCode().equals(loginVerify.getCode())){
-                //校验成功 进行下一步
-                loginVerify.setStep(VerificationTypeEnum.SLIDING_VALIDATION.getCode());
-                redisService.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.MINUTES);
-                //返回下一步码
-                return String.valueOf(VerificationTypeEnum.SLIDING_VALIDATION.getCode());
+                //校验成功 开始判断
+                if(loginVerify.getStep()+1==loginVerify.getUserVerifications().size()){
+                    //校验完成
+                    return loginBefore(loginVerify);
+                }else {
+                    //还有下一步
+                    loginVerify.setStep(loginVerify.getStep()+1);
+                    //删除校验码
+                    loginVerify.setCode(null);
+                    redisService.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.MINUTES);
+                    //返回下一步码
+                    return String.valueOf(loginVerify.getUserVerifications().get(loginVerify.getStep()).getVerificationId());
+                }
             }else {
                 //校验失败 继续生成字符校验图片
+                return "验证码错误";
             }
         }
         //生成6位验证码
-        String code = generateCaptcha(6);
+        String code =  redisService.getCacheObject(LPT_PREFIX+"mailbox-"+loginBody.getUsername());
         LptMember getParmas = new LptMember();
-        getParmas.setUserId(loginBody.getUserId());
+        getParmas.setUserId(loginVerify.getUserId());
         getParmas.setUsername(loginBody.getUsername());
         LptMember lptMember = lptMemberMapper.selectLptMemberByUsername(getParmas);
-        if (StringUtils.isNotBlank(lptMember.getMailbox())) {
-            //邮箱不为空
-            //发送邮箱验证码
-
-            LptMailboxUtil.send("smtp.qq.com",465,true,"2832914238@qq.com","zedgqaxuwhnldgab",lptMember.getMailbox(),"令牌通验证码","尊敬的用户，您好！\n" +
-                    "\n" +
-                    "您正在进行邮箱验证操作，您的验证码是：\n" +
-                    "\n" +
-                    ""+code+"\n" +
-                    "\n" +
-                    "该验证码仅有效5分钟，请尽快完成验证。如果您没有进行相关操作，可能是有人误操作，请忽略此邮件。\n" +
-                    "\n" +
-                    "感谢您的使用！\n" +
-                    "\n" +
-                    "若有任何疑问，请联系我们的客服团队，我们将竭诚为您服务。\n" +
-                    "\n" +
-                    "祝您使用愉快！\n" +
-                    "\n" +
-                    "【令牌通】团队");
+        if(code == null){
+            code  =  generateCaptcha(6);
+            if (StringUtils.isNotBlank(lptMember.getMailbox())) {
+                //邮箱不为空
+                //发送邮箱验证码
+                LptMailboxUtil.send("smtp.qq.com",465,true,"2832914238@qq.com","zedgqaxuwhnldgab",lptMember.getMailbox(),"令牌通验证码","尊敬的用户，您好！\n" +
+                        "\n" +
+                        "您正在进行邮箱验证操作，您的验证码是：\n" +
+                        "\n" +
+                        ""+code+"\n" +
+                        "\n" +
+                        "该验证码仅有效5分钟，请尽快完成验证。如果您没有进行相关操作，可能是有人误操作，请忽略此邮件。\n" +
+                        "\n" +
+                        "感谢您的使用！\n" +
+                        "\n" +
+                        "若有任何疑问，请联系我们的客服团队，我们将竭诚为您服务。\n" +
+                        "\n" +
+                        "祝您使用愉快！\n" +
+                        "\n" +
+                        "【令牌通】团队");
+            }
+            redisService.setCacheObject(LPT_PREFIX+"mailbox-"+loginBody.getUsername(), code, 1L, TimeUnit.MINUTES);
         }
         //记录正确结果
         loginVerify.setCode(code);

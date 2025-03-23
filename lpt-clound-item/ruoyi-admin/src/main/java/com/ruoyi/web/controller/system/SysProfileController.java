@@ -1,9 +1,11 @@
 package com.ruoyi.web.controller.system;
 
+import com.ruoyi.framework.web.Util.LptSignUtil;
 import lpt.LptFaceComparisonUtil;
 import lpt.faceDTO.LptFaceCompareRepVo;
 import lpt.faceDTO.LptFaceCompareReqVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -26,6 +28,9 @@ import com.ruoyi.common.utils.file.MimeTypeUtils;
 import com.ruoyi.framework.web.service.TokenService;
 import com.ruoyi.system.service.ISysUserService;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 个人信息 业务处理
  *
@@ -40,6 +45,20 @@ public class SysProfileController extends BaseController
 
     @Autowired
     private TokenService tokenService;
+
+    private final String appSecret;
+    private final String aesIv;
+    private final Long userId;
+
+    public SysProfileController(
+            @Value("${lpt.appSecret}") String appSecret,
+            @Value("${lpt.aesIv}") String aesIv,
+            @Value("${lpt.userId}") Long userId
+    ) {
+        this.appSecret = appSecret;
+        this.aesIv = aesIv;
+        this.userId = userId;
+    }
 
     /**
      * 个人信息
@@ -89,10 +108,18 @@ public class SysProfileController extends BaseController
         }
         if (userService.updateUserProfile(currentUser) > 0)
         {
+            //更新接口端用户信息
+            Map<String, Object> map = new HashMap<>();
+            map.put("userId", userId);
+            map.put("username", user.getUserName());
+            map.put("mailbox", user.getEmail());
+            map.put("faceBase64", user.getFaceBase64());
+            LptSignUtil.sendUpdate(map);
             // 更新缓存用户信息
             tokenService.setLoginUser(loginUser);
             return success();
         }
+
         return error("修改个人信息异常，请联系管理员");
     }
 

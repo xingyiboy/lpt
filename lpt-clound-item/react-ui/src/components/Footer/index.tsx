@@ -1,24 +1,39 @@
 /*
- * @Date: 2025-03-16 16:12:47
+ * @Date: 2025-03-23 00:02:13
  * @LastEditors: xingyi && 2416820386@qq.com
- * @LastEditTime: 2025-03-18 18:27:16
- * @FilePath: \lpt-single-item\react-ui\src\components\Footer\index.tsx
+ * @LastEditTime: 2025-03-23 21:44:52
+ * @FilePath: \react-ui\src\components\Footer\index.tsx
  */
-import { GithubOutlined } from '@ant-design/icons';
 import { DefaultFooter } from '@ant-design/pro-components';
+import { useIntl } from '@umijs/max';
 import React from 'react';
 
 const Footer: React.FC = () => {
+  const intl = useIntl();
+  const defaultMessage = intl.formatMessage({
+    id: 'app.copyright.produced',
+    defaultMessage: '令牌通团队出品',
+  });
+
+  const currentYear = new Date().getFullYear();
+
   return (
     <DefaultFooter
       style={{
         background: 'none',
       }}
+      copyright={`${currentYear} ${defaultMessage}`}
       links={[
         {
-          key: 'LPT',
-          title: 'LPT',
-          href: 'http://113.45.31.128/home',
+          key: '令牌通',
+          title: '令牌通',
+          href: 'https://pro.ant.design',
+          blankTarget: true,
+        },
+        {
+          key: 'Ant Design',
+          title: 'Ant Design',
+          href: 'https://ant.design',
           blankTarget: true,
         },
       ]}

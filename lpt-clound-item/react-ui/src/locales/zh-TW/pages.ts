@@ -17,7 +17,7 @@ export default {
   'pages.login.captcha.required': '驗證碼是必填項！',
   'pages.login.phoneLogin.getVerificationCode': '獲取驗證碼',
   'pages.getCaptchaSecondText': '秒後重新獲取',
-  'pages.login.rememberMe': '自動登錄',
+  'pages.login.rememberMe': '记住密码',
   'pages.login.forgotPassword': '忘記密碼 ?',
   'pages.login.submit': '登錄',
   'pages.login.loginWith': '其他登錄方式 :',

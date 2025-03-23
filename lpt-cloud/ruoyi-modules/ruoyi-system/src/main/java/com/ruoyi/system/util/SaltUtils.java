@@ -9,6 +9,12 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 
 public class SaltUtils {
 
+    public static void main(String[] args) {
+        String hash = hashPasswordWithSHA256("135178", "75LSRgkz3d7P/QybSgCJ1w==");
+        boolean b = verifyPasswordWithSHA256("135178", "75LSRgkz3d7P/QybSgCJ1w==", hash);
+        System.out.println(b);
+    }
+
     // 默认的盐的长度
     private static final int DEFAULT_SALT_LENGTH = 16;
 

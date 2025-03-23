@@ -50,7 +50,7 @@ const MemberForm: React.FC<MemberFormProps> = (props) => {
       width={640}
       title={intl.formatMessage({
         id: 'system.member.title',
-        defaultMessage: '编辑成员信息',
+        defaultMessage: '编辑成员信息-此处新增后，请在自己的系统也增加用户',
       })}
       open={props.open}
       forceRender

@@ -1,5 +1,9 @@
 package com.ruoyi.system.domain.lpt.dto;
 
+import com.ruoyi.system.domain.UserVerification;
+
+import java.util.List;
+
 /**
  * @Description: 登录校验
  * @author: huangguoshan
@@ -12,7 +16,7 @@ public class LoginVerify {
 
     private String password;
 
-    private Integer Step;
+    private Integer step;
 
     private String code;
 
@@ -20,6 +24,55 @@ public class LoginVerify {
 
     private String uuid;
 
+    private List<UserVerification> userVerifications;
+
+    private String ip;
+
+    private String device;
+
+    private Long userId;
+
+    private Long riskNumber;
+
+    public Long getRiskNumber() {
+        return riskNumber;
+    }
+
+    public void setRiskNumber(Long riskNumber) {
+        this.riskNumber = riskNumber;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
+
+    public String getDevice() {
+        return device;
+    }
+
+    public void setDevice(String device) {
+        this.device = device;
+    }
+
+    public List<UserVerification> getUserVerifications() {
+        return userVerifications;
+    }
+
+    public void setUserVerifications(List<UserVerification> userVerifications) {
+        this.userVerifications = userVerifications;
+    }
 
     public String getUuid() {
         return uuid;
@@ -45,10 +98,12 @@ public class LoginVerify {
         this.code = code;
     }
 
-    public LoginVerify(String username, String password, Integer step) {
+    public LoginVerify(String username, String password, Integer step,List<UserVerification> userVerifications,String token)  {
         this.username = username;
         this.password = password;
-        Step = step;
+        this.step = step;
+        this.userVerifications = userVerifications;
+        this.token = token;
     }
 
     public String getUsername() {
@@ -68,10 +123,10 @@ public class LoginVerify {
     }
 
     public Integer getStep() {
-        return Step;
+        return step;
     }
 
     public void setStep(Integer step) {
-        Step = step;
+        this.step = step;
     }
 }

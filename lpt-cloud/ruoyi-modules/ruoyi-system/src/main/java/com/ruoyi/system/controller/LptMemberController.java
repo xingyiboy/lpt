@@ -1,11 +1,15 @@
 package com.ruoyi.system.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.ruoyi.common.core.utils.StringUtils;
+import com.ruoyi.common.security.utils.SecurityUtils;
 import com.ruoyi.system.api.domain.SysUser;
+import com.ruoyi.system.api.model.LoginUser;
 import com.ruoyi.system.domain.lpt.dto.LoginBody;
 import com.ruoyi.system.domain.lpt.dto.LptData;
 import com.ruoyi.system.domain.lpt.dto.LptSginDTO;
@@ -56,8 +60,12 @@ public class LptMemberController extends BaseController
         if(loginBody.getUserId()==null){
             throw new RuntimeException("用户id不能为空");
         }
+        //将token带上前缀
+        if(loginBody.getToken()!=null){
+            loginBody.setToken("token:"+loginBody.getToken());
+        }
         //TODO 后面加上签名 AES加密
-        return lptMemberService.login(loginBody,session);
+        return lptMemberService.login(loginBody, session);
     }
 
 //    private LptData getSignData(LptSginDTO lptSginDTO){
@@ -115,13 +123,30 @@ public class LptMemberController extends BaseController
     /**
      * 新增成员
      */
-    @RequiresPermissions("system:member:add")
     @Log(title = "成员", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody LptMember lptMember)
     {
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        lptMember.setUserId(loginUser.getUserid());
         return toAjax(lptMemberService.insertLptMember(lptMember));
     }
+
+    /**
+     * 新增成员 接口
+     */
+    @Log(title = "成员", businessType = BusinessType.INSERT)
+    @PostMapping("/addHttp")
+    public AjaxResult addHttp(@RequestBody LptMember lptMember)
+    {
+        lptMember.setRiskNumber(0L);
+        if(lptMember.getUserId() == null){
+            throw new RuntimeException("用户id不能为空");
+        }
+        return toAjax(lptMemberService.insertLptMember(lptMember));
+    }
+
+
 
     /**
      * 修改成员
@@ -131,6 +156,24 @@ public class LptMemberController extends BaseController
     @PutMapping
     public AjaxResult edit(@RequestBody LptMember lptMember)
     {
+        lptMember.setUserId(SecurityUtils.getLoginUser().getUserid());
+        return toAjax(lptMemberService.updateLptMember(lptMember));
+    }
+
+    /**
+     * 修改成员 接口
+     */
+    @Log(title = "成员", businessType = BusinessType.UPDATE)
+    @PutMapping("/editHttp")
+    public AjaxResult editHttp(@RequestBody LptMember lptMember)
+    {
+        System.out.println("123123");
+        if (lptMember.getUserId() == null) {
+            throw new RuntimeException("用户id不能为空");
+        }
+        if (lptMember.getUsername() == null) {
+            throw new RuntimeException("会员账号不能为空");
+        }
         return toAjax(lptMemberService.updateLptMember(lptMember));
     }
 

@@ -1,3 +1,9 @@
+/*
+ * @Date: 2025-03-23 00:02:13
+ * @LastEditors: xingyi && 2416820386@qq.com
+ * @LastEditTime: 2025-03-23 21:45:48
+ * @FilePath: \react-ui\src\locales\zh-CN.ts
+ */
 import app from './zh-CN/app';
 import component from './zh-CN/component';
 import globalHeader from './zh-CN/globalHeader';
@@ -27,7 +33,7 @@ export default {
   'layout.user.link.help': '帮助',
   'layout.user.link.privacy': '隐私',
   'layout.user.link.terms': '条款',
-  'app.copyright.produced': '蚂蚁集团体验技术部出品',
+  'app.copyright.produced': '令牌通团队出品',
   'app.preview.down.block': '下载此页面到本地项目',
   'app.welcome.link.fetch-blocks': '获取全部区块',
   'app.welcome.link.block-list': '基于 block 开发，快速构建标准页面',

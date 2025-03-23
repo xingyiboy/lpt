@@ -246,6 +246,24 @@ const MemberTableList: React.FC = () => {
       align: 'center',
     },
     {
+      title: <FormattedMessage id="system.member.riskNumber" defaultMessage="人脸图片" />,
+      dataIndex: 'faceBase64',
+      valueType: 'digit', // 你可以保留它，但会在 render 中覆盖
+      align: 'center',
+      render: (_, record) => {
+        // 假设 text 是一个 base64 编码的图像数据
+        return record.faceBase64 ? (
+          <img
+            src={record.faceBase64}
+            alt="人脸图片"
+            style={{ width: 100, height: 100, objectFit: 'cover' }} // 你可以调整图片的尺寸
+          />
+        ) : (
+          <span>没有图片</span> // 如果没有图片显示“没有图片”
+        );
+      },
+    },
+    {
       title: <FormattedMessage id="pages.searchTable.titleOption" defaultMessage="操作" />,
       align: 'center',
       dataIndex: 'option',

@@ -112,7 +112,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="riskNumber != null">risk_number = #{riskNumber},</if>
             <if test="faceBase64 != null">faceBase64 = #{faceBase64},</if>
         </trim>
-        where id = #{id}
+        where username = #{username} and user_id = #{userId}
     </update>
 
     <delete id="deleteLptMemberById" parameterType="Long">

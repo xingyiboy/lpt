@@ -3,6 +3,7 @@ package com.ruoyi.framework.web.Util;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.druid.support.json.JSONUtils;
+import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.utils.sign.Md5Utils;
 import jakarta.servlet.http.HttpSession;
@@ -41,6 +42,96 @@ public class LptSignUtil {
 
     @Autowired
     private RedisCache redisCache;
+
+    public static void sendAdd(Object newUesr) {
+        try {
+            URL url = new URL("http://localhost:8080/system/member/addHttp");
+            // 打开连接
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setDoOutput(true);  // 允许输出内容
+            connection.setRequestProperty("Content-Type", "application/json");  // 设置请求类型
+            connection.setRequestProperty("Authorization", "Bearer <your-token>");  // 替换为实际的令牌
+            // 要发送的数据（JSON格式）
+            String jsonInputString = JSONUtil.toJsonStr(newUesr);
+
+            // 发送请求数据
+            try (OutputStream os = connection.getOutputStream()) {
+                byte[] input = jsonInputString.getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
+
+            // 获取响应代码
+            int responseCode = connection.getResponseCode();
+            System.out.println("Response Code: " + responseCode);
+            Map<String, String> responseMap = new HashMap<>();
+            // 读取响应内容并提取 cookies
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"))) {
+                String inputLine;
+                StringBuilder response = new StringBuilder();
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+
+                // 提取 Set-Cookie 响应头
+                Map<String, List<String>> headers = connection.getHeaderFields();
+                List<String> cookiesHeader = headers.get("Set-Cookie");
+                if (cookiesHeader != null) {
+                    for (String setCookie : cookiesHeader) {
+                        responseMap.put("cookie",setCookie);
+                    }
+                }
+                responseMap.put("response",response.toString());
+            }
+
+        } catch (Exception e) {
+        }
+    }
+
+    public static void sendUpdate(Object newUesr) {
+        try {
+            URL url = new URL("http://localhost:8080/system/member/editHttp");
+            // 打开连接
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("PUT");
+            connection.setDoOutput(true);  // 允许输出内容
+            connection.setRequestProperty("Content-Type", "application/json");  // 设置请求类型
+            connection.setRequestProperty("Authorization", "Bearer <your-token>");  // 替换为实际的令牌
+            // 要发送的数据（JSON格式）
+            String jsonInputString = JSONUtil.toJsonStr(newUesr);
+
+            // 发送请求数据
+            try (OutputStream os = connection.getOutputStream()) {
+                byte[] input = jsonInputString.getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
+
+            // 获取响应代码
+            int responseCode = connection.getResponseCode();
+            System.out.println("Response Code: " + responseCode);
+            Map<String, String> responseMap = new HashMap<>();
+            // 读取响应内容并提取 cookies
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"))) {
+                String inputLine;
+                StringBuilder response = new StringBuilder();
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+
+                // 提取 Set-Cookie 响应头
+                Map<String, List<String>> headers = connection.getHeaderFields();
+                List<String> cookiesHeader = headers.get("Set-Cookie");
+                if (cookiesHeader != null) {
+                    for (String setCookie : cookiesHeader) {
+                        responseMap.put("cookie",setCookie);
+                    }
+                }
+                responseMap.put("response",response.toString());
+            }
+
+        } catch (Exception e) {
+        }
+    }
 
 //    /**
 //     * 常用属性注入

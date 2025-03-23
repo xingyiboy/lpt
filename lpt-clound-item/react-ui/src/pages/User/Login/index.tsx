@@ -1,7 +1,7 @@
 /*
  * @Date: 2025-03-16 16:12:47
  * @LastEditors: xingyi && 2416820386@qq.com
- * @LastEditTime: 2025-03-23 15:34:02
+ * @LastEditTime: 2025-03-23 20:48:05
  * @FilePath: \react-ui\src\pages\User\Login\index.tsx
  */
 import Footer from '@/components/Footer';
@@ -21,9 +21,10 @@ import {
   ProFormCheckbox,
   ProFormText,
 } from '@ant-design/pro-components';
+import { decrypt, encrypt } from '@/utils/crypto';
 import { useEmotionCss } from '@ant-design/use-emotion-css';
 import { FormattedMessage, history, SelectLang, useIntl, useModel, Helmet } from '@umijs/max';
-import { Alert, Col, message, Row, Tabs, Image, Button, Modal } from 'antd';
+import { Alert, Col, message, Row, Tabs, Image, Button, Modal, Checkbox } from 'antd';
 import Settings from '../../../../config/defaultSettings';
 import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { flushSync } from 'react-dom';
@@ -33,6 +34,7 @@ import MailboxValidation from './components/MailboxValidation';
 import BehaviorValidation from './components/BehaviorValidation';
 import load from './components/load.min.js';
 import FaceValidation from './components/FaceValidation';
+import { isMobile, isTablet, isDesktop, osVersion, browserName } from 'react-device-detect';
 
 const ActionIcons = () => {
   const langClassName = useEmotionCss(({ token }) => {
@@ -103,6 +105,13 @@ const Login: React.FC = () => {
   const [type, setType] = useState<string>('account');
   const { initialState, setInitialState } = useModel('@@initialState');
   const [captchaInput, setCaptchaInput] = useState('');
+  const [ip, setIp] = useState('');
+  const [location, setLocation] = useState(null);
+  const browserInfo = {
+    name: navigator.appName,
+    version: navigator.appVersion,
+    userAgent: navigator.userAgent,
+  };
 
   const [submitting, setSubmitting] = useState(false);
 
@@ -116,6 +125,7 @@ const Login: React.FC = () => {
   const [showFaceValidation, setShowFaceValidation] = useState(false);
 
   const [isRegister, setIsRegister] = useState(false);
+  const [rememberMe, setRememberMe] = useState<boolean>(true);
 
   // 使用 useRef 替代 useState 来存储最新值
   const loginValuesRef = useRef<API.LoginParams>();
@@ -150,6 +160,24 @@ const Login: React.FC = () => {
   };
 
   useEffect(() => {
+    // 获取IP地址
+    fetch('http://ip-api.com/json')
+      .then((response) => response.json())
+      .then((data) => {
+        // 根据返回的数据提取 IP 地址
+        setIp(data.query); // 在新的API返回中，IP 地址存储在 `query` 字段中
+      })
+      .catch((error) => console.error('Error fetching IP address:', error));
+    // 获取地理位置
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setLocation({ latitude, longitude });
+        },
+        (error) => console.error('Error getting location:', error),
+      );
+    }
     const script = document.createElement('script');
     script.src = load;
     script.async = true;
@@ -167,24 +195,33 @@ const Login: React.FC = () => {
     };
   }, []); // 空依赖数组，确保只加载一次
 
-  const handleNextSetp = (Step: String) => {
+  const handleNextSetp = async (Step: String) => {
+    setUserLoginState({ code: 200 });
+    const currentValues = loginValuesRef.current;
+    if (currentValues == null) {
+      return;
+    }
+    setCaptchaInput('');
     switch (Step) {
       case '1':
         //执行字符校验
         closeAllValidation();
         setShowImageInputValidation(true);
+        getCodeDataAndVerify(false, '1');
         message.success('验证成功，开始字符校验');
         break;
       case '2':
         //执行数字计算校验
         closeAllValidation();
         setShowImageInputValidation(true);
+        getCodeDataAndVerify(false, '2');
         message.success('验证成功，开始数字计算校验');
         break;
       case '3':
         //执行邮箱校验
         closeAllValidation();
         setShowMailboxValidation(true);
+        getCodeDataAndVerify(false, '3');
         message.success('验证成功，开始邮箱校验');
         break;
       case '4':
@@ -221,42 +258,10 @@ const Login: React.FC = () => {
     }
   };
 
-  //处理下一步操作
-  const handleSubmitCaptcha = async (step: string, values?: API.LoginParams = null) => {
-    setUserLoginState({ code: 200 });
-    showModal();
-    const currentValues = values || loginValuesRef.current;
-    if (currentValues == null) {
-      return;
-    }
-    console.log(step);
-    switch (step) {
-      case '1':
-        //执行字符校验
-        getCodeDataAndVerify(currentValues, false, '1');
-        break;
-      case '2':
-        //执行数字计算校验
-        getCodeDataAndVerify(currentValues, false, '2');
-        break;
-      case '3':
-        //执行邮箱校验
-        getCodeDataAndVerify(currentValues, false, '3');
-        break;
-      case '4':
-        //执行滑动操作
-        getCodeDataAndVerify(currentValues, false, '4');
-      default:
-        //错误重新获取验证码不能进行下一步
-        getCodeDataAndVerify(currentValues);
-        break;
-    }
-  };
-
   //处理点击提交
   const handleSubmitVarify = useCallback(async () => {
-    await getCodeDataAndVerify(null, true);
-  }, [captchaInput]);
+    await getCodeDataAndVerify(true);
+  }, [captchaInput, codeImgData]);
 
   //处理点击验证码
   const handleClickVarify = useCallback(() => {
@@ -264,15 +269,14 @@ const Login: React.FC = () => {
       return;
     }
     getCodeDataAndVerify();
-  }, [captchaInput, submitting]);
+  }, [captchaInput, submitting, codeImgData]);
 
   //获取验证码/校验验证码
   const getCodeDataAndVerify = useCallback(
-    async (values?: API.LoginParams, isVerify = false, Step = '') => {
+    async (isVerify = false, Step = '') => {
       if (isVerify == true) {
         //校验
-
-        const currentValues = values || loginValuesRef.current;
+        const currentValues = loginValuesRef.current;
         if (currentValues == null) {
           return;
         }
@@ -280,7 +284,7 @@ const Login: React.FC = () => {
         if (response.code === 200) {
           //执行下一步操作
           if (response.data != '验证码错误') {
-            handleSubmitCaptcha(response.data);
+            handleNextSetp(response.data);
           } else {
             message.error(response.data);
             getCodeDataAndVerify();
@@ -294,7 +298,7 @@ const Login: React.FC = () => {
         //获取验证码
         try {
           // 优先使用传入值，没有则使用存储的值
-          const currentValues = values || loginValuesRef.current;
+          const currentValues = loginValuesRef.current;
           if (!currentValues) {
             message.error('请先填写登录信息');
             return;
@@ -304,30 +308,18 @@ const Login: React.FC = () => {
 
           if (response.code === 200) {
             setCodeImgData(response.data);
-            handleNextSetp(Step);
             setSubmitting(false);
-            // 存储到 ref
-            loginValuesRef.current = currentValues;
-          }
-          //滑动校验复位
-          if (response.id != null) {
-            closeAllValidation();
-            setShowBehaviorValidation(true);
           }
         } catch (error) {
           message.error('获取验证码失败');
         }
       }
     },
-    [captchaInput],
+    [captchaInput, codeImgData],
   );
 
   const showModal = () => {
     setOpen(true);
-  };
-
-  const handleOk = () => {
-    setLoading(true);
   };
 
   const handleCancel = () => {
@@ -362,8 +354,24 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (values: API.LoginParams) => {
     try {
+      // 如果选择记住密码，则加密存储
+      if (rememberMe) {
+        localStorage.setItem('rememberedUsername', encrypt(values.username));
+        localStorage.setItem('rememberedPassword', encrypt(values.password));
+      } else {
+        // 如果取消记住密码，则清除存储
+        localStorage.removeItem('rememberedUsername');
+        localStorage.removeItem('rememberedPassword');
+      }
       const apiMethod = isRegister ? register : login;
-      const response = await apiMethod({ ...values, step: 0 });
+      const response = await apiMethod({
+        ...values,
+        step: 0,
+        ip: ip,
+        device: browserInfo.userAgent,
+      });
+      // 存储到 ref
+      loginValuesRef.current = values;
 
       if (response.code === 200) {
         if (isRegister) {
@@ -374,7 +382,8 @@ const Login: React.FC = () => {
         }
         //登录
         uuid.current = response.data.uuid;
-        handleSubmitCaptcha(response.data.step, values);
+        showModal();
+        handleNextSetp(response.data.step);
       } else {
         clearSessionToken();
         setUserLoginState({ ...response, type });
@@ -414,9 +423,18 @@ const Login: React.FC = () => {
   };
 
   const [showCameraCapture, setShowCameraCapture] = useState(false);
+  const getRememberedUsername = () => {
+    return decrypt(localStorage.getItem('rememberedUsername') || '');
+  };
+  const getRememberedPassword = () => {
+    return decrypt(localStorage.getItem('rememberedPassword') || '');
+  };
 
   return (
     <div className={containerClassName}>
+      <div style={{ marginLeft: '10px' }}>
+        <p>IP: {ip}</p>
+      </div>
       <Helmet>
         <title>
           {intl.formatMessage({
@@ -443,6 +461,8 @@ const Login: React.FC = () => {
           subTitle={intl.formatMessage({ id: 'pages.layouts.userLayout.title' })}
           initialValues={{
             autoLogin: true,
+            username: getRememberedUsername(),
+            password: getRememberedPassword(),
           }}
           submitter={{
             searchConfig: {
@@ -635,9 +655,18 @@ const Login: React.FC = () => {
               marginBottom: 24,
             }}
           >
-            <ProFormCheckbox noStyle name="autoLogin">
-              <FormattedMessage id="pages.login.rememberMe" defaultMessage="自动登录" />
-            </ProFormCheckbox>
+            <Checkbox
+              checked={rememberMe}
+              onChange={(e) => {
+                setRememberMe(e.target.checked);
+                if (!e.target.checked) {
+                  localStorage.removeItem('rememberedUsername');
+                  localStorage.removeItem('rememberedPassword');
+                }
+              }}
+            >
+              记住账号密码
+            </Checkbox>
             <a style={{ float: 'right' }} onClick={toggleRegister}>
               {isRegister ? (
                 <FormattedMessage id="pages.login.hasAccount" defaultMessage="已有账号？去登录" />

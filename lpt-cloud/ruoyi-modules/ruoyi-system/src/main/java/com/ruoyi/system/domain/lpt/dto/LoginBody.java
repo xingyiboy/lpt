@@ -10,8 +10,7 @@ import javax.servlet.http.HttpSession;
  *
  * @author ruoyi
  */
-public class LoginBody
-{
+public class LoginBody {
     /**
      * 用户名
      */
@@ -19,28 +18,12 @@ public class LoginBody
 
     private HttpSession session;
 
-    public HttpSession getSession() {
-        return session;
-    }
-
-    public void setSession(HttpSession session) {
-        this.session = session;
-    }
-
     /**
      * 用户密码
      */
     private String password;
 
     private Long userId;
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
 
     /**
      * 登录步骤
@@ -54,6 +37,47 @@ public class LoginBody
     private LptImageCaptchaTrack data;
 
     private String faceBase64;
+
+    /**
+     * 验证码
+     */
+    private String code;
+
+    private String token;
+
+    /**
+     * ip
+     */
+    private String ip;
+    /**
+     * 设备
+     */
+    private String device;
+
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
+
+    public String getDevice() {
+        return device;
+    }
+
+    public void setDevice(String device) {
+        this.device = device;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 
     public String getFaceBase64() {
         return faceBase64;
@@ -95,10 +119,21 @@ public class LoginBody
         this.code = code;
     }
 
-    /**
-     * 验证码
-     */
-    private String code;
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public HttpSession getSession() {
+        return session;
+    }
+
+    public void setSession(HttpSession session) {
+        this.session = session;
+    }
 
     public String getUsername() {
         return username;
