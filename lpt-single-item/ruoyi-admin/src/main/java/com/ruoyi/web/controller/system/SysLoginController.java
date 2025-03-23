@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.redis.RedisCache;
+import com.ruoyi.common.utils.StringUtils;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -49,7 +50,10 @@ public class SysLoginController
     public Object login(@RequestBody LoginBody loginBody, String username,String uuid, HttpSession session)
     {
         loginBody.setUuid(uuid);
-        return loginService.login(loginBody,username,session);
+        if(StringUtils.isNotBlank(username)){
+            loginBody.setUsername(username);
+        }
+        return loginService.login(loginBody,session);
     }
 
     /**

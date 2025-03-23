@@ -47,9 +47,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where id = #{id}
     </select>
 
-    <select id="selectLptMemberByUsername" parameterType="String" resultMap="LptMemberResult">
+    <select id="selectLptMemberByUsername" parameterType="LptMember" resultMap="LptMemberResult">
         <include refid="selectLptMemberVo"/>
-        where username = #{username}
+        <where>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="username != null "> and username = #{username}</if>
+        </where>
     </select>
 
     <insert id="insertLptMember" parameterType="LptMember" useGeneratedKeys="true" keyProperty="id">

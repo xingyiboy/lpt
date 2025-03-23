@@ -20,10 +20,12 @@
         <dependency>
             <groupId>lpt</groupId>
             <artifactId>lpt-maven</artifactId>
-            <version>1.4</version>
+            <version>1.6</version>
         </dependency>
 
-    	<!-- SpringCloud Alibaba Nacos -->
+
+
+        <!-- SpringCloud Alibaba Nacos -->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>

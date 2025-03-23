@@ -1,5 +1,9 @@
 package com.ruoyi.system.service.impl;
 
+import cn.hutool.json.JSONConfig;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson2.JSON;
 import com.ruoyi.common.core.constant.UserConstants;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.exception.ServiceException;
@@ -8,11 +12,14 @@ import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.ip.IpUtils;
 import com.ruoyi.common.redis.service.RedisService;
 import com.ruoyi.common.security.utils.SecurityUtils;
-import com.ruoyi.system.domain.Enum.VerificationTypeEnum;
 import com.ruoyi.system.domain.LptMember;
-import com.ruoyi.system.domain.dto.LoginBody;
-import com.ruoyi.system.domain.dto.LoginVerify;
+import com.ruoyi.system.domain.UserVerification;
+import com.ruoyi.system.domain.lpt.Enum.RiskTypeEnum;
+import com.ruoyi.system.domain.lpt.dto.LoginBody;
+import com.ruoyi.system.domain.lpt.dto.LoginVerify;
+import com.ruoyi.system.domain.lpt.Enum.VerificationTypeEnum;
 import com.ruoyi.system.mapper.LptMemberMapper;
+import com.ruoyi.system.mapper.UserVerificationMapper;
 import com.ruoyi.system.service.ILptMemberService;
 import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.system.util.SaltUtils;
@@ -20,6 +27,7 @@ import lpt.LptCharacterUtil;
 import lpt.LptDigitalCountUtil;
 import lpt.LptFaceComparisonUtil;
 import lpt.LptMailboxUtil;
+import lpt.application.DefaultImageCaptchaApplication;
 import lpt.application.LptImageCaptchaApplication;
 import lpt.application.LptTACBuilder;
 import lpt.application.vo.LptCaptchaResponse;
@@ -27,6 +35,7 @@ import lpt.application.vo.LptImageCaptchaVO;
 import lpt.common.response.LptApiResponse;
 import lpt.faceDTO.LptFaceCompareRepVo;
 import lpt.faceDTO.LptFaceCompareReqVo;
+import lpt.validator.ImageCaptchaValidator;
 import lpt.validator.common.model.dto.MatchParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,6 +60,8 @@ public class LptMemberServiceImpl implements ILptMemberService
     private RedisService redisService;
     @Autowired
     private ISysConfigService configService;
+    @Autowired
+    private UserVerificationMapper userVerificationMapper;
 
     private final String LPT_PREFIX = "LoginVerify-";
 
@@ -156,12 +167,10 @@ public class LptMemberServiceImpl implements ILptMemberService
      * 登录
      *
      * @param loginBody
-     * @param username
-     * @param session
      * @return
      */
     @Override
-    public Object login(LoginBody loginBody, String username, HttpSession session) {
+    public Object login(LoginBody loginBody, HttpSession session) {
         VerificationTypeEnum verificationTypeEnum = null;
         //获取redis的数据
         LoginVerify loginVerify = null;
@@ -171,10 +180,6 @@ public class LptMemberServiceImpl implements ILptMemberService
             loginVerify = null;
         }else {
             loginVerify = redisService.getCacheObject(LPT_PREFIX + loginBody.getUsername());
-            if (loginVerify == null && username!=null) {
-                loginVerify = redisService.getCacheObject(LPT_PREFIX + username);
-                loginBody.setUsername(username);
-            }
         }
         if(loginVerify==null){
             //第一次请求 直接设为密码校验
@@ -200,14 +205,17 @@ public class LptMemberServiceImpl implements ILptMemberService
             case CONCAT_VALIDATION:
                 return handleConcatValidation(loginBody,loginVerify,session); //滑动还原验证码
             case FACE_VALIDATION:
-                return R.ok(handleFaceValidation(loginBody,loginVerify,session)); //人脸校验处理
+                return handleFaceValidation(loginBody,loginVerify); //人脸校验处理
             default:
                 throw new ServiceException("不支持的校验类型: " + verificationTypeEnum);
         }
     }
     //人脸校验
-    private  String  handleFaceValidation(LoginBody loginBody, LoginVerify loginVerify, HttpSession session) {
-        LptMember lptMember = lptMemberMapper.selectLptMemberByUsername(loginVerify.getUsername());
+    private  Object  handleFaceValidation(LoginBody loginBody, LoginVerify loginVerify) {
+        LptMember getParmas = new LptMember();
+        getParmas.setUserId(loginBody.getUserId());
+        getParmas.setUsername(loginBody.getUsername());
+        LptMember lptMember = lptMemberMapper.selectLptMemberByUsername(getParmas);
         if(StringUtils.isNotBlank(lptMember.getFaceBase64())){
             //有人脸
             LptFaceCompareReqVo lptFaceCompareReqVo = new LptFaceCompareReqVo();
@@ -220,20 +228,20 @@ public class LptMemberServiceImpl implements ILptMemberService
                     //关掉redis
                     redisService.deleteObject(LPT_PREFIX + loginVerify.getUsername());
                     //返回token 登录成功
-                    return "token:"+loginVerify.getToken();
+                    return R.ok("token:"+loginVerify.getToken(),"success");
                 }else {
-                    return "人脸相似度太低，请重新上传";
+                    return R.ok("人脸相似度太低，请重新上传");
                 }
             }else {
                 //校验异常
                 if(lptFaceCompareRepVo.getMessage().equals("Image B is not face")){
-                    return "此照片不是人脸，请重新上传";
+                    return R.ok("此照片不是人脸，请重新上传");
                 }
-                return lptFaceCompareRepVo.getMessage();
+                return R.ok(lptFaceCompareRepVo.getMessage());
             }
         }else {
             //没有人脸 直接验证通过
-            return "token:"+loginVerify.getToken();
+            return R.ok("token:"+loginVerify.getToken(),"success");
         }
     }
 
@@ -400,9 +408,23 @@ public class LptMemberServiceImpl implements ILptMemberService
      * @return
      */
     private Object handlePasswordValidation(LoginBody loginBody) {
-        // 登录前置校验 校验账号和密码
+        // 登录前置校验 校验账号和密码的非法性
         loginPreCheck(loginBody.getUsername(), loginBody.getPassword());
-        //验证完成
+        //通过系统用户id和会员用户名查询会员信息
+        LptMember search = new LptMember();
+        search.setUserId(loginBody.getUserId());
+        search.setUsername(loginBody.getUsername());
+        LptMember lptMember = lptMemberMapper.selectLptMemberByUsername(search);
+        //校验 盐值密码
+        if(!SaltUtils.verifyPasswordWithSHA256(loginBody.getPassword(), lptMember.getPassword(), lptMember.getSalt())){
+            throw new ServiceException("密码错误");
+        }
+        //验证密码完成
+        //检测下一步 先默认全部低风险
+        UserVerification userVerification = new UserVerification();
+        userVerification.setUserId(loginBody.getUserId());
+        userVerification.setRiskType(RiskTypeEnum.LOW.getCode());
+        List<UserVerification> userVerifications = userVerificationMapper.selectUserVerificationList(userVerification);
         //存入redis 进行下一步
         LoginVerify loginVerify = new LoginVerify(loginBody.getUsername(),loginBody.getPassword(),VerificationTypeEnum.CHARACTER_VALIDATION.getCode());
         //生成UUID
@@ -497,7 +519,10 @@ public class LptMemberServiceImpl implements ILptMemberService
         }
         //生成6位验证码
         String code = generateCaptcha(6);
-        LptMember lptMember = lptMemberMapper.selectLptMemberByUsername(loginBody.getUsername());
+        LptMember getParmas = new LptMember();
+        getParmas.setUserId(loginBody.getUserId());
+        getParmas.setUsername(loginBody.getUsername());
+        LptMember lptMember = lptMemberMapper.selectLptMemberByUsername(getParmas);
         if (StringUtils.isNotBlank(lptMember.getMailbox())) {
             //邮箱不为空
             //发送邮箱验证码

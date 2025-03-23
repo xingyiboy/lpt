@@ -21,10 +21,10 @@ public interface LptMemberMapper
 
     /**
      * 查询成员
-     * @param username 成员用户名
+     * @param lptMember 成员
      * @return
      */
-    public LptMember selectLptMemberByUsername(String username);
+    public LptMember selectLptMemberByUsername(LptMember lptMember);
 
     /**
      * 查询成员列表

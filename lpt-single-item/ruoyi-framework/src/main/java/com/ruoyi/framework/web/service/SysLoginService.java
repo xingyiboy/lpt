@@ -89,7 +89,7 @@ public class SysLoginService
      *
      * @return 结果
      */
-    public Object login(LoginBody loginBody, String username , HttpSession session)
+    public Object login(LoginBody loginBody,HttpSession session)
     {
         VerificationTypeEnum verificationTypeEnum = null;
         //获取redis的数据
@@ -100,10 +100,6 @@ public class SysLoginService
             loginVerify = null;
         }else {
             loginVerify = redisCache.getCacheObject(LPT_PREFIX + loginBody.getUsername());
-            if (loginVerify == null && username!=null) {
-                loginVerify = redisCache.getCacheObject(LPT_PREFIX + username);
-                loginBody.setUsername(username);
-            }
         }
         if(loginVerify==null){
             //第一次请求 直接设为密码校验
@@ -129,13 +125,13 @@ public class SysLoginService
             case CONCAT_VALIDATION:
                 return handleConcatValidation(loginBody,loginVerify,session); //滑动还原验证码
             case FACE_VALIDATION:
-                return R.ok(handleFaceValidation(loginBody,loginVerify,session)); //人脸校验处理
+                return handleFaceValidation(loginBody,loginVerify); //人脸校验处理
             default:
                 throw new ServiceException("不支持的校验类型: " + verificationTypeEnum);
         }
     }
     //人脸校验
-    private  String  handleFaceValidation(LoginBody loginBody, LoginVerify loginVerify, HttpSession session) {
+    private  Object  handleFaceValidation(LoginBody loginBody, LoginVerify loginVerify) {
         SysUser sysUser = sysUserMapper.selectUserByUserName(loginVerify.getUsername());
         if(StringUtils.isNotBlank(sysUser.getFaceBase64())){
             //有人脸
@@ -149,20 +145,20 @@ public class SysLoginService
                     //关掉redis
                     redisCache.deleteObject(LPT_PREFIX + loginVerify.getUsername());
                     //返回token 登录成功
-                    return "token:"+loginVerify.getToken();
+                    return R.ok("token:"+loginVerify.getToken(),"success");
                 }else {
-                    return "人脸相似度太低，请重新上传";
+                    return R.ok("人脸相似度太低，请重新上传");
                 }
             }else {
                 //校验异常
                 if(lptFaceCompareRepVo.getMessage().equals("Image B is not face")){
-                    return "此照片不是人脸，请重新上传";
+                    return R.ok("此照片不是人脸，请重新上传");
                 }
-                return lptFaceCompareRepVo.getMessage();
+                return R.ok(lptFaceCompareRepVo.getMessage());
             }
         }else {
             //没有人脸 直接验证通过
-            return "token:"+loginVerify.getToken();
+            return R.ok("token:"+loginVerify.getToken(),"success");
         }
     }
 

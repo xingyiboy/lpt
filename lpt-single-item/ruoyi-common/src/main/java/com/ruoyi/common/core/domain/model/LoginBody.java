@@ -22,7 +22,7 @@ public class LoginBody
     /**
      * 登录步骤
      */
-    private Integer Step;
+    private Integer step;
 
     private String uuid;
 
@@ -94,10 +94,10 @@ public class LoginBody
     }
 
     public Integer getStep() {
-        return Step;
+        return step;
     }
 
     public void setStep(Integer step) {
-        Step = step;
+        this.step = step;
     }
 }

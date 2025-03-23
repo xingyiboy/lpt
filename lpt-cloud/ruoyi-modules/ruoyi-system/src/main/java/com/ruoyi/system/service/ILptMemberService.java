@@ -2,7 +2,8 @@ package com.ruoyi.system.service;
 
 import java.util.List;
 import com.ruoyi.system.domain.LptMember;
-import com.ruoyi.system.domain.dto.LoginBody;
+import com.ruoyi.system.domain.lpt.dto.LoginBody;
+import lpt.application.LptImageCaptchaApplication;
 
 import javax.servlet.http.HttpSession;
 
@@ -72,9 +73,7 @@ public interface ILptMemberService
     /**
      * 登录
      * @param loginBody
-     * @param username
-     * @param session
      * @return
      */
-    Object login(LoginBody loginBody, String username, HttpSession session);
+    Object login(LoginBody loginBody, HttpSession session);
 }

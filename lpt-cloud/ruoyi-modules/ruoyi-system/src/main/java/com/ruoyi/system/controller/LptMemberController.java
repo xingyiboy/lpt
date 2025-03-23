@@ -1,13 +1,17 @@
 package com.ruoyi.system.controller;
 
 import java.util.List;
-import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.ruoyi.common.security.utils.SecurityUtils;
+import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.system.api.domain.SysUser;
-import com.ruoyi.system.domain.dto.LoginBody;
+import com.ruoyi.system.domain.lpt.dto.LoginBody;
+import com.ruoyi.system.domain.lpt.dto.LptData;
+import com.ruoyi.system.domain.lpt.dto.LptSginDTO;
+import com.ruoyi.system.mapper.SysUserMapper;
+import com.ruoyi.system.util.LptSignUtil;
+import lpt.application.LptImageCaptchaApplication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,6 +43,8 @@ public class LptMemberController extends BaseController
 {
     @Autowired
     private ILptMemberService lptMemberService;
+    @Autowired
+    private SysUserMapper sysUserMapper;
 
     /**
      * 成员登录接口
@@ -46,10 +52,30 @@ public class LptMemberController extends BaseController
      * @return
      */
     @PostMapping("/login")
-    public Object login(@RequestBody LoginBody loginBody, String username, String uuid, HttpSession session){
-        loginBody.setUuid(uuid);
-        return lptMemberService.login(loginBody,username,session);
+    public Object login(@RequestBody LoginBody loginBody,HttpSession session){
+        if(loginBody.getUserId()==null){
+            throw new RuntimeException("用户id不能为空");
+        }
+        //TODO 后面加上签名 AES加密
+        return lptMemberService.login(loginBody,session);
     }
+
+//    private LptData getSignData(LptSginDTO lptSginDTO){
+//        if(lptSginDTO.getUserId()==null||StringUtils.isEmpty(lptSginDTO.getUserId().toString())){
+//            throw new RuntimeException("用户id不能为空");
+//        }
+//        SysUser sysUser = sysUserMapper.selectUserById(lptSginDTO.getUserId());
+//        if(sysUser==null){
+//            throw new RuntimeException("userId系统用户不存在");
+//        }
+//        String decryptString = null;
+//        try {
+//            decryptString = LptSignUtil.decrypt(lptSginDTO.getData(),sysUser.getSecretKey(),sysUser.getOffset())
+//        } catch (Exception e) {
+//            throw new RuntimeException("签名错误，解密失败:"+e);
+//        }
+//
+//    }
 
     /**
      * 查询成员列表
