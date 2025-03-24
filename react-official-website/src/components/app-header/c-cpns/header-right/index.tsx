@@ -1,7 +1,7 @@
 /*
  * @Date: 2025-03-14 19:17:24
  * @LastEditors: xingyi && 2416820386@qq.com
- * @LastEditTime: 2025-03-23 21:54:02
+ * @LastEditTime: 2025-03-24 22:23:25
  * @FilePath: \react-official-website\src\components\app-header\c-cpns\header-right\index.tsx
  */
 import React, { memo, useEffect, useState } from 'react'
@@ -39,10 +39,16 @@ const HeaderRight: FC<IProps> = () => {
     window.open('https://113.45.31.128', '_blank') // _blank 会在新标签页中打开
   }
 
+  const handleDocsClick = () => {
+    window.location.href = '/docs'
+  }
+
   return (
     <RightWrapper>
       <div className="btns">
-        <span className="btn">开发指南</span>
+        <span className="btn" onClick={handleDocsClick}>
+          开发指南
+        </span>
         <span className="btn" onClick={handleInterfaceClick}>
           接口系统
         </span>

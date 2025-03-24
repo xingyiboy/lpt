@@ -3,19 +3,13 @@ import { useState, useEffect } from 'react'
 type ThemeType = 'light' | 'dark' | 'reading'
 
 export const useTheme = () => {
-  const [theme, setTheme] = useState<ThemeType>('light')
+  const [theme, setTheme] = useState(
+    () => localStorage.getItem('theme') || 'light'
+  )
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') as ThemeType
-    if (savedTheme) {
-      setTheme(savedTheme)
-    }
-  }, [])
+    localStorage.setItem('theme', theme)
+  }, [theme])
 
-  const updateTheme = (newTheme: ThemeType) => {
-    setTheme(newTheme)
-    localStorage.setItem('theme', newTheme)
-  }
-
-  return { theme, setTheme: updateTheme }
+  return { theme, setTheme }
 }

@@ -6,7 +6,6 @@ import SearchTabs from '@/components/app-header/c-cpns/header-center/c-cpns/sear
 import searchTitles from '@/assets/data/search_titles.json'
 import SearchSections from '@/components/app-header/c-cpns/header-center/c-cpns/search-sections'
 import { CSSTransition } from 'react-transition-group'
-import { useNavigate } from 'react-router-dom'
 
 interface IProps {
   children?: ReactNode
@@ -17,7 +16,6 @@ interface IProps {
 const HeaderCenter: FC<IProps> = (props) => {
   const { isSearch, searchBarClick } = props
   const [tabIndex, setTabIndex] = useState(0)
-  const navigate = useNavigate()
   const titles = searchTitles.map((item) => item.title)
 
   // 添加 refs
@@ -29,7 +27,8 @@ const HeaderCenter: FC<IProps> = (props) => {
   }
 
   const handleItemClick = (url: string) => {
-    navigate(url)
+    // 使用直接跳转方式
+    window.location.href = url
     searchBarClick() // 点击后关闭搜索框
   }
 

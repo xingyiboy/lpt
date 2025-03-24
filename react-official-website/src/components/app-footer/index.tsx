@@ -6,7 +6,6 @@
  */
 import React, { memo } from 'react'
 import type { FC, ReactNode } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { AppFooterWrapper } from '@/components/app-footer/style'
 import footerData from '@/assets/data/footer.json'
 
@@ -15,10 +14,9 @@ interface IProps {
 }
 
 const AppFooter: FC<IProps> = () => {
-  const navigate = useNavigate()
-
   const handleItemClick = (url: string) => {
-    navigate(url)
+    // 直接使用 window.location.href 进行页面跳转
+    window.location.href = url
   }
 
   return (

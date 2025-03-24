@@ -4,15 +4,15 @@
     "list": [
       {
         "title": "平台简介",
-        "url": "/platform/intro"
+        "url": "/docs/platform/intro"
       },
       {
         "title": "快速入门",
-        "url": "/quick-start"
+        "url": "/docs/quick-start"
       },
       {
         "title": "技术选型",
-        "url": "/tech-stack"
+        "url": "/docs/tech-stack"
       }
     ]
   },
@@ -21,19 +21,19 @@
     "list": [
       {
         "title": "用户对接",
-        "url": "/user/integration"
+        "url": "/docs/user/integration"
       },
       {
         "title": "验证对接",
-        "url": "/auth/integration"
+        "url": "/docs/auth/integration"
       },
       {
         "title": "接口文档",
-        "url": "/api/docs"
+        "url": "/docs/api/docs"
       },
       {
         "title": "签名方式",
-        "url": "/signature"
+        "url": "/docs/signature"
       }
     ]
   },
@@ -42,15 +42,15 @@
     "list": [
       {
         "title": "私有化部署",
-        "url": "/private-deployment"
+        "url": "/docs/private-deployment"
       },
       {
         "title": "加入团队",
-        "url": "/join-us"
+        "url": "/docs/join-us"
       },
       {
         "title": "代理平台",
-        "url": "/proxy"
+        "url": "/docs/proxy"
       }
     ]
   },
@@ -59,15 +59,15 @@
     "list": [
       {
         "title": "帮助",
-        "url": "/help"
+        "url": "/docs/help"
       },
       {
         "title": "常见问题",
-        "url": "/faq"
+        "url": "/docs/faq"
       },
       {
         "title": "联系我们",
-        "url": "/contact"
+        "url": "/docs/contact"
       }
     ]
   }

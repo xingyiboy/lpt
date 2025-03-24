@@ -10,6 +10,7 @@ import { useRoutes } from 'react-router-dom'
 import routes from '@/router'
 import AppHeader from '@/components/app-header'
 import { useScrollTop } from '@/hooks'
+import { GlobalStyle } from './views/docs/style'
 
 interface IProps {
   children?: ReactNode
@@ -20,10 +21,13 @@ const App: FC<IProps> = () => {
   useScrollTop()
 
   return (
-    <div className="app">
-      <AppHeader />
-      <div style={{ width: '100%' }}>{useRoutes(routes)}</div>
-    </div>
+    <>
+      <GlobalStyle />
+      <div className="app">
+        <AppHeader />
+        <div style={{ width: '100%' }}>{useRoutes(routes)}</div>
+      </div>
+    </>
   )
 }
 
