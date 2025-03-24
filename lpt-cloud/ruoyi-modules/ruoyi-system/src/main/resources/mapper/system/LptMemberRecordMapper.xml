@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.LptMemberRecordMapper">
+    
+    <resultMap type="LptMemberRecord" id="LptMemberRecordResult">
+        <result property="id"    column="id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="memberId"    column="member_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="loginIp"    column="login_ip"    />
+        <result property="decive"    column="decive"    />
+        <result property="latitude"    column="latitude"    />
+        <result property="longitude"    column="longitude"    />
+    </resultMap>
+
+    <sql id="selectLptMemberRecordVo">
+        select id, create_by, create_time, update_by, update_time, remark, member_id, user_id, login_ip, decive, latitude, longitude from lpt_member_record
+    </sql>
+
+    <select id="selectLptMemberRecordList" parameterType="LptMemberRecord" resultMap="LptMemberRecordResult">
+        <include refid="selectLptMemberRecordVo"/>
+        <where>  
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+            <if test="memberId != null "> and member_id = #{memberId}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="loginIp != null  and loginIp != ''"> and login_ip = #{loginIp}</if>
+            <if test="decive != null  and decive != ''"> and decive = #{decive}</if>
+            <if test="latitude != null "> and latitude = #{latitude}</if>
+            <if test="longitude != null "> and longitude = #{longitude}</if>
+        </where>
+    </select>
+    
+    <select id="selectLptMemberRecordById" parameterType="Long" resultMap="LptMemberRecordResult">
+        <include refid="selectLptMemberRecordVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertLptMemberRecord" parameterType="LptMemberRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into lpt_member_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="memberId != null">member_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="loginIp != null">login_ip,</if>
+            <if test="decive != null">decive,</if>
+            <if test="latitude != null">latitude,</if>
+            <if test="longitude != null">longitude,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="memberId != null">#{memberId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="loginIp != null">#{loginIp},</if>
+            <if test="decive != null">#{decive},</if>
+            <if test="latitude != null">#{latitude},</if>
+            <if test="longitude != null">#{longitude},</if>
+         </trim>
+    </insert>
+
+    <update id="updateLptMemberRecord" parameterType="LptMemberRecord">
+        update lpt_member_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="memberId != null">member_id = #{memberId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="loginIp != null">login_ip = #{loginIp},</if>
+            <if test="decive != null">decive = #{decive},</if>
+            <if test="latitude != null">latitude = #{latitude},</if>
+            <if test="longitude != null">longitude = #{longitude},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteLptMemberRecordById" parameterType="Long">
+        delete from lpt_member_record where id = #{id}
+    </delete>
+
+    <delete id="deleteLptMemberRecordByIds" parameterType="String">
+        delete from lpt_member_record where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

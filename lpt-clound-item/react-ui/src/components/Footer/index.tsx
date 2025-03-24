@@ -1,7 +1,7 @@
 /*
- * @Date: 2025-03-23 00:02:13
+ * @Date: 2025-03-13 10:21:47
  * @LastEditors: xingyi && 2416820386@qq.com
- * @LastEditTime: 2025-03-23 21:44:52
+ * @LastEditTime: 2025-03-24 15:20:01
  * @FilePath: \react-ui\src\components\Footer\index.tsx
  */
 import { DefaultFooter } from '@ant-design/pro-components';
@@ -12,7 +12,7 @@ const Footer: React.FC = () => {
   const intl = useIntl();
   const defaultMessage = intl.formatMessage({
     id: 'app.copyright.produced',
-    defaultMessage: '令牌通团队出品',
+    defaultMessage: '令牌桶团队出品',
   });
 
   const currentYear = new Date().getFullYear();
@@ -27,13 +27,13 @@ const Footer: React.FC = () => {
         {
           key: '令牌通',
           title: '令牌通',
-          href: 'https://pro.ant.design',
+          href: 'http://113.45.31.128:9999/homen',
           blankTarget: true,
         },
         {
-          key: 'Ant Design',
-          title: 'Ant Design',
-          href: 'https://ant.design',
+          key: 'LPT',
+          title: 'LPT',
+          href: 'http://113.45.31.128:9999/homen',
           blankTarget: true,
         },
       ]}

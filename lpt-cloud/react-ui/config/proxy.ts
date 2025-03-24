@@ -1,3 +1,9 @@
+/*
+ * @Date: 2025-03-14 18:11:08
+ * @LastEditors: xingyi && 2416820386@qq.com
+ * @LastEditTime: 2025-03-24 19:07:37
+ * @FilePath: \react-ui\config\proxy.ts
+ */
 /**
  * @name 代理的配置
  * @see 在生产环境 代理是无法生效的，所以这里没有生产环境的配置

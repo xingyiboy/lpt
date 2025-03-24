@@ -1,7 +1,7 @@
 /*
  * @Date: 2025-03-14 19:17:24
  * @LastEditors: xingyi && 2416820386@qq.com
- * @LastEditTime: 2025-03-18 00:34:28
+ * @LastEditTime: 2025-03-23 21:54:02
  * @FilePath: \react-official-website\src\components\app-header\c-cpns\header-right\index.tsx
  */
 import React, { memo, useEffect, useState } from 'react'
@@ -36,7 +36,7 @@ const HeaderRight: FC<IProps> = () => {
   }
 
   const handleOnlineClick = () => {
-    window.open('http://113.45.31.128:9999/user/login', '_blank') // _blank 会在新标签页中打开
+    window.open('https://113.45.31.128', '_blank') // _blank 会在新标签页中打开
   }
 
   return (

@@ -6,6 +6,7 @@
  */
 import React, { memo } from 'react'
 import type { FC, ReactNode } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { AppFooterWrapper } from '@/components/app-footer/style'
 import footerData from '@/assets/data/footer.json'
 
@@ -14,6 +15,12 @@ interface IProps {
 }
 
 const AppFooter: FC<IProps> = () => {
+  const navigate = useNavigate()
+
+  const handleItemClick = (url: string) => {
+    navigate(url)
+  }
+
   return (
     <AppFooterWrapper>
       <div className="wrapper">
@@ -25,8 +32,12 @@ const AppFooter: FC<IProps> = () => {
                 <div className="list">
                   {item.list.map((iten) => {
                     return (
-                      <div className="iten" key={iten}>
-                        {iten}
+                      <div
+                        className="iten"
+                        key={iten.title}
+                        onClick={() => handleItemClick(iten.url)}
+                      >
+                        {iten.title}
                       </div>
                     )
                   })}

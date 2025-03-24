@@ -1,7 +1,7 @@
 /*
  * @Date: 2025-03-13 10:21:47
  * @LastEditors: xingyi && 2416820386@qq.com
- * @LastEditTime: 2025-03-13 19:25:51
+ * @LastEditTime: 2025-03-24 15:17:03
  * @FilePath: \react-ui\config\defaultSettings.ts
  */
 import { ProLayoutProps } from '@ant-design/pro-components';
@@ -23,7 +23,7 @@ const Settings: ProLayoutProps & {
   colorWeak: false,
   title: '令牌通',
   pwa: true,
-  logo: 'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg',
+  logo: '/favicon.ico',
   iconfontUrl: '',
   siderMenuType: 'sub',
   token: {

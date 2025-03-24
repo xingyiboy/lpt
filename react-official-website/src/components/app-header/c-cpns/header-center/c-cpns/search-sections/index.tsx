@@ -1,20 +1,30 @@
+/* eslint-disable react/prop-types */
 import React, { memo } from 'react'
-import type { FC, ReactNode } from 'react'
+import type { FC } from 'react'
 import { SectionsWrapper } from './style'
 
 interface IProps {
-  children?: ReactNode
-  searchInfos: any
+  searchInfos: {
+    title: string
+    desc: string
+    url: string
+  }[]
+  onItemClick: (url: string) => void
 }
 
-const SearchSections: FC<IProps> = (props) => {
-  const { searchInfos } = props
+const SearchSections: FC<IProps> = memo((props) => {
+  const { searchInfos, onItemClick } = props
+
   return (
     <SectionsWrapper>
       <div className="content">
-        {searchInfos.map((item: any, index: number) => {
+        {searchInfos.map((item, index) => {
           return (
-            <div className="item" key={index}>
+            <div
+              key={index}
+              className="item"
+              onClick={() => onItemClick(item.url)}
+            >
               <div className="info">
                 <div className="title">{item.title}</div>
                 <div className="desc">{item.desc}</div>
@@ -25,6 +35,8 @@ const SearchSections: FC<IProps> = (props) => {
       </div>
     </SectionsWrapper>
   )
-}
+})
 
-export default memo(SearchSections)
+SearchSections.displayName = 'SearchSections'
+
+export default SearchSections

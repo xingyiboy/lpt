@@ -1,3 +1,9 @@
+/*
+ * @Date: 2025-03-14 18:17:53
+ * @LastEditors: xingyi && 2416820386@qq.com
+ * @LastEditTime: 2025-03-24 20:35:45
+ * @FilePath: \react-official-website\src\views\home\index.tsx
+ */
 import React, { memo, useEffect } from 'react'
 import type { FC, ReactNode } from 'react'
 import { HomeWrapper } from '@/views/home/style'
@@ -20,7 +26,14 @@ const Home: FC<IProps> = () => {
 
   return (
     <HomeWrapper style={{ width: '100%' }}>
-      <HomeBanner />
+      <img
+        src={require('@/assets/img/background.png')}
+        style={{
+          width: '100%',
+          height: '100vh',
+          objectFit: 'cover'
+        }}
+      />
       <AppFooter />
     </HomeWrapper>
   )

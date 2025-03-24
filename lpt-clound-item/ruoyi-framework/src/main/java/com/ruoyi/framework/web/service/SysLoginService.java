@@ -25,6 +25,7 @@ import com.ruoyi.system.mapper.SysUserMapper;
 import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.system.service.ISysUserService;
 import jakarta.annotation.Resource;
+import lpt.LptMailboxUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -45,6 +46,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Component
 public class SysLoginService {
+
     @Autowired
     private TokenService tokenService;
 
@@ -96,6 +98,7 @@ public class SysLoginService {
         }
         //设置用户id
         loginBody.setUserId(userId);
+        loginBody.setIp(IpUtils.getIpAddr());
         //发请求
         Map<String, String> data = LptSignUtil.sendLogin(loginBody, cookie);
         //存cookie 第一次请求

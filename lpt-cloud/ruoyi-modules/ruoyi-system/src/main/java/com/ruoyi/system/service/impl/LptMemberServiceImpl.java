@@ -10,12 +10,14 @@ import com.ruoyi.common.redis.service.RedisService;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import com.ruoyi.system.api.model.LoginUser;
 import com.ruoyi.system.domain.LptMember;
+import com.ruoyi.system.domain.LptMemberRecord;
 import com.ruoyi.system.domain.UserVerification;
 import com.ruoyi.system.domain.lpt.Enum.RiskTypeEnum;
 import com.ruoyi.system.domain.lpt.dto.LoginBody;
 import com.ruoyi.system.domain.lpt.dto.LoginVerify;
 import com.ruoyi.system.domain.lpt.Enum.VerificationTypeEnum;
 import com.ruoyi.system.mapper.LptMemberMapper;
+import com.ruoyi.system.mapper.LptMemberRecordMapper;
 import com.ruoyi.system.mapper.UserVerificationMapper;
 import com.ruoyi.system.service.ILptMemberService;
 import com.ruoyi.system.service.ISysConfigService;
@@ -57,6 +59,8 @@ public class LptMemberServiceImpl implements ILptMemberService
     private ISysConfigService configService;
     @Autowired
     private UserVerificationMapper userVerificationMapper;
+    @Autowired
+    private LptMemberRecordMapper lptMemberRecordMapper;
 
     private final String LPT_PREFIX = "LoginVerify-";
 
@@ -163,7 +167,6 @@ public class LptMemberServiceImpl implements ILptMemberService
         updateMember.setPassword(SaltUtils.hashPasswordWithSHA256(lptMember.getPassword(), updateMember.getSalt()));
         return lptMemberMapper.updateLptMember(updateMember);
     }
-
     /**
      * 登录
      *
@@ -224,7 +227,21 @@ public class LptMemberServiceImpl implements ILptMemberService
         LptMember lptMember = lptMemberMapper.selectLptMemberByUsername(serach);
         lptMember.setLoginIp(loginVerify.getIp());
         lptMember.setFacility(loginVerify.getDevice());
-        lptMember.setRiskNumber(loginVerify.getRiskNumber()-10);
+        if(loginVerify.getRiskNumber()-10<0){
+            lptMember.setRiskNumber(0L);
+        }else {
+            lptMember.setRiskNumber(loginVerify.getRiskNumber()-10);
+        }
+        //增加登录记录
+        LptMemberRecord lptMemberRecord = new LptMemberRecord();
+        lptMemberRecord.setUserId(loginVerify.getUserId());
+        lptMemberRecord.setLoginIp(loginVerify.getIp());
+        lptMemberRecord.setDecive(loginVerify.getDevice());
+        lptMemberRecord.setCreateTime(DateUtils.getNowDate());
+        lptMemberRecord.setLatitude(loginVerify.getLatitude());
+        lptMemberRecord.setLongitude(loginVerify.getLongitude());
+        lptMemberRecord.setMemberId(lptMember.getId());
+        lptMemberRecordMapper.insertLptMemberRecord(lptMemberRecord);
         lptMemberMapper.updateLptMember(lptMember);
         return loginVerify.getToken();
     }
@@ -534,6 +551,9 @@ public class LptMemberServiceImpl implements ILptMemberService
         loginVerify.setUserId(loginBody.getUserId());
         //生成UUID
         loginVerify.setUuid(UUID.randomUUID().toString());
+        //设置经纬度
+        loginVerify.setLatitude(loginBody.getLatitude());
+        loginVerify.setLongitude(loginBody.getLongitude());
         //存入redis
         redisService.setCacheObject(LPT_PREFIX+loginBody.getUsername(), loginVerify, TIME_OUT, TimeUnit.MINUTES);
         //返回下一步码
@@ -541,7 +561,7 @@ public class LptMemberServiceImpl implements ILptMemberService
         //用uuid存储然后最后登录成功再取出判断 防止有人直接请求最后结果导致直接登录
         map.put("uuid",loginVerify.getUuid());
         //设置验证类型步骤码
-        if(userVerifications.size()==0){
+        if(userVerifications.size()==0 || lptMember.getIsRelease()==1){
             //直接通过
             map.put("step",loginBefore(loginVerify));
         }else {
@@ -631,7 +651,7 @@ public class LptMemberServiceImpl implements ILptMemberService
         return image;
     }
 
-    private String handleEmailValidation(LoginBody loginBody,LoginVerify loginVerify) {
+    private String  handleEmailValidation(LoginBody loginBody,LoginVerify loginVerify) {
         //判断是否开始校验
         if(loginBody.getCode()!=null){
             //校验字符 是否和redis存入的一样

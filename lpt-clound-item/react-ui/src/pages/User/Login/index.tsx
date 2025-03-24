@@ -1,7 +1,7 @@
 /*
  * @Date: 2025-03-16 16:12:47
  * @LastEditors: xingyi && 2416820386@qq.com
- * @LastEditTime: 2025-03-23 20:48:05
+ * @LastEditTime: 2025-03-24 17:22:29
  * @FilePath: \react-ui\src\pages\User\Login\index.tsx
  */
 import Footer from '@/components/Footer';
@@ -106,7 +106,11 @@ const Login: React.FC = () => {
   const { initialState, setInitialState } = useModel('@@initialState');
   const [captchaInput, setCaptchaInput] = useState('');
   const [ip, setIp] = useState('');
-  const [location, setLocation] = useState(null);
+  const [location, setLocation] = useState({
+    latitude: null,
+    longitude: null,
+    error: null,
+  });
   const browserInfo = {
     name: navigator.appName,
     version: navigator.appVersion,
@@ -168,15 +172,29 @@ const Login: React.FC = () => {
         setIp(data.query); // 在新的API返回中，IP 地址存储在 `query` 字段中
       })
       .catch((error) => console.error('Error fetching IP address:', error));
-    // 获取地理位置
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          const { latitude, longitude } = position.coords;
-          setLocation({ latitude, longitude });
+          setLocation({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            error: null,
+          });
         },
-        (error) => console.error('Error getting location:', error),
+        (error) => {
+          setLocation({
+            latitude: null,
+            longitude: null,
+            error: error.message,
+          });
+        },
       );
+    } else {
+      setLocation({
+        latitude: null,
+        longitude: null,
+        error: 'Geolocation is not supported by this browser.',
+      });
     }
     const script = document.createElement('script');
     script.src = load;
@@ -221,7 +239,7 @@ const Login: React.FC = () => {
         //执行邮箱校验
         closeAllValidation();
         setShowMailboxValidation(true);
-        getCodeDataAndVerify(false, '3');
+        setTimeout(() => getCodeDataAndVerify(false, '3'), 1500);
         message.success('验证成功，开始邮箱校验');
         break;
       case '4':
@@ -369,6 +387,8 @@ const Login: React.FC = () => {
         step: 0,
         ip: ip,
         device: browserInfo.userAgent,
+        latitude: location.latitude,
+        longitude: location.longitude,
       });
       // 存储到 ref
       loginValuesRef.current = values;
@@ -432,9 +452,6 @@ const Login: React.FC = () => {
 
   return (
     <div className={containerClassName}>
-      <div style={{ marginLeft: '10px' }}>
-        <p>IP: {ip}</p>
-      </div>
       <Helmet>
         <title>
           {intl.formatMessage({

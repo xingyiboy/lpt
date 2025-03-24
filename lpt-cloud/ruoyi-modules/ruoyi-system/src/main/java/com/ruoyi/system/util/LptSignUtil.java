@@ -99,6 +99,7 @@ public class LptSignUtil {
         return URLDecoder.decode(value, "UTF-8");
     }
 
+
     /**
      * 加密
      * @param plainText

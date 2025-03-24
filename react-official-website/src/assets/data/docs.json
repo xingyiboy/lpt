@@ -1,0 +1,59 @@
+{
+  "sidebar": [
+    {
+      "title": "萌新必读",
+      "children": [
+        {
+          "title": "简介",
+          "path": "/docs/introduction",
+          "content": "这是一个简介页面的详细内容...",
+          "anchors": [
+            {
+              "title": "什么是令牌通",
+              "id": "what-is-lpt"
+            },
+            {
+              "title": "特性",
+              "id": "features"
+            }
+          ]
+        },
+        {
+          "title": "快速开始",
+          "path": "/docs/quick-start",
+          "content": "快速开始的详细内容...",
+          "anchors": [
+            {
+              "title": "环境准备",
+              "id": "environment"
+            },
+            {
+              "title": "安装步骤",
+              "id": "installation"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "进阶指南",
+      "children": [
+        {
+          "title": "技术架构",
+          "path": "/docs/architecture",
+          "content": "技术架构的详细内容...",
+          "anchors": [
+            {
+              "title": "整体设计",
+              "id": "design"
+            },
+            {
+              "title": "核心模块",
+              "id": "core-modules"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

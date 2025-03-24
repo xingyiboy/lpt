@@ -15,6 +15,7 @@ import com.ruoyi.system.domain.lpt.dto.LptData;
 import com.ruoyi.system.domain.lpt.dto.LptSginDTO;
 import com.ruoyi.system.mapper.SysUserMapper;
 import com.ruoyi.system.util.LptSignUtil;
+import lpt.LptMailboxUtil;
 import lpt.application.LptImageCaptchaApplication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -156,6 +157,8 @@ public class LptMemberController extends BaseController
     @PutMapping
     public AjaxResult edit(@RequestBody LptMember lptMember)
     {
+        LptMember lptMember1 = lptMemberService.selectLptMemberById(lptMember.getId());
+        lptMember.setUsername(lptMember1.getUsername());
         lptMember.setUserId(SecurityUtils.getLoginUser().getUserid());
         return toAjax(lptMemberService.updateLptMember(lptMember));
     }

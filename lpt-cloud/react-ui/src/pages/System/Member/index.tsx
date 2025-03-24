@@ -19,6 +19,7 @@ import { FormattedMessage, useAccess, useIntl } from '@umijs/max'; // 导入国�
 import type { FormInstance } from 'antd'; // 导入FormInstance类型
 import { Button, Form, Input, message, Modal, Switch } from 'antd'; // 导入Ant Design的组件
 import React, { useEffect, useRef, useState } from 'react'; // 导入React相关函数
+import MemberRecordModal from './components/MemberRecordModal'; // 导入查看日志的组件
 import UpdateForm from './edit'; // 导入编辑表单组件
 
 /**
@@ -128,11 +129,11 @@ const MemberTableList: React.FC = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false); // 控制模态框的显示
   const [resetPwdModalVisible, setResetPwdModalVisible] = useState<boolean>(false);
   const [resetPwdForm] = Form.useForm();
-  const [selectedMember, setSelectedMember] = useState<API.System.LptMember>();
+  const [selectedMemberId, setSelectedMemberId] = useState<number>();
 
   const actionRef = useRef<ActionType>(); // 创建ActionType引用
-  const [currentRow, setCurrentRow] = useState<API.System.LptMember>(); // 当前选中的行
-  const [selectedRows, setSelectedRows] = useState<API.System.LptMember[]>([]); // 选中的行数组
+  const [currentRow, setCurrentRow] = useState<API.System.LptMember>();
+  const [selectedRows, setSelectedRows] = useState<API.System.LptMember[]>([]);
 
   const [statusOptions, setStatusOptions] = useState<any>([]); // 状态选项
 
@@ -259,7 +260,7 @@ const MemberTableList: React.FC = () => {
             style={{ width: 100, height: 100, objectFit: 'cover' }} // 你可以调整图片的尺寸
           />
         ) : (
-          <span>没有图片</span> // 如果没有图片显示“没有图片”
+          <span>没有图片</span> // 如果没有图片显示"没有图片"
         );
       },
     },
@@ -288,7 +289,7 @@ const MemberTableList: React.FC = () => {
           key="resetPwd"
           hidden={!access.hasPerms('system:member:edit')}
           onClick={() => {
-            setSelectedMember(record);
+            setSelectedMemberId(record.id);
             setResetPwdModalVisible(true);
             resetPwdForm.setFieldsValue({
               id: record.id,
@@ -322,6 +323,17 @@ const MemberTableList: React.FC = () => {
         >
           删除
         </Button>,
+        <Button
+          type="link"
+          size="small"
+          key="viewLog"
+          onClick={() => {
+            setSelectedMemberId(record.id);
+            setLogModalVisible(true);
+          }}
+        >
+          查看日志
+        </Button>,
       ],
     },
   ];
@@ -343,6 +355,8 @@ const MemberTableList: React.FC = () => {
       message.error('密码重置失败，请重试');
     }
   };
+
+  const [logModalVisible, setLogModalVisible] = useState<boolean>(false);
 
   return (
     <PageContainer>
@@ -506,11 +520,19 @@ const MemberTableList: React.FC = () => {
           >
             <Input.Password placeholder="请输入新密码" />
           </Form.Item>
-          <Form.Item name="id" hidden initialValue={selectedMember?.id}>
+          <Form.Item name="id" hidden initialValue={selectedMemberId}>
             <Input />
           </Form.Item>
         </Form>
       </Modal>
+      <MemberRecordModal
+        open={logModalVisible}
+        onCancel={() => {
+          setLogModalVisible(false);
+          setSelectedMemberId(undefined);
+        }}
+        memberId={selectedMemberId}
+      />
     </PageContainer>
   );
 };

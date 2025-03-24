@@ -1,18 +1,74 @@
 [
   {
     "name": "令牌通",
-    "list": ["平台简介", "快速入门", "技术选型"]
+    "list": [
+      {
+        "title": "平台简介",
+        "url": "/platform/intro"
+      },
+      {
+        "title": "快速入门",
+        "url": "/quick-start"
+      },
+      {
+        "title": "技术选型",
+        "url": "/tech-stack"
+      }
+    ]
   },
   {
     "name": "平台对接",
-    "list": ["用户对接", "验证对接", "接口文档", "签名方式"]
+    "list": [
+      {
+        "title": "用户对接",
+        "url": "/user/integration"
+      },
+      {
+        "title": "验证对接",
+        "url": "/auth/integration"
+      },
+      {
+        "title": "接口文档",
+        "url": "/api/docs"
+      },
+      {
+        "title": "签名方式",
+        "url": "/signature"
+      }
+    ]
   },
   {
     "name": "合作",
-    "list": ["私有化部署", "加入团队", "代理平台"]
+    "list": [
+      {
+        "title": "私有化部署",
+        "url": "/private-deployment"
+      },
+      {
+        "title": "加入团队",
+        "url": "/join-us"
+      },
+      {
+        "title": "代理平台",
+        "url": "/proxy"
+      }
+    ]
   },
   {
     "name": "客服支持",
-    "list": ["帮助", "常见问题", "联系我们"]
+    "list": [
+      {
+        "title": "帮助",
+        "url": "/help"
+      },
+      {
+        "title": "常见问题",
+        "url": "/faq"
+      },
+      {
+        "title": "联系我们",
+        "url": "/contact"
+      }
+    ]
   }
 ]
