@@ -1,12 +1,7 @@
 package com.ruoyi.system.util;
 
-import com.alibaba.druid.support.json.JSONUtils;
 import com.alibaba.nacos.common.utils.MD5Utils;
-import lpt.LptCharacterUtil;
-import org.springframework.http.*;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
@@ -21,10 +16,6 @@ import java.util.*;
  */
 @Component
 public class LptSignUtil {
-
-    private static final RestTemplate restTemplate = new RestTemplate();
-    private static final ObjectMapper objectMapper = new ObjectMapper();
-
 
     /**
      * 生成签名
@@ -168,82 +159,6 @@ public class LptSignUtil {
         // 解密并转换回字符串
         byte[] decrypted = cipher.doFinal(encryptedBytes);
         return new String(decrypted, "UTF-8");
-    }
-
-    /**
-     * 发送API请求
-     *
-     * @param dataMap    请求数据
-     * @param url        请求URL
-     * @return 响应结果
-     */
-    public static String sendApiRequest(Map<String, String> dataMap, String url,String appSecret,String aesIv) {
-        try {
-            // 1. 准备公共请求参数
-            String timestamp = generateTimestamp();
-
-            // 2. 转换请求数据为JSON字符串
-            String jsonString = JSONUtils.toJSONString(dataMap);
-
-            // 3. 构建请求参数Map
-            Map<String, String> params = new HashMap<>();
-            params.put("timestamp", timestamp);
-            params.put("data", jsonString);
-
-            // 4. 生成签名
-            String sign = generateSign(params,appSecret);
-            params.put("sign", sign);
-
-            // 5. AES加密数据
-            String encryptedData = encrypt(jsonString,appSecret,aesIv);
-            params.put("data", encryptedData);
-
-            // 6. 构建HTTP请求体
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            HttpEntity<Map<String, String>> entity = new HttpEntity<>(params, headers);
-
-            // 7. 发送POST请求
-            ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
-
-            // 8. 处理响应
-            if (response.getStatusCode() == HttpStatus.OK) {
-                String responseBody = response.getBody();
-                Map<String, Object> responseMap = objectMapper.readValue(responseBody, Map.class);
-                return processResponse(responseMap,appSecret,aesIv);
-            } else {
-                return null;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    /**
-     * 处理响应结果
-     *
-     * @param responseMap 响应结果
-     * @return 处理后的数据
-     */
-    private static String processResponse(Map<String, Object> responseMap, String appSecret, String aesIv) {
-        String resultCode = (String) responseMap.get("resultcode");
-        String msg = (String) responseMap.get("msg");
-        Object data = responseMap.get("data");
-
-        System.out.println("结果代码: " + resultCode);
-        System.out.println("信息: " + msg);
-
-        if (data != null) {
-            try {
-                String decryptedData = decrypt(data.toString(),appSecret,aesIv);
-                return decryptedData;
-            } catch (Exception e) {
-                System.out.println("解密失败");
-                return null;
-            }
-        }
-        return null;
     }
 
     /**

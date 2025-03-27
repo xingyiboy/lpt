@@ -65,20 +65,17 @@ public class SysLoginService {
     @Autowired
     private ISysConfigService configService;
 
+    @Autowired
+    private LptSignUtil lptSignUtil;
+
     private final String COOKIE_NAME = "lpt-cookie-";
 
 
-    private final String appSecret;
-    private final String aesIv;
     private final Long userId;
 
     public SysLoginService(
-            @Value("${lpt.appSecret}") String appSecret,
-            @Value("${lpt.aesIv}") String aesIv,
             @Value("${lpt.userId}") Long userId
     ) {
-        this.appSecret = appSecret;
-        this.aesIv = aesIv;
         this.userId = userId;
     }
 
@@ -100,7 +97,7 @@ public class SysLoginService {
         loginBody.setUserId(userId);
         loginBody.setIp(IpUtils.getIpAddr());
         //发请求
-        Map<String, String> data = LptSignUtil.sendLogin(loginBody, cookie);
+        Map<String, String> data = lptSignUtil.sendLogin(loginBody, cookie);
         //存cookie 第一次请求
         if (loginBody.getStep()!=null&&loginBody.getStep().equals(0)) {
             redisCache.setCacheObject(COOKIE_NAME + loginBody.getUsername(), data.get("cookie"), 1, TimeUnit.DAYS);

@@ -30,17 +30,14 @@ public class SysRegisterController extends BaseController
     @Autowired
     private ISysConfigService configService;
 
-    private final String appSecret;
-    private final String aesIv;
+    @Autowired
+    private LptSignUtil lptSignUtil;
+
     private final Long userId;
 
     public SysRegisterController(
-            @Value("${lpt.appSecret}") String appSecret,
-            @Value("${lpt.aesIv}") String aesIv,
             @Value("${lpt.userId}") Long userId
     ) {
-        this.appSecret = appSecret;
-        this.aesIv = aesIv;
         this.userId = userId;
     }
 
@@ -53,7 +50,7 @@ public class SysRegisterController extends BaseController
         map.put("userId", userId);
         map.put("username", user.getUsername());
         map.put("password", user.getPassword());
-        LptSignUtil.sendAdd(map);
+        lptSignUtil.sendAdd(map);
         return StringUtils.isEmpty(msg) ? success() : error(msg);
     }
 }

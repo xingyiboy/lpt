@@ -1,13 +1,9 @@
 package com.ruoyi.framework.web.Util;
 
-import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.druid.support.json.JSONUtils;
-import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.utils.sign.Md5Utils;
-import jakarta.servlet.http.HttpSession;
-import lpt.faceDTO.LptFaceCompareRepVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -27,9 +23,6 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.*;
-import java.util.stream.Collectors;
-
-import static cn.hutool.http.cookie.GlobalCookieManager.getCookies;
 
 /**
  * 令牌通接口对接
@@ -37,14 +30,151 @@ import static cn.hutool.http.cookie.GlobalCookieManager.getCookies;
 @Component
 public class LptSignUtil {
 
-    private static final RestTemplate restTemplate = new RestTemplate();
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    /**
+     * 常用属性注入
+     */
+    private final String appSecret;
+    private final String aesIv;
+    private final Long userId;
 
-    @Autowired
-    private RedisCache redisCache;
+    public LptSignUtil(
+            @Value("${lpt.appSecret}") String appSecret,
+            @Value("${lpt.aesIv}") String aesIv,
+            @Value("${lpt.userId}") Long userId
+    ) {
+        this.appSecret = appSecret;
+        this.aesIv = aesIv;
+        this.userId = userId;
+    }
 
-    public static void sendAdd(Object newUesr) {
+    /**
+     * 处理响应结果
+     *
+     * @param responseMap 响应结果
+     * @return 处理后的数据
+     */
+    private String processResponse(Map<String, Object> responseMap) {
+        String resultCode = (String) responseMap.get("resultcode");
+        String msg = (String) responseMap.get("sign");
+        Object data = responseMap.get("data");
+
+
+        if (data != null) {
+            try {
+                String decryptedData = decrypt(data.toString());
+                return decryptedData;
+            } catch (Exception e) {
+                System.out.println("解密失败");
+                return null;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 登录
+     * @param data
+     * @param cookie
+     * @return
+     */
+    public  Map<String, String> sendLogin(Object data, String cookie){
         try {
+            // 1. 准备公共请求参数
+            String timestamp = generateTimestamp();
+
+            // 2. 转换请求数据为JSON字符串
+
+            String jsonString = JSONUtil.toJsonStr(data);
+
+            // 3. 构建请求参数Map
+            Map<String, String> params = new HashMap<>();
+            params.put("timestamp", timestamp);
+            params.put("data", jsonString);
+            params.put("userId", String.valueOf(userId));
+
+            // 4. 生成签名
+            String sign = generateSign(params);
+            params.put("sign", sign);
+
+            // 5. AES加密数据
+            String encryptedData = encrypt(jsonString);
+            params.put("data", encryptedData);
+
+            URL url = new URL("http://localhost:8080/system/member/login");
+            // 打开连接
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setDoOutput(true);  // 允许输出内容
+            connection.setRequestProperty("Content-Type", "application/json");  // 设置请求类型
+            connection.setRequestProperty("Authorization", "Bearer <your-token>");  // 替换为实际的令牌
+            if (cookie != null) {
+                connection.setRequestProperty("Cookie", cookie);
+            }
+            // 要发送的数据（JSON格式）
+            String jsonInputString = JSONUtil.toJsonStr(params);
+
+            // 发送请求数据
+            try (OutputStream os = connection.getOutputStream()) {
+                byte[] input = jsonInputString.getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
+
+            // 获取响应代码
+            int responseCode = connection.getResponseCode();
+            System.out.println("Response Code: " + responseCode);
+            Map<String, String> responseMap = new HashMap<>();
+            // 读取响应内容并提取 cookies
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"))) {
+                String inputLine;
+                StringBuilder response = new StringBuilder();
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+
+                // 提取 Set-Cookie 响应头
+                Map<String, List<String>> headers = connection.getHeaderFields();
+                List<String> cookiesHeader = headers.get("Set-Cookie");
+                if (cookiesHeader != null) {
+                    for (String setCookie : cookiesHeader) {
+                        responseMap.put("cookie",setCookie);
+                    }
+                }
+                String decrypt = decrypt(response.toString());
+                responseMap.put("response",decrypt);
+                return responseMap;
+            }
+
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * 创建用户
+     * @param newUesr
+     */
+    public void sendAdd(Object newUesr) {
+        try {
+            // 1. 准备公共请求参数
+            String timestamp = generateTimestamp();
+
+            // 2. 转换请求数据为JSON字符串
+            String jsonString = JSONUtils.toJSONString(newUesr);
+
+            // 3. 构建请求参数Map
+            Map<String, String> params = new HashMap<>();
+            params.put("timestamp", timestamp);
+            params.put("data", jsonString);
+            params.put("userId", String.valueOf(userId));
+
+            // 4. 生成签名
+            String sign = generateSign(params);
+            params.put("sign", sign);
+
+            // 5. AES加密数据
+            String encryptedData = encrypt(jsonString);
+            params.put("data", encryptedData);
+
             URL url = new URL("http://localhost:8080/system/member/addHttp");
             // 打开连接
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -53,7 +183,7 @@ public class LptSignUtil {
             connection.setRequestProperty("Content-Type", "application/json");  // 设置请求类型
             connection.setRequestProperty("Authorization", "Bearer <your-token>");  // 替换为实际的令牌
             // 要发送的数据（JSON格式）
-            String jsonInputString = JSONUtil.toJsonStr(newUesr);
+            String jsonInputString = JSONUtil.toJsonStr(params);
 
             // 发送请求数据
             try (OutputStream os = connection.getOutputStream()) {
@@ -81,15 +211,40 @@ public class LptSignUtil {
                         responseMap.put("cookie",setCookie);
                     }
                 }
-                responseMap.put("response",response.toString());
+                String decrypt = decrypt(response.toString());
+                responseMap.put("response",decrypt);
             }
 
         } catch (Exception e) {
         }
     }
 
-    public static void sendUpdate(Object newUesr) {
+    /**
+     * 更新用户
+     * @param newUesr
+     */
+    public void sendUpdate(Object newUesr) {
         try {
+            // 1. 准备公共请求参数
+            String timestamp = generateTimestamp();
+
+            // 2. 转换请求数据为JSON字符串
+            String jsonString = JSONUtils.toJSONString(newUesr);
+
+            // 3. 构建请求参数Map
+            Map<String, String> params = new HashMap<>();
+            params.put("timestamp", timestamp);
+            params.put("data", jsonString);
+            params.put("userId", String.valueOf(userId));
+
+            // 4. 生成签名
+            String sign = generateSign(params);
+            params.put("sign", sign);
+
+            // 5. AES加密数据
+            String encryptedData = encrypt(jsonString);
+            params.put("data", encryptedData);
+
             URL url = new URL("http://localhost:8080/system/member/editHttp");
             // 打开连接
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -98,7 +253,7 @@ public class LptSignUtil {
             connection.setRequestProperty("Content-Type", "application/json");  // 设置请求类型
             connection.setRequestProperty("Authorization", "Bearer <your-token>");  // 替换为实际的令牌
             // 要发送的数据（JSON格式）
-            String jsonInputString = JSONUtil.toJsonStr(newUesr);
+            String jsonInputString = JSONUtil.toJsonStr(params);
 
             // 发送请求数据
             try (OutputStream os = connection.getOutputStream()) {
@@ -126,26 +281,14 @@ public class LptSignUtil {
                         responseMap.put("cookie",setCookie);
                     }
                 }
-                responseMap.put("response",response.toString());
+                String decrypt = decrypt(response.toString());
+                responseMap.put("response",decrypt);
             }
 
         } catch (Exception e) {
         }
     }
 
-//    /**
-//     * 常用属性注入
-//     */
-//    private final String appSecret;
-//    private final String aesIv;
-//
-//    public LptSignUtil(
-//            @Value("${signature.appSecret}") String appSecret,
-//            @Value("${signature.aesIv}") String aesIv
-//    ) {
-//        this.appSecret = appSecret;
-//        this.aesIv = aesIv;
-//    }
 
     /**
      * 生成签名
@@ -154,7 +297,7 @@ public class LptSignUtil {
      * @return 签名字符串
      * @throws Exception 异常
      */
-    public String generateSign(Map<String, String> params,String appSecret) throws Exception {
+    public String generateSign(Map<String, String> params) throws Exception {
         // 1. 移除sign参数
         Map<String, String> filteredParams = new HashMap<>(params);
         filteredParams.remove("sign");
@@ -189,7 +332,7 @@ public class LptSignUtil {
      * @param s 十六进制字符串
      * @return 字节数组
      */
-    private static byte[] hexStringToByteArray(String s) {
+    private byte[] hexStringToByteArray(String s) {
         int len = s.length();
         if (len % 2 != 0) {
             throw new IllegalArgumentException("十六进制字符串长度必须是偶数");
@@ -203,7 +346,7 @@ public class LptSignUtil {
     }
 
     // URL 编码方法
-    public static String encode(String value) throws UnsupportedEncodingException {
+    public String encode(String value) throws UnsupportedEncodingException {
         if (value == null) {
             return null;
         }
@@ -212,7 +355,7 @@ public class LptSignUtil {
     }
 
     // URL 解码方法
-    public static String decode(String value) throws UnsupportedEncodingException {
+    public String decode(String value) throws UnsupportedEncodingException {
         if (value == null) {
             return null;
         }
@@ -220,7 +363,13 @@ public class LptSignUtil {
         return URLDecoder.decode(value, "UTF-8");
     }
 
-    public  String encrypt(String plainText,String appSecret,String aesIv) throws Exception {
+    /**
+     * AES 加密
+     * @param plainText
+     * @return
+     * @throws Exception
+     */
+    public String encrypt(String plainText) throws Exception {
         byte[] keyBytes = appSecret.getBytes("UTF-8");
         if (keyBytes.length != 32) {
             throw new IllegalArgumentException("密钥长度必须为 32 字节 (256 位)!");
@@ -244,7 +393,13 @@ public class LptSignUtil {
         return base64Encoded;
     }
 
-    public String decrypt(String encryptedText,String appSecret,String aesIv) throws Exception {
+    /**
+     * AES 解密
+     * @param encryptedText
+     * @return
+     * @throws Exception
+     */
+    public String decrypt(String encryptedText) throws Exception {
         //用URL解码
         encryptedText = decode(encryptedText);
 
@@ -275,137 +430,11 @@ public class LptSignUtil {
     }
 
     /**
-     * 发送API请求
-     *
-     * @param dataMap    请求数据
-     * @param url        请求URL
-     * @return 响应结果
-     */
-    public  String sendApiRequest(Map<String, String> dataMap, String url, String appSecret, String aesIv)  {
-        try {
-            // 1. 准备公共请求参数
-            String timestamp = generateTimestamp();
-
-            // 2. 转换请求数据为JSON字符串
-            String jsonString = JSONUtils.toJSONString(dataMap);
-
-            // 3. 构建请求参数Map
-            Map<String, String> params = new HashMap<>();
-            params.put("timestamp", timestamp);
-            params.put("data", jsonString);
-
-            // 4. 生成签名
-            String sign = generateSign(params, appSecret);
-            params.put("sign", sign);
-
-            // 5. AES加密数据
-            String encryptedData = encrypt(jsonString, appSecret, aesIv);
-            params.put("data", encryptedData);
-
-            // 6. 构建HTTP请求体
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            HttpEntity<Map<String, String>> entity = new HttpEntity<>(params, headers);
-
-            // 7. 发送POST请求
-            ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
-
-            // 8. 处理响应
-            if (response.getStatusCode() == HttpStatus.OK) {
-                String responseBody = response.getBody();
-                Map<String, Object> responseMap = objectMapper.readValue(responseBody, Map.class);
-                return processResponse(responseMap, appSecret, aesIv);
-            } else {
-                return null;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public static Map<String, String> sendLogin(Object data, String cookie){
-        try {
-            URL url = new URL("http://localhost:8080/system/member/login");
-            // 打开连接
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setDoOutput(true);  // 允许输出内容
-            connection.setRequestProperty("Content-Type", "application/json");  // 设置请求类型
-            connection.setRequestProperty("Authorization", "Bearer <your-token>");  // 替换为实际的令牌
-            if (cookie != null) {
-                connection.setRequestProperty("Cookie", cookie);
-            }
-            // 要发送的数据（JSON格式）
-            String jsonInputString = JSONUtil.toJsonStr(data);
-
-            // 发送请求数据
-            try (OutputStream os = connection.getOutputStream()) {
-                byte[] input = jsonInputString.getBytes("utf-8");
-                os.write(input, 0, input.length);
-            }
-
-            // 获取响应代码
-            int responseCode = connection.getResponseCode();
-            System.out.println("Response Code: " + responseCode);
-            Map<String, String> responseMap = new HashMap<>();
-            // 读取响应内容并提取 cookies
-            try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"))) {
-                String inputLine;
-                StringBuilder response = new StringBuilder();
-                while ((inputLine = in.readLine()) != null) {
-                    response.append(inputLine);
-                }
-
-                // 提取 Set-Cookie 响应头
-                Map<String, List<String>> headers = connection.getHeaderFields();
-                List<String> cookiesHeader = headers.get("Set-Cookie");
-                if (cookiesHeader != null) {
-                    for (String setCookie : cookiesHeader) {
-                        responseMap.put("cookie",setCookie);
-                    }
-                }
-                responseMap.put("response",response.toString());
-                return responseMap;
-            }
-
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    /**
-     * 处理响应结果
-     *
-     * @param responseMap 响应结果
-     * @return 处理后的数据
-     */
-    private String processResponse(Map<String, Object> responseMap ,String appSecret, String aesIv) {
-        String resultCode = (String) responseMap.get("resultcode");
-        String msg = (String) responseMap.get("msg");
-        Object data = responseMap.get("data");
-
-        System.out.println("结果代码: " + resultCode);
-        System.out.println("信息: " + msg);
-
-        if (data != null) {
-            try {
-                String decryptedData = decrypt(data.toString(),appSecret,aesIv);
-                return decryptedData;
-            } catch (Exception e) {
-                System.out.println("解密失败");
-                return null;
-            }
-        }
-        return null;
-    }
-
-    /**
      * 生成时间戳
      *
      * @return 时间戳
      */
-    private static String generateTimestamp() {
+    private String generateTimestamp() {
         // 这里实现时间戳的生成逻辑
         return String.valueOf(System.currentTimeMillis());
     }

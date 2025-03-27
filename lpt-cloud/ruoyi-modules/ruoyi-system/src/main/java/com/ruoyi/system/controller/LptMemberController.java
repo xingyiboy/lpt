@@ -6,6 +6,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import cn.hutool.json.JSONUtil;
+import com.alibaba.druid.support.json.JSONUtils;
+import com.alibaba.fastjson2.JSON;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import com.ruoyi.system.api.domain.SysUser;
@@ -57,34 +60,46 @@ public class LptMemberController extends BaseController
      * @return
      */
     @PostMapping("/login")
-    public Object login(@RequestBody LoginBody loginBody,HttpSession session){
-        if(loginBody.getUserId()==null){
-            throw new RuntimeException("用户id不能为空");
-        }
-        //将token带上前缀
-        if(loginBody.getToken()!=null){
-            loginBody.setToken("token:"+loginBody.getToken());
-        }
-        //TODO 后面加上签名 AES加密
-        return lptMemberService.login(loginBody, session);
-    }
+    public String login(@RequestBody LptData lptData,HttpSession session){
+        try{
+            long currentTime = System.currentTimeMillis();  // 获取当前时间的时间戳
+            long timestamp = Long.parseLong(lptData.getTimestamp());  // 获取 lptData 中的时间戳
+            // 判断时间戳是否在10分钟内
+            if (currentTime - timestamp <= 10 * 60 * 1000) {
+                SysUser sysUser = sysUserMapper.selectUserById(Long.valueOf(lptData.getUserId()));
+                //解密
+                String decrypt = LptSignUtil.decrypt(lptData.getData(), sysUser.getSecretKey(), sysUser.getOffset());
+                //解密后转换成对象
+                LoginBody loginBody = JSON.parseObject(decrypt, LoginBody.class);
+                //判断签名是否正确
+                // 3. 构建请求参数Map
+                Map<String, String> params = new HashMap<>();
+                params.put("timestamp", lptData.getTimestamp());
+                params.put("data", decrypt);
+                params.put("userId", lptData.getUserId());
+                // 4. 判断签名是否正确
+                if(!LptSignUtil.generateSign(params,sysUser.getSecretKey()).equals(lptData.getSign())){
+                    throw new RuntimeException("签名错误");
+                }
+                //完成
+                if(StringUtils.isBlank(loginBody.getUserId().toString())){
+                    throw new RuntimeException("用户id不能为空");
+                }
+                //将token带上前缀
+                if(loginBody.getToken()!=null){
+                    loginBody.setToken("token:"+loginBody.getToken());
+                }
 
-//    private LptData getSignData(LptSginDTO lptSginDTO){
-//        if(lptSginDTO.getUserId()==null||StringUtils.isEmpty(lptSginDTO.getUserId().toString())){
-//            throw new RuntimeException("用户id不能为空");
-//        }
-//        SysUser sysUser = sysUserMapper.selectUserById(lptSginDTO.getUserId());
-//        if(sysUser==null){
-//            throw new RuntimeException("userId系统用户不存在");
-//        }
-//        String decryptString = null;
-//        try {
-//            decryptString = LptSignUtil.decrypt(lptSginDTO.getData(),sysUser.getSecretKey(),sysUser.getOffset())
-//        } catch (Exception e) {
-//            throw new RuntimeException("签名错误，解密失败:"+e);
-//        }
-//
-//    }
+                String jsonString = JSONUtil.toJsonStr(lptMemberService.login(loginBody, session));
+                return LptSignUtil.encrypt(jsonString, sysUser.getSecretKey(), sysUser.getOffset());
+
+            }else{
+                throw new RuntimeException("时间戳过期");
+            }
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
 
     /**
      * 查询成员列表
@@ -138,15 +153,44 @@ public class LptMemberController extends BaseController
      */
     @Log(title = "成员", businessType = BusinessType.INSERT)
     @PostMapping("/addHttp")
-    public AjaxResult addHttp(@RequestBody LptMember lptMember)
+    public String addHttp(@RequestBody LptData lptData)
     {
-        lptMember.setRiskNumber(0L);
-        if(lptMember.getUserId() == null){
-            throw new RuntimeException("用户id不能为空");
-        }
-        return toAjax(lptMemberService.insertLptMember(lptMember));
-    }
+        try{
+            long currentTime = System.currentTimeMillis();  // 获取当前时间的时间戳
+            long timestamp = Long.parseLong(lptData.getTimestamp());  // 获取 lptData 中的时间戳
+            // 判断时间戳是否在10分钟内
+            if (currentTime - timestamp <= 10 * 60 * 1000) {
+                SysUser sysUser = sysUserMapper.selectUserById(Long.valueOf(lptData.getUserId()));
+                //解密
+                String decrypt = LptSignUtil.decrypt(lptData.getData(), sysUser.getSecretKey(), sysUser.getOffset());
+                //解密后转换成对象
+                LptMember lptMember = JSON.parseObject(decrypt, LptMember.class);
+                //判断签名是否正确
+                // 3. 构建请求参数Map
+                Map<String, String> params = new HashMap<>();
+                params.put("timestamp", lptData.getTimestamp());
+                params.put("data", decrypt);
+                params.put("userId", lptData.getUserId());
+                // 4. 判断签名是否正确
+                if(!LptSignUtil.generateSign(params,sysUser.getSecretKey()).equals(lptData.getSign())){
+                    throw new RuntimeException("签名错误");
+                }
+                //完成
+                lptMember.setRiskNumber(0L);
+                if(lptMember.getUserId() == null){
+                    throw new RuntimeException("用户id不能为空");
+                }
+                String jsonString = JSONUtil.toJsonStr(toAjax(lptMemberService.insertLptMember(lptMember)));
+                return LptSignUtil.encrypt(jsonString, sysUser.getSecretKey(), sysUser.getOffset());
 
+            }else{
+                throw new RuntimeException("时间戳过期");
+            }
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+
+    }
 
 
     /**
@@ -168,16 +212,44 @@ public class LptMemberController extends BaseController
      */
     @Log(title = "成员", businessType = BusinessType.UPDATE)
     @PutMapping("/editHttp")
-    public AjaxResult editHttp(@RequestBody LptMember lptMember)
+    public String editHttp(@RequestBody LptData lptData)
     {
-        System.out.println("123123");
-        if (lptMember.getUserId() == null) {
-            throw new RuntimeException("用户id不能为空");
+        try{
+            long currentTime = System.currentTimeMillis();  // 获取当前时间的时间戳
+            long timestamp = Long.parseLong(lptData.getTimestamp());  // 获取 lptData 中的时间戳
+            // 判断时间戳是否在10分钟内
+            if (currentTime - timestamp <= 10 * 60 * 1000) {
+                SysUser sysUser = sysUserMapper.selectUserById(Long.valueOf(lptData.getUserId()));
+                //解密
+                String decrypt = LptSignUtil.decrypt(lptData.getData(), sysUser.getSecretKey(), sysUser.getOffset());
+                //解密后转换成对象
+                LptMember lptMember = JSON.parseObject(decrypt, LptMember.class);
+                //判断签名是否正确
+                // 3. 构建请求参数Map
+                Map<String, String> params = new HashMap<>();
+                params.put("timestamp", lptData.getTimestamp());
+                params.put("data", decrypt);
+                params.put("userId", lptData.getUserId());
+                // 4. 判断签名是否正确
+                if(!LptSignUtil.generateSign(params,sysUser.getSecretKey()).equals(lptData.getSign())){
+                    throw new RuntimeException("签名错误");
+                }
+                //完成
+                if (lptMember.getUserId() == null) {
+                    throw new RuntimeException("用户id不能为空");
+                }
+                if (lptMember.getUsername() == null) {
+                    throw new RuntimeException("会员账号不能为空");
+                }
+                String jsonString = JSONUtil.toJsonStr(toAjax(lptMemberService.updateLptMember(lptMember)));
+                return LptSignUtil.encrypt(jsonString, sysUser.getSecretKey(), sysUser.getOffset());
+
+            }else{
+                throw new RuntimeException("时间戳过期");
+            }
+        }catch (Exception e){
+            throw new RuntimeException(e);
         }
-        if (lptMember.getUsername() == null) {
-            throw new RuntimeException("会员账号不能为空");
-        }
-        return toAjax(lptMemberService.updateLptMember(lptMember));
     }
 
     /**

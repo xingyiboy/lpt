@@ -233,8 +233,34 @@ const DocsPage: React.FC = () => {
   const renderContent = () => {
     if (!currentContent?.content) return null
 
-    // 将换行符转换为段落
     const paragraphs = currentContent.content.split('\n\n').map((p, index) => {
+      // 处理图片
+      if (p.startsWith('![')) {
+        const match = p.match(/!\[(.*?)\]\((.*?)\)/)
+        if (match) {
+          const [_, alt, src] = match
+          return (
+            <div key={index} className="image-container">
+              <img src={src} alt={alt} className="content-image" />
+            </div>
+          )
+        }
+      }
+
+      // 处理视频
+      if (p.startsWith('<video')) {
+        const match = p.match(/src='(.*?)'/)
+        if (match) {
+          const [_, src] = match
+          return (
+            <div key={index} className="video-container">
+              <video src={src} controls className="content-video" />
+            </div>
+          )
+        }
+      }
+
+      // 处理标题和其他内容...
       if (p.startsWith('# ')) {
         return (
           <h1 key={index} className="main-title">

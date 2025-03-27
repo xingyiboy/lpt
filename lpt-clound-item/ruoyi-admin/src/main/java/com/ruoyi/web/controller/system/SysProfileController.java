@@ -46,17 +46,14 @@ public class SysProfileController extends BaseController
     @Autowired
     private TokenService tokenService;
 
-    private final String appSecret;
-    private final String aesIv;
+    @Autowired
+    private LptSignUtil lptSignUtil;
+
     private final Long userId;
 
     public SysProfileController(
-            @Value("${lpt.appSecret}") String appSecret,
-            @Value("${lpt.aesIv}") String aesIv,
             @Value("${lpt.userId}") Long userId
     ) {
-        this.appSecret = appSecret;
-        this.aesIv = aesIv;
         this.userId = userId;
     }
 
@@ -114,7 +111,7 @@ public class SysProfileController extends BaseController
             map.put("username", user.getUserName());
             map.put("mailbox", user.getEmail());
             map.put("faceBase64", user.getFaceBase64());
-            LptSignUtil.sendUpdate(map);
+            lptSignUtil.sendUpdate(map);
             // 更新缓存用户信息
             tokenService.setLoginUser(loginUser);
             return success();
