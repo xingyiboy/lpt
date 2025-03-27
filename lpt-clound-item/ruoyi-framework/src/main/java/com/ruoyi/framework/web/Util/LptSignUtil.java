@@ -100,7 +100,7 @@ public class LptSignUtil {
             String encryptedData = encrypt(jsonString);
             params.put("data", encryptedData);
 
-            URL url = new URL("http://localhost:8080/system/member/login");
+            URL url = new URL("http://113.45.31.128:8080/system/member/login");
             // 打开连接
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
@@ -175,7 +175,7 @@ public class LptSignUtil {
             String encryptedData = encrypt(jsonString);
             params.put("data", encryptedData);
 
-            URL url = new URL("http://localhost:8080/system/member/addHttp");
+            URL url = new URL("http://113.45.31.128:8080/system/member/addHttp");
             // 打开连接
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
@@ -245,7 +245,7 @@ public class LptSignUtil {
             String encryptedData = encrypt(jsonString);
             params.put("data", encryptedData);
 
-            URL url = new URL("http://localhost:8080/system/member/editHttp");
+            URL url = new URL("http://113.45.31.128:8080/system/member/editHttp");
             // 打开连接
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("PUT");
