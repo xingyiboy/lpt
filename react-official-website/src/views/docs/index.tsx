@@ -45,6 +45,7 @@ interface DocContent {
   sections?: Array<{
     id: string
     title: string
+    scrollPosition: number
   }>
 }
 
@@ -93,9 +94,9 @@ const DocsPage: React.FC = () => {
   ]
 
   // 将文档查找逻辑抽离出来
-  const findDocByPath = (path: string) => {
+  const findDocByPath = (path: string): DocContent | undefined => {
     const allDocs = docsData.sidebar.flatMap((section) => section.children)
-    return allDocs.find((doc) => doc.path === path)
+    return allDocs.find((doc) => doc.path === path) as DocContent
   }
 
   // 初始化时设置当前内容
@@ -143,37 +144,33 @@ const DocsPage: React.FC = () => {
 
   const handleSearchResultClick = useCallback(
     (result: SearchResult) => {
-      setCurrentContent({
-        title: result.title,
-        path: result.path,
-        content: result.content,
-        sections: findDocByPath(result.path)?.sections
-      })
-      navigate(`/docs${result.path}`, { replace: true })
-      setShowSearchResults(false)
-      setSearchKeyword('')
+      const doc = findDocByPath(result.path)
+      if (doc) {
+        setCurrentContent(doc)
+        navigate(`/docs${result.path}`, { replace: true })
+        setShowSearchResults(false)
+        setSearchKeyword('')
+      }
     },
     [navigate]
   )
 
-  const handleSearch = (value: string) => {
-    setSearchKeyword(value)
+  const handleSearch = (keyword: string) => {
+    const results: SearchResult[] = []
+    const searchKeyword = keyword.toLowerCase()
 
-    if (!value.trim()) {
+    if (!searchKeyword) {
       setSearchResults([])
       setShowSearchResults(false)
       return
     }
-
-    const results: SearchResult[] = []
-    const keyword = value.toLowerCase()
 
     // 搜索所有文档内容
     docsData.sidebar.forEach((section) => {
       section.children.forEach((item) => {
         if (item.content) {
           // 搜索标题
-          if (item.title.toLowerCase().includes(keyword)) {
+          if (item.title.toLowerCase().includes(searchKeyword)) {
             results.push({
               title: item.title,
               path: item.path,
@@ -182,25 +179,46 @@ const DocsPage: React.FC = () => {
             })
           }
 
-          // 搜索内容
-          const contentLines = item.content.split('\n')
-          contentLines.forEach((line) => {
-            if (line.toLowerCase().includes(keyword)) {
+          // 创建临时 DOM 元素来解析 HTML 内容
+          const tempDiv = document.createElement('div')
+          tempDiv.innerHTML = item.content
+
+          // 搜索文本内容
+          const textContent = tempDiv.textContent || tempDiv.innerText
+          const textLines = textContent
+            .split('\n')
+            .filter((line) => line.trim())
+
+          textLines.forEach((line) => {
+            const trimmedLine = line.trim()
+            if (trimmedLine.toLowerCase().includes(searchKeyword)) {
               results.push({
                 title: item.title,
                 path: item.path,
                 content: item.content,
-                matchText: line.trim(),
-                sectionTitle: line.startsWith('#')
-                  ? line.replace(/#/g, '').trim()
-                  : undefined
+                matchText: trimmedLine
+              })
+            }
+          })
+
+          // 搜索 h1-h6 标题内容
+          const headings = tempDiv.querySelectorAll('h1, h2, h3, h4, h5, h6')
+          headings.forEach((heading: Element) => {
+            const headingText = heading.textContent || ''
+            if (headingText.toLowerCase().includes(searchKeyword)) {
+              results.push({
+                title: item.title,
+                path: item.path,
+                content: item.content,
+                matchText: headingText,
+                sectionTitle: headingText
               })
             }
           })
 
           // 搜索章节标题
           item.sections?.forEach((section) => {
-            if (section.title.toLowerCase().includes(keyword)) {
+            if (section.title.toLowerCase().includes(searchKeyword)) {
               results.push({
                 title: item.title,
                 path: item.path,
@@ -214,7 +232,16 @@ const DocsPage: React.FC = () => {
       })
     })
 
-    setSearchResults(results)
+    // 去重
+    const uniqueResults = results.filter(
+      (result, index, self) =>
+        index ===
+        self.findIndex(
+          (r) => r.path === result.path && r.matchText === result.matchText
+        )
+    )
+
+    setSearchResults(uniqueResults)
     setShowSearchResults(true)
   }
 
@@ -222,68 +249,13 @@ const DocsPage: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  // 处理右侧目录点击
-  const handleSectionClick = (sectionId: string) => {
-    const element = document.getElementById(sectionId)
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' })
-    }
+  const handleSectionClick = (scrollPosition: number) => {
+    window.scrollTo({ top: scrollPosition, behavior: 'smooth' })
   }
 
   const renderContent = () => {
     if (!currentContent?.content) return null
-
-    const paragraphs = currentContent.content.split('\n\n').map((p, index) => {
-      // 处理图片
-      if (p.startsWith('![')) {
-        const match = p.match(/!\[(.*?)\]\((.*?)\)/)
-        if (match) {
-          const [_, alt, src] = match
-          return (
-            <div key={index} className="image-container">
-              <img src={src} alt={alt} className="content-image" />
-            </div>
-          )
-        }
-      }
-
-      // 处理视频
-      if (p.startsWith('<video')) {
-        const match = p.match(/src='(.*?)'/)
-        if (match) {
-          const [_, src] = match
-          return (
-            <div key={index} className="video-container">
-              <video src={src} controls className="content-video" />
-            </div>
-          )
-        }
-      }
-
-      // 处理标题和其他内容...
-      if (p.startsWith('# ')) {
-        return (
-          <h1 key={index} className="main-title">
-            {p.substring(2)}
-          </h1>
-        )
-      }
-      if (p.startsWith('## ')) {
-        const title = p.substring(3)
-        return (
-          <h2 key={index} id={`section-${index}`} className="section-title">
-            {title}
-          </h2>
-        )
-      }
-      return (
-        <p key={index} className="content-paragraph">
-          {p}
-        </p>
-      )
-    })
-
-    return paragraphs
+    return <div dangerouslySetInnerHTML={{ __html: currentContent.content }} />
   }
 
   const handleThemeChange = (newTheme: string) => {
@@ -319,7 +291,10 @@ const DocsPage: React.FC = () => {
             type="text"
             placeholder="搜索文档..."
             value={searchKeyword}
-            onChange={(e) => handleSearch(e.target.value)}
+            onChange={(e) => {
+              setSearchKeyword(e.target.value) // 先更新搜索关键词
+              handleSearch(e.target.value) // 然后执行搜索
+            }}
           />
           {showSearchResults && searchResults.length > 0 && (
             <SearchResults>
@@ -371,8 +346,8 @@ const DocsPage: React.FC = () => {
               {section.children.map((item, itemIndex) => (
                 <SidebarItem
                   key={itemIndex}
-                  active={location.pathname === item.path}
-                  onClick={() => handleMenuClick(item)}
+                  active={location.pathname === `/docs${item.path}`}
+                  onClick={() => handleMenuClick(item as DocContent)}
                 >
                   {item.title}
                 </SidebarItem>
@@ -386,11 +361,11 @@ const DocsPage: React.FC = () => {
         <RightSidebar>
           <h3 className="toc-title">目录</h3>
           <ul className="toc-list">
-            {currentContent?.sections?.map((section, index) => (
+            {currentContent?.sections?.map((section) => (
               <li
                 key={section.id}
                 className="toc-item"
-                onClick={() => handleSectionClick(`section-${index}`)}
+                onClick={() => handleSectionClick(section.scrollPosition)}
               >
                 {section.title}
               </li>

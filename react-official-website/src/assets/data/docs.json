@@ -1,78 +1,91 @@
 {
   "sidebar": [
     {
-      "title": "\u5E73\u53F0\u6307\u5357",
+      "title": "平台指南",
       "children": [
         {
-          "title": "\u5E73\u53F0\u7B80\u4ECB",
+          "title": "平台简介",
           "path": "/platform/intro",
-          "content": "# \u4EE4\u724C\u901A\u5E73\u53F0\u7B80\u4ECB\n\n## \u6982\u8FF0\n\"\u4EE4\u724C\u901A\"\u662F\u4E00\u4E2A\u57FA\u4E8E\u591A\u56E0\u7D20\u8BA4\u8BC1\uFF08MFA\uFF09\u7684API\u7CFB\u7EDF\uFF0C\u65E8\u5728\u901A\u8FC7AI\u9A71\u52A8\u7684\u52A8\u6001\u9274\u6743\u6280\u672F\u3001\u591A\u7EF4\u5EA6\u884C\u4E3A\u5206\u6790\u548C\u5206\u5E03\u5F0F\u4F1A\u8BDD\u7BA1\u7406\uFF0C\u4E3A\u91D1\u878D\u3001\u533B\u7597\u3001\u7535\u5546\u7B49\u884C\u4E1A\u63D0\u4F9B\u9AD8\u6548\u3001\u5B89\u5168\u7684\u8EAB\u4EFD\u8BA4\u8BC1\u89E3\u51B3\u65B9\u6848\u3002\u9879\u76EE\u91C7\u7528\u5206\u5C42\u67B6\u6784\u8BBE\u8BA1\uFF0C\u5305\u542B\u7528\u6237\u63A5\u5165\u5C42\u3001AI\u7EFC\u5408\u5904\u7406\u5C42\u3001\u8BA4\u8BC1\u903B\u8F91\u5C42\u548C\u6570\u636E\u5B58\u50A8\u5C42\uFF0C\u6838\u5FC3\u6280\u672F\u5305\u62EC\u52A8\u6001Token\u7BA1\u7406\u3001Spring Security\u96C6\u6210\u548CWebSocket\u5B9E\u65F6\u901A\u4FE1\u3002\u7CFB\u7EDF\u4E0D\u4EC5\u80FD\u591F\u9632\u5FA1CSRF\u3001Token\u52AB\u6301\u7B49\u653B\u51FB\uFF0C\u8FD8\u80FD\u901A\u8FC7\u81EA\u9002\u5E94\u8BA4\u8BC1\u7B56\u7565\u63D0\u5347\u7528\u6237\u4F53\u9A8C\uFF0C\u6EE1\u8DB3\u9AD8\u5E76\u53D1\u573A\u666F\u4E0B\u7684\u6027\u80FD\u9700\u6C42\u3002\n\n\"\u4EE4\u724C\u901A\"\u521B\u65B0\u6027\u5730\u5C06AI\u6280\u672F\u878D\u5165\u4F20\u7EDF MFA\u4F53\u7CFB\uFF0C\u89E3\u51B3\"\u5B89\u5168\u4E0E\u4FBF\u6377\u4E0D\u53EF\u517C\u5F97\"\u7684\u75DB\u70B9\uFF0C\u63D0\u4F9B\u6A21\u5757\u5316\u3001\u9AD8\u517C\u5BB9\u6027\u7684\u8BBE\u8BA1\uFF0C\u652F\u6301\u591A\u8BED\u8A00SDK\uFF08\u5982Python\u3001Java\u3001JavaScript\uFF09\uFF0C\u9002\u914D\u591A\u79CD\u524D\u7AEF\u6846\u67B6\uFF08\u5982React\u3001Vue\uFF09\u3002\u9879\u76EE\u76EE\u6807\u662F\u901A\u8FC7\u6280\u672F\u521B\u65B0\u964D\u4F4E\u4F01\u4E1A\u8BA4\u8BC1\u6210\u672C\uFF0C\u63D0\u5347\u7CFB\u7EDF\u5B89\u5168\u6027\u548C\u7528\u6237\u4F53\u9A8C\uFF0C\u52A9\u529B\u4F01\u4E1A\u5728\u6570\u5B57\u5316\u8F6C\u578B\u4E2D\u6784\u5EFA\u53EF\u9760\u7684\u8EAB\u4EFD\u8BA4\u8BC1\u4F53\u7CFB\u3002\n\n## \u9879\u76EE\u80CC\u666F\n\u968F\u7740\u6570\u5B57\u5316\u8F6C\u578B\u7684\u52A0\u901F\uFF0C\u5168\u7403\u8303\u56F4\u5185\u5BF9\u8EAB\u4EFD\u8BA4\u8BC1\u7CFB\u7EDF\u7684\u9700\u6C42\u5FEB\u901F\u589E\u957F\u3002\u4F20\u7EDF\u8BA4\u8BC1\u65B9\u5F0F\uFF08\u5355\u4E00\u5BC6\u7801\u6216\u9759\u6001\u9A8C\u8BC1\u7801\u7B49\uFF09\u5DF2\u65E0\u6CD5\u6EE1\u8DB3\u73B0\u4EE3\u5B89\u5168\u9700\u6C42\uFF0C\u8D26\u6237\u76D7\u5237\u3001\u649E\u5E93\u653B\u51FB\u3001\u6570\u636E\u6CC4\u9732\u7B49\u95EE\u9891\u53D1\u3002\u6839\u636E\u884C\u4E1A\u6570\u636E\uFF0C\u91D1\u878D\u884C\u4E1A\u8D26\u6237\u76D7\u5237\u7387\u4E00\u5EA6\u9AD8\u8FBE5%\uFF0C\u7535\u5546\u5E73\u53F0\u5728\u9AD8\u5CF0\u671F\u5F88\u53EF\u80FD\u9047\u5230\u6570\u5343\u4E07\u6B21\u9ED1\u4EA7\u653B\u51FB\uFF0C\u533B\u7597\u884C\u4E1A\u5219\u9700\u6EE1\u8DB3\u4E25\u683C\u7684\u5408\u89C4\u8981\u6C42\u3002\u8FD9\u4E9B\u6311\u6218\u51F8\u663E\u4E86\u4F20\u7EDF\u8BA4\u8BC1\u7CFB\u7EDF\u7684\u5C40\u9650\u6027\u3002\n\n\u4E0E\u6B64\u540C\u65F6\uFF0C\u4EBA\u5DE5\u667A\u80FD\u6280\u672F\u7684\u7A81\u7834\u4E3A\u8EAB\u4EFD\u8BA4\u8BC1\u9886\u57DF\u5E26\u6765\u4E86\u65B0\u673A\u9047\u3002\u6DF1\u5EA6\u5B66\u4E60\u3001\u884C\u4E3A\u5206\u6790\u548C\u5206\u5E03\u5F0F\u7CFB\u7EDF\uFF08Redis\u96C6\u7FA4\uFF09\u7684\u5E94\u7528\uFF0C\u4F7F\u5F97\u52A8\u6001\u8BA4\u8BC1\u548C\u9AD8\u5E76\u53D1\u5904\u7406\u6210\u4E3A\u53EF\u80FD\u3002\u7136\u800C\uFF0C\u5E02\u573A\u4E0A\u73B0\u6709MFA\u7CFB\u7EDF\u666E\u904D\u5B58\u5728\u4EE5\u4E0B\u95EE\u9898\uFF1A\u5B89\u5168\u7B56\u7565\u8FC7\u4E8E\u9759\u6001\uFF0C\u7528\u6237\u4F53\u9A8C\u5DEE\uFF1B\u7F3A\u4E4F\u884C\u4E3A\u5206\u6790\uFF0C\u96BE\u4EE5\u5E94\u5BF9\u590D\u6742\u653B\u51FB\uFF1B\u67B6\u6784\u6269\u5C55\u6027\u4E0D\u8DB3\uFF0C\u65E0\u6CD5\u9002\u5E94\u9AD8\u5E76\u53D1\u573A\u666F\u3002\u9488\u5BF9\u8FD9\u4E9B\u75DB\u70B9\uFF0C\"\u4EE4\u724C\u901A\"\u9879\u76EE\u5E94\u8FD0\u800C\u751F\uFF0C\u65E8\u5728\u901A\u8FC7AI\u9A71\u52A8\u7684\u52A8\u6001\u9274\u6743\u548C\u5206\u5E03\u5F0F\u4F1A\u8BDD\u7BA1\u7406\uFF0C\u4E3A\u4F01\u4E1A\u63D0\u4F9B\u66F4\u5B89\u5168\u3001\u66F4\u9AD8\u6548\u7684\u8BA4\u8BC1\u89E3\u51B3\u65B9\u6848\u3002\n\n## \u7CFB\u7EDF\u67B6\u6784\n### \u7528\u6237\u63A5\u5165\u5C42\n\u652F\u6301Web/\u79FB\u52A8\u7AEF\u4EA4\u4E92\uFF0C\u91C7\u96C6\u7528\u6237\u884C\u4E3A\u6570\u636E\uFF08\u9F20\u6807\u8F68\u8FF9\u3001\u952E\u76D8\u8282\u594F\uFF09\uFF0C\u751F\u6210JWT\u683C\u5F0FToken\u5E76\u901A\u8FC7WebSocket\u5B9E\u65F6\u63A8\u9001\u8BA4\u8BC1\u72B6\u6001\u3002\n\n### AI\u7EFC\u5408\u5904\u7406\u5C42\n\u5229\u7528\u5F3A\u5316\u5B66\u4E60\u6A21\u578B\u5206\u6790\u7528\u6237\u884C\u4E3A\uFF08\u8BA4\u8BC1\u65F6\u95F4\u3001\u5730\u70B9\u3001\u8BBE\u5907\uFF09\uFF0C\u52A8\u6001\u8C03\u6574\u8BA4\u8BC1\u7B56\u7565\uFF0C\u7ED3\u5408\u98CE\u9669\u8BC4\u4F30\uFF08\u4F4E/\u4E2D/\u9AD8\uFF09\u4F18\u5316\u6D41\u7A0B\u3002\n\n### \u8BA4\u8BC1\u903B\u8F91\u5C42\n\u96C6\u6210Spring Security\uFF0C\u901A\u8FC7\u81EA\u5B9A\u4E49\u8FC7\u6EE4\u5668\u9A8C\u8BC1Token\u6709\u6548\u6027\uFF0C\u9AD8\u98CE\u9669\u573A\u666F\u89E6\u53D1\u4E8C\u6B21\u9A8C\u8BC1\uFF08\u4EBA\u8138\u8BC6\u522B\u3001\u77ED\u4FE1\u9A8C\u8BC1\u7801\uFF09\u3002\n\n### \u6570\u636E\u5B58\u50A8\u5C42\n\u4F7F\u7528Redis\u96C6\u7FA4\u5B58\u50A8Token\u548C\u7528\u6237\u72B6\u6001\uFF0C\u91C7\u7528BCrypt\u548CAES\u52A0\u5BC6\u4FDD\u62A4\u654F\u611F\u6570\u636E\u3002\n\n## \u6838\u5FC3\u6280\u672F\n### AI\u9A71\u52A8\u7684\u52A8\u6001Token\u9274\u6743\n\u6839\u636E\u7528\u6237\u884C\u4E3A\u751F\u6210\u77ED\u671F\uFF0810\u5206\u949F\uFF09\u6216\u957F\u671F\uFF0824\u5C0F\u65F6\uFF09Token\uFF0C\u652F\u6301\u667A\u80FD\u7EED\u671F\u3002\n\n### \u5206\u5E03\u5F0F\u4F1A\u8BDD\u7BA1\u7406\n\u901A\u8FC7Redis\u96C6\u7FA4\u548CWebSocket\u5B9E\u73B0\u552F\u4E00\u767B\u5F55\u63A7\u5236\uFF0C\u65B0\u767B\u5F55\u89E6\u53D1\u65E7\u8FDE\u63A5\u4E0B\u7EBF\u3002\n\n### \u591A\u7EF4\u5EA6\u884C\u4E3A\u5206\u6790\n\u63D0\u53D6200+\u884C\u4E3A\u7279\u5F81\uFF08\u9F20\u6807\u8F68\u8FF9\u3001\u9875\u9762\u505C\u7559\u65F6\u95F4\uFF09\uFF0C\u7ED3\u5408\u6DF1\u5EA6\u5B66\u4E60\u6A21\u578B\u8BC6\u522B\u653B\u51FB\uFF0C\u51C6\u786E\u7387\u8FBE99.2%\u3002",
+          "content": "<div><h1>令牌通平台简介</h1><div>这是一段简单的介绍内容</div></div>",
           "sections": [
             {
               "id": "overview",
-              "title": "\u6982\u8FF0"
+              "title": "概述",
+              "scrollPosition": 0
             },
             {
               "id": "background",
-              "title": "\u9879\u76EE\u80CC\u666F"
+              "title": "项目背景",
+              "scrollPosition": 300
             },
             {
               "id": "architecture",
-              "title": "\u7CFB\u7EDF\u67B6\u6784"
+              "title": "系统架构",
+              "scrollPosition": 600
             },
             {
               "id": "core-tech",
-              "title": "\u6838\u5FC3\u6280\u672F"
+              "title": "核心技术",
+              "scrollPosition": 900
             }
           ]
         },
         {
           "title": "快速入门",
           "path": "/quick-start",
-          "content": "# 快速入门\n\n## 1. 在接口平台注册账号并登录\nhttp://113.45.31.128:99\n\n![登录界面](http://113.45.31.128:9000/lpt/2025/03/30/下载_20250330153759A002.png)\n\n## 2. 在个人中心查看自己的用户编号，偏移量，密钥信息\n\n![个人中心](http://113.45.31.128:9000/lpt/2025/03/30/123123_20250330155445A007.png)\n\n## 3. 下载lpt-clound-item示例对接代码\n\n在代码中的application.yml文件下加入你的配置\n\n![配置示例](http://113.45.31.128:9000/lpt/2025/03/30/123_20250330154347A005.png)\n\n## 4. 启动后端\n\n![启动后端](http://113.45.31.128:9000/lpt/2025/03/30/Snipaste_2025-03-30_15-48-19_20250330154830A006.png)\n\n## 5. 启动前端react-ui\n\nnpm i\n\nnpm run dev",
+          "content": "<div><h1>快速入门</h1><div><h2>1. 在接口平台注册账号并登录</h2><p>http://113.45.31.128:99</p><img src='http://113.45.31.128:9000/lpt/2025/03/30/下载_20250330153759A002.png' alt='登录界面'/><h2>2. 在个人中心查看自己的用户编号，偏移量，密钥信息</h2><img src='http://113.45.31.128:9000/lpt/2025/03/30/123123_20250330155445A007.png' alt='个人中心'/><h2>3. 下载lpt-clound-item示例对接代码</h2><p>在代码中的application.yml文件下加入你的配置</p><img src='http://113.45.31.128:9000/lpt/2025/03/30/123_20250330154347A005.png' alt='配置示例'/><h2>4. 启动后端</h2><img src='http://113.45.31.128:9000/lpt/2025/03/30/Snipaste_2025-03-30_15-48-19_20250330154830A006.png' alt='启动后端'/><h2>5. 启动前端react-ui</h2><p>npm i</p><p>npm run dev</p></div></div>",
           "sections": [
             {
               "id": "register-login",
-              "title": "1. 注册登录"
+              "title": "1. 注册登录",
+              "scrollPosition": 0
             },
             {
               "id": "user-info",
-              "title": "2. 个人中心"
+              "title": "2. 个人中心",
+              "scrollPosition": 300
             },
             {
               "id": "code-config",
-              "title": "3. 示例代码配置"
+              "title": "3. 示例代码配置",
+              "scrollPosition": 600
             },
             {
               "id": "backend-start",
-              "title": "4. 启动后端"
+              "title": "4. 启动后端",
+              "scrollPosition": 900
             },
             {
               "id": "frontend-start",
-              "title": "5. 启动前端"
+              "title": "5. 启动前端",
+              "scrollPosition": 1200
             }
           ]
         },
         {
           "title": "技术选型",
           "path": "/tech-stack",
-          "content": "# 技术选型\n\n## 后端技术\n### 核心框架\n- Spring Boot 2.7.x：提供基础的应用框架和自动配置\n- Spring Security：实现认证和授权功能\n- Spring Cloud：微服务架构支持\n\n### 数据存储\n- MySQL 8.0：持久化存储用户数据和系统配置\n- Redis Cluster：分布式缓存和会话管理\n- MongoDB：存储用户行为日志和分析数据\n\n### 人工智能\n- TensorFlow：深度学习模型训练和推理\n- Scikit-learn：机器学习算法支持\n- PyTorch：行为分析模型开发\n\n### 消息中间件\n- RabbitMQ：异步消息处理\n- Apache Kafka：实时数据流处理\n\n### 监控运维\n- Prometheus：系统监控\n- Grafana：数据可视化\n- ELK Stack：日志收集和分析\n\n## 前端技术\n### 核心框架\n- React 18：用户界面开发\n- TypeScript：类型安全的JavaScript开发\n- Next.js：服务端渲染支持\n\n### UI组件\n- Ant Design：企业级UI组件库\n- TailwindCSS：原子化CSS框架\n- Material-UI：补充UI组件\n\n### 状态管理\n- Redux Toolkit：全局状态管理\n- React Query：服务端状态管理\n\n### 开发工具\n- Webpack 5：项目构建和优化\n- ESLint：代码质量控制\n- Jest：单元测试框架\n\n## 部署技术\n### 容器化\n- Docker：应用容器化\n- Kubernetes：容器编排管理\n\n### CI/CD\n- Jenkins：持续集成和部署\n- GitLab CI：代码管理和流水线\n\n### 服务网格\n- Istio：微服务通信治理\n- Envoy：边缘代理\n\n## 安全技术\n### 加密算法\n- BCrypt：密码哈希\n- AES/RSA：数据加密\n- JWT：令牌加密\n\n### 安全防护\n- WAF：Web应用防火墙\n- DDoS防护：高防IP\n- SSL证书：传输加密",
+          "content": "<div><h1>技术选型</h1><div><h2>后端技术</h2><h3>核心框架</h3><ul><li>Spring Boot 2.7.x：提供基础的应用框架和自动配置</li><li>Spring Security：实现认证和授权功能</li><li>Spring Cloud：微服务架构支持</li></ul><h3>数据存储</h3><ul><li>MySQL 8.0：持久化存储用户数据和系统配置</li><li>Redis Cluster：分布式缓存和会话管理</li><li>MongoDB：存储用户行为日志和分析数据</li></ul></div></div>",
           "sections": [
             {
               "id": "backend-tech",
-              "title": "后端技术"
+              "title": "后端技术",
+              "scrollPosition": 0
             },
             {
               "id": "frontend-tech",
-              "title": "前端技术"
+              "title": "前端技术",
+              "scrollPosition": 400
             },
             {
               "id": "deployment-tech",
-              "title": "部署技术"
+              "title": "部署技术",
+              "scrollPosition": 800
             },
             {
               "id": "security-tech",
-              "title": "安全技术"
+              "title": "安全技术",
+              "scrollPosition": 1200
             }
           ]
         }
@@ -84,22 +97,24 @@
         {
           "title": "用户对接",
           "path": "/user/integration",
-          "content": "# 用户对接指南\n\n## 对接流程\n1. 系统注册\n2. 身份认证\n3. 权限配置",
+          "content": "<div><h1>用户对接指南</h1><div><h2>对接流程</h2><ol><li>系统注册</li><li>身份认证</li><li>权限配置</li></ol></div></div>",
           "sections": [
             {
               "id": "integration-process",
-              "title": "对接流程"
+              "title": "对接流程",
+              "scrollPosition": 0
             }
           ]
         },
         {
           "title": "验证对接",
           "path": "/auth/integration",
-          "content": "# 验证对接\n\n## 认证方式\n- Token认证\n- 签名认证\n- OAuth2.0",
+          "content": "<div><h1>验证对接</h1><div><h2>认证方式</h2><ul><li>Token认证</li><li>签名认证</li><li>OAuth2.0</li></ul></div></div>",
           "sections": [
             {
               "id": "auth-methods",
-              "title": "认证方式"
+              "title": "认证方式",
+              "scrollPosition": 0
             }
           ]
         },
@@ -133,97 +148,109 @@
         {
           "title": "私有化部署",
           "path": "/private-deployment",
-          "content": "# 私有化部署\n\n## 部署要求\n- 硬件要求\n- 软件环境\n- 网络要求",
+          "content": "<div><h1>私有化部署</h1><div><h2>部署要求</h2><ul><li>硬件要求</li><li>软件环境</li><li>网络要求</li></ul></div></div>",
           "sections": [
             {
               "id": "deployment-requirements",
-              "title": "部署要求"
+              "title": "部署要求",
+              "scrollPosition": 0
             }
           ]
         },
         {
           "title": "加入团队",
           "path": "/join-us",
-          "content": "# 加入团队\n\n## 联系QQ:2416820386",
+          "content": "<div><h1>加入团队</h1><div><h2>联系QQ:2416820386</h2></div></div>",
           "sections": [
             {
               "id": "positions",
-              "title": "招聘岗位"
+              "title": "招聘岗位",
+              "scrollPosition": 0
             }
           ]
         },
         {
           "title": "代理平台",
           "path": "/proxy",
-          "content": "# 代理平台\n\n## 代理政策\n- 代理等级\n- 收益分成\n- 支持政策",
+          "content": "<div><h1>代理平台</h1><div><h2>代理政策</h2><ul><li>代理等级</li><li>收益分成</li><li>支持政策</li></ul></div></div>",
           "sections": [
             {
               "id": "proxy-policy",
-              "title": "代理政策"
+              "title": "代理政策",
+              "scrollPosition": 0
             }
           ]
         },
         {
           "title": "帮助",
           "path": "/help",
-          "content": "# 帮助中心\n\n## 使用指南\n- 基础功能介绍\n- 操作指南\n- 使用技巧",
+          "content": "<div><h1>帮助中心</h1><div><h2>使用指南</h2><ul><li>基础功能介绍</li><li>操作指南</li><li>使用技巧</li></ul></div></div>",
           "sections": [
             {
               "id": "user-guide",
-              "title": "使用指南"
+              "title": "使用指南",
+              "scrollPosition": 0
             }
           ]
         },
         {
           "title": "常见问题",
           "path": "/faq",
-          "content": "# 常见问题\n\n## 问题列表\n- 账号相关\n- 接口调用\n- 部署问题",
+          "content": "<div><h1>常见问题</h1><div><h2>问题列表</h2><ul><li>账号相关</li><li>接口调用</li><li>部署问题</li></ul></div></div>",
           "sections": [
             {
               "id": "faq-list",
-              "title": "问题列表"
+              "title": "问题列表",
+              "scrollPosition": 0
             }
           ]
         },
         {
           "title": "联系我们",
           "path": "/contact",
-          "content": "# 联系我们\n\n## 联系方式\n- 客服电话：400-xxx-xxxx\n- 技术支持：support@xxx.com\n- 商务合作：business@xxx.com",
+          "content": "<div><h1>联系我们</h1><div><h2>联系方式</h2><ul><li>客服电话：400-xxx-xxxx</li><li>技术支持：support@xxx.com</li><li>商务合作：business@xxx.com</li></ul></div></div>",
           "sections": [
             {
               "id": "contact-info",
-              "title": "联系方式"
+              "title": "联系方式",
+              "scrollPosition": 0
             }
           ]
         },
         {
           "title": "团队成员",
           "path": "/team/members",
-          "content": "# 团队成员\n\n## 队长：陈文强\n陈文强作为队长，拥有出色的领导能力和项目管理经验。他在团队中负责整体规划和决策，确保项目顺利推进。凭借丰富的经验和战略眼光，陈文强能够准确把握项目方向，并激励团队成员高效完成各自任务。\n\n## 队员：崔学童\n崔学童是团队的核心成员之一，具备扎实的技术功底和创新思维。在项目中，他负责需求分析、系统设计以及部分代码编写工作。同时，崔学童还承担了与客户沟通协调的任务，能够准确理解客户需求并将其转化为技术实现方案。\n\n## 队员：张比特\n张比特是团队的技术专家，专注于后端开发。他负责项目中核心模块的代码编写，对系统的架构设计和性能优化有深入研究。张比特能够运用先进的编程技术和工具，高效地完成复杂功能的实现，为系统的稳定运行提供坚实的技术支持。\n\n## 队员：韦晓婷\n韦晓婷在团队中负责前端开发和用户体验设计。她具备出色的视觉设计能力和交互设计能力，能够打造出美观、易用的用户界面。同时，韦晓婷还参与了项目的文档撰写和团队内部的沟通协调工作，确保项目的各个方面都能顺利进行。\n\n## 队员：黄嘉庆\n黄嘉庆在团队中扮演着多面手的角色。他不仅参与代码编写，还负责系统的测试和优化工作。黄嘉庆注重细节，对代码质量有严格要求，能够从用户角度出发，发现并解决系统中的潜在问题，确保系统的稳定性和易用性。\n\n## 队员：黄国杉\n黄国杉是团队的另一位技术骨干，主要负责代码编写和系统的部署工作。他对系统的整体架构有深入的理解，能够确保代码的可维护性和可扩展性。在项目中，黄国杉还积极参与技术难题的攻克，为团队解决了一系列技术瓶颈。",
+          "content": "<div><h1>团队成员</h1><div><h2>队长：陈文强</h2><p>陈文强作为队长，拥有出色的领导能力和项目管理经验。他在团队中负责整体规划和决策，确保项目顺利推进。凭借丰富的经验和战略眼光，陈文强能够准确把握项目方向，并激励团队成员高效完成各自任务。</p><h2>队员：崔学童</h2><p>崔学童是团队的核心成员之一，具备扎实的技术功底和创新思维。在项目中，他负责需求分析、系统设计以及部分代码编写工作。同时，崔学童还承担了与客户沟通协调的任务，能够准确理解客户需求并将其转化为技术实现方案。</p><h2>队员：张比特</h2><p>张比特是团队的技术专家，专注于后端开发。他负责项目中核心模块的代码编写，对系统的架构设计和性能优化有深入研究。张比特能够运用先进的编程技术和工具，高效地完成复杂功能的实现，为系统的稳定运行提供坚实的技术支持。</p><h2>队员：韦晓婷</h2><p>韦晓婷在团队中负责前端开发和用户体验设计。她具备出色的视觉设计能力和交互设计能力，能够打造出美观、易用的用户界面。同时，韦晓婷还参与了项目的文档撰写和团队内部的沟通协调工作，确保项目的各个方面都能顺利进行。</p><h2>队员：黄嘉庆</h2><p>黄嘉庆在团队中扮演着多面手的角色。他不仅参与代码编写，还负责系统的测试和优化工作。黄嘉庆注重细节，对代码质量有严格要求，能够从用户角度出发，发现并解决系统中的潜在问题，确保系统的稳定性和易用性。</p><h2>队员：黄国杉</h2><p>黄国杉是团队的另一位技术骨干，主要负责代码编写和系统的部署工作。他对系统的整体架构有深入的理解，能够确保代码的可维护性和可扩展性。在项目中，黄国杉还积极参与技术难题的攻克，为团队解决了一系列技术瓶颈。</p></div></div>",
           "sections": [
             {
               "id": "leader",
-              "title": "队长：陈文强"
+              "title": "队长：陈文强",
+              "scrollPosition": 0
             },
             {
               "id": "member-1",
-              "title": "队员：崔学童"
+              "title": "队员：崔学童",
+              "scrollPosition": 300
             },
             {
               "id": "member-2",
-              "title": "队员：张比特"
+              "title": "队员：张比特",
+              "scrollPosition": 600
             },
             {
               "id": "member-3",
-              "title": "队员：韦晓婷"
+              "title": "队员：韦晓婷",
+              "scrollPosition": 900
             },
             {
               "id": "member-4",
-              "title": "队员：黄嘉庆"
+              "title": "队员：黄嘉庆",
+              "scrollPosition": 1200
             },
             {
               "id": "member-5",
-              "title": "队员：黄国杉"
+              "title": "队员：黄国杉",
+              "scrollPosition": 1500
             }
           ]
         }

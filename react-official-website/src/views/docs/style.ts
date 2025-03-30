@@ -312,7 +312,7 @@ export const GlobalStyle = createGlobalStyle`
     }
 
     ${NavLinks} a {
-      color: #888;
+      color: #fff;
 
       &:hover {
         color: #1890ff;
@@ -325,7 +325,7 @@ export const GlobalStyle = createGlobalStyle`
     }
 
     ${SidebarItem} {
-      color: #888;
+      color: #fff;
 
       &:hover {
         background: #363636;
@@ -360,23 +360,6 @@ export const GlobalStyle = createGlobalStyle`
       &[active=true] {
         background: #363636;
         color: #1890ff;
-      }
-    }
-
-    ${Content} {
-      background: #2d2d2d;
-      color: #fff;
-
-      .main-title {
-        color: #fff;
-      }
-
-      .section-title {
-        color: #fff;
-      }
-
-      .content-paragraph {
-        color: #fff;
       }
     }
   }
