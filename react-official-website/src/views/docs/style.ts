@@ -134,6 +134,28 @@ export const Content = styled.main`
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
   }
+
+  a {
+    color: #1890ff;
+    text-decoration: none;
+    transition: all 0.3s;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .ql-code-block-container {
+    a {
+      color: #1890ff;
+      text-decoration: none;
+      transition: all 0.3s;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
 `
 
 export const RightSidebar = styled.aside`
@@ -143,6 +165,8 @@ export const RightSidebar = styled.aside`
   height: fit-content;
   position: sticky;
   top: 88px;
+  margin-left: 20px;
+  width: 180px;
 
   .toc-title {
     font-size: 1.2rem;
@@ -285,7 +309,7 @@ export const GlobalStyle = createGlobalStyle`
 
   body[data-theme='dark'] {
     background-color: #1f1f1f;
-    color: #fff;
+    color: #e5eaf3;
 
     ${DocWrapper} {
       background: #1f1f1f;
@@ -298,13 +322,13 @@ export const GlobalStyle = createGlobalStyle`
     }
 
     ${Title} {
-      color: #fff;
+      color: #e5eaf3;
     }
 
     ${SearchBar} input {
       background: #2d2d2d;
       border-color: #444;
-      color: #fff;
+      color: #e5eaf3;
 
       &::placeholder {
         color: #888;
@@ -312,7 +336,7 @@ export const GlobalStyle = createGlobalStyle`
     }
 
     ${NavLinks} a {
-      color: #fff;
+      color: #e5eaf3;
 
       &:hover {
         color: #1890ff;
@@ -321,11 +345,31 @@ export const GlobalStyle = createGlobalStyle`
 
     ${Sidebar}, ${Content}, ${RightSidebar} {
       background: #2d2d2d;
-      color: #fff;
+      color: #e5eaf3;
+    }
+
+    ${Content} {
+      .main-title {
+        color: rgba(255, 255, 255, 0.85);
+        border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .section-title {
+        color: rgba(255, 255, 255, 0.85);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .content-paragraph {
+        color: rgba(255, 255, 255, 0.85);
+      }
+
+      a {
+        color: #1890ff;
+      }
     }
 
     ${SidebarItem} {
-      color: #fff;
+      color: rgba(255, 255, 255, 0.85);
 
       &:hover {
         background: #363636;
@@ -334,6 +378,20 @@ export const GlobalStyle = createGlobalStyle`
       &[active=true] {
         background: #363636;
         color: #1890ff;
+      }
+    }
+
+    ${RightSidebar} {
+      .toc-title {
+        color: rgba(255, 255, 255, 0.85);
+      }
+
+      .toc-item {
+        color: rgba(255, 255, 255, 0.85);
+      }
+
+      ul li {
+        color: rgba(255, 255, 255, 0.85);
       }
     }
 

@@ -6,86 +6,96 @@
         {
           "title": "平台简介",
           "path": "/platform/intro",
-          "content": "<div><h1>令牌通平台简介</h1><div>这是一段简单的介绍内容</div></div>",
           "sections": [
             {
               "id": "overview",
               "title": "概述",
-              "scrollPosition": 0
+              "scrollPosition": 0,
+              "content": "<h2>概述</h2><div>令牌通平台是一个创新的区块链技术解决方案，为企业和开发者提供便捷的区块链接入服务。</div>"
             },
             {
               "id": "background",
               "title": "项目背景",
-              "scrollPosition": 300
+              "scrollPosition": 300,
+              "content": "<h2>项目背景</h2><div>随着区块链技术的快速发展，市场对高效、安全的区块链接入方案需求日益增长。令牌通平台应运而生，旨在解决传统区块链接入的技术门槛问题。</div>"
             },
             {
               "id": "architecture",
               "title": "系统架构",
-              "scrollPosition": 600
+              "scrollPosition": 600,
+              "content": "<h2>系统架构</h2><div>平台采用微服务架构，包含用户服务、认证服务、区块链接入服务等核心模块，确保系统的高可用性和可扩展性。</div>"
             },
             {
               "id": "core-tech",
               "title": "核心技术",
-              "scrollPosition": 900
+              "scrollPosition": 900,
+              "content": "<h2>核心技术</h2><div>平台核心技术包括智能合约管理、多链支持、安全加密等关键功能，为用户提供全方位的技术支持。</div>"
             }
           ]
         },
         {
           "title": "快速入门",
           "path": "/quick-start",
-          "content": "<div><h1>快速入门</h1><div><h2>1. 在接口平台注册账号并登录</h2><p>http://113.45.31.128:99</p><img src='http://113.45.31.128:9000/lpt/2025/03/30/下载_20250330153759A002.png' alt='登录界面'/><h2>2. 在个人中心查看自己的用户编号，偏移量，密钥信息</h2><img src='http://113.45.31.128:9000/lpt/2025/03/30/123123_20250330155445A007.png' alt='个人中心'/><h2>3. 下载lpt-clound-item示例对接代码</h2><p>在代码中的application.yml文件下加入你的配置</p><img src='http://113.45.31.128:9000/lpt/2025/03/30/123_20250330154347A005.png' alt='配置示例'/><h2>4. 启动后端</h2><img src='http://113.45.31.128:9000/lpt/2025/03/30/Snipaste_2025-03-30_15-48-19_20250330154830A006.png' alt='启动后端'/><h2>5. 启动前端react-ui</h2><p>npm i</p><p>npm run dev</p></div></div>",
           "sections": [
             {
               "id": "register-login",
               "title": "1. 注册登录",
-              "scrollPosition": 0
+              "scrollPosition": 0,
+              "content": "<h2><span >1. 在接口平台注册账号并登录</span></h2><div class=\"ql-code-block-container\" spellcheck=\"false\"><div class=\"ql-code-block\" data-language=\"plain\"><a href=\"http://113.45.31.128:99\"  target=\"_blank\">接口平台 http://113.45.31.128:99</a></div></div><p><img src=\"http://113.45.31.128:9000/lpt/2025/03/30/下载_20250330153759A002.png\"></p>"
             },
             {
               "id": "user-info",
-              "title": "2. 个人中心",
-              "scrollPosition": 300
+              "title": "2. 查看接口配置",
+              "scrollPosition": 870,
+              "content": "<h2><span >2. 在个人中心查看自己的用户编号，偏移量，密钥信息</span></h2><h2><br></h2><p><img style=\"width: 100%;\" src=\"http://113.45.31.128:9000/lpt/2025/03/30/下载 (1)_20250330154137A004.png\"></p>"
             },
             {
               "id": "code-config",
-              "title": "3. 示例代码配置",
-              "scrollPosition": 600
+              "title": "3. 下载lpt-clound-item示例对接代码",
+              "scrollPosition": 1440,
+              "content": "<h2><span >3. 下载lpt-clound-item示例对接代码</span></h2><h2><span >在代码中的application.yml文件下加入你的配置</span></h2><p><br></p><p><p>lpt接口配置</p><img style=\"width: 100%;\" src=\"http://113.45.31.128:9000/lpt/2025/03/30/123_20250330154347A005.png\"><p>redis配置</p><img style=\"width: 100%;\" src=\"http://113.45.31.128:9000/lpt/2025/03/30/peizhi2_20250330164632A009.png\">\n\n<p>mysql配置</p><img style=\"width: 100%;\" src=\"http://113.45.31.128:9000/lpt/2025/03/30/peizhi_20250330164628A008.png\"></p>"
             },
             {
               "id": "backend-start",
               "title": "4. 启动后端",
-              "scrollPosition": 900
+              "scrollPosition": 3120,
+              "content": "<h2><span >4. 启动后端</span></h2><p><img style=\"width: 100%;\" src=\"http://113.45.31.128:9000/lpt/2025/03/30/Snipaste_2025-03-30_15-48-19_20250330154830A006.png\"></p>"
             },
             {
               "id": "frontend-start",
-              "title": "5. 启动前端",
-              "scrollPosition": 1200
+              "title": "5. 启动前端react-ui",
+              "scrollPosition": 3870,
+              "content": "<h2><span >5. 启动前端react-ui</span></h2><div class=\"ql-code-block-container\" spellcheck=\"false\"><div class=\"ql-code-block\">npm i</div><div class=\"ql-code-block\">npm run dev</div></div><p><br></p>"
             }
           ]
         },
         {
           "title": "技术选型",
           "path": "/tech-stack",
-          "content": "<div><h1>技术选型</h1><div><h2>后端技术</h2><h3>核心框架</h3><ul><li>Spring Boot 2.7.x：提供基础的应用框架和自动配置</li><li>Spring Security：实现认证和授权功能</li><li>Spring Cloud：微服务架构支持</li></ul><h3>数据存储</h3><ul><li>MySQL 8.0：持久化存储用户数据和系统配置</li><li>Redis Cluster：分布式缓存和会话管理</li><li>MongoDB：存储用户行为日志和分析数据</li></ul></div></div>",
           "sections": [
             {
               "id": "backend-tech",
               "title": "后端技术",
-              "scrollPosition": 0
+              "scrollPosition": 0,
+              "content": "<div><h1>技术选型</h1><div><h2>后端技术</h2><h3>核心框架</h3><ul><li>Spring Boot 2.7.x：提供基础的应用框架和自动配置</li><li>Spring Security：实现认证和授权功能</li><li>Spring Cloud：微服务架构支持</li></ul><h3>数据存储</h3><ul><li>MySQL 8.0：持久化存储用户数据和系统配置</li><li>Redis Cluster：分布式缓存和会话管理</li><li>MongoDB：存储用户行为日志和分析数据</li></ul></div></div>"
             },
             {
               "id": "frontend-tech",
               "title": "前端技术",
-              "scrollPosition": 400
+              "scrollPosition": 400,
+              "content": "<div><h1>技术选型</h1><div><h2>前端技术</h2><h3>核心框架</h3><ul><li>React：构建用户界面的JavaScript库</li><li>Vue：构建用户界面的渐进式框架</li><li>Angular：构建用户界面的前端框架</li></ul><h3>样式框架</h3><ul><li>Bootstrap：响应式布局框架</li><li>Ant Design：企业级UI设计语言</li><li>Element UI：基于Vue的Web UI工具包</li></ul></div></div>"
             },
             {
               "id": "deployment-tech",
               "title": "部署技术",
-              "scrollPosition": 800
+              "scrollPosition": 800,
+              "content": "<div><h1>技术选型</h1><div><h2>部署技术</h2><h3>容器技术</h3><ul><li>Docker：容器化部署技术</li><li>Kubernetes：容器编排技术</li></ul><h3>持续集成</h3><ul><li>Jenkins：自动化构建工具</li><li>GitLab CI：基于Git的持续集成平台</li></ul><h3>监控与日志</h3><ul><li>Prometheus：监控系统</li><li>ELK Stack：日志分析系统</li></ul></div></div>"
             },
             {
               "id": "security-tech",
               "title": "安全技术",
-              "scrollPosition": 1200
+              "scrollPosition": 1200,
+              "content": "<div><h1>技术选型</h1><div><h2>安全技术</h2><h3>数据加密</h3><ul><li>AES：对称加密算法</li><li>RSA：非对称加密算法</li><li>Hash：哈希算法</li></ul><h3>访问控制</h3><ul><li>OAuth2.0：认证和授权标准</li><li>RBAC：基于角色的访问控制</li><li>ACL：访问控制列表</li></ul><h3>安全审计</h3><ul><li>日志审计：记录系统操作日志</li><li>行为审计：监控用户操作行为</li><li>安全审计：定期检查系统安全状态</li></ul></div></div>"
             }
           ]
         }
@@ -97,46 +107,66 @@
         {
           "title": "用户对接",
           "path": "/user/integration",
-          "content": "<div><h1>用户对接指南</h1><div><h2>对接流程</h2><ol><li>系统注册</li><li>身份认证</li><li>权限配置</li></ol></div></div>",
           "sections": [
             {
               "id": "integration-process",
               "title": "对接流程",
-              "scrollPosition": 0
+              "scrollPosition": 0,
+              "content": "<div><h1>用户对接指南</h1><div><h2>对接流程</h2><ol><li>系统注册</li><li>身份认证</li><li>权限配置</li></ol></div></div>"
             }
           ]
         },
         {
           "title": "验证对接",
           "path": "/auth/integration",
-          "content": "<div><h1>验证对接</h1><div><h2>认证方式</h2><ul><li>Token认证</li><li>签名认证</li><li>OAuth2.0</li></ul></div></div>",
           "sections": [
             {
               "id": "auth-methods",
               "title": "认证方式",
-              "scrollPosition": 0
+              "scrollPosition": 0,
+              "content": "<div><h1>验证对接</h1><div><h2>认证方式</h2><ul><li>Token认证</li><li>签名认证</li><li>OAuth2.0</li></ul></div></div>"
             }
           ]
         },
         {
           "title": "接口文档",
           "path": "/api/docs",
-          "content": "# 接口文档\n\n## 接口规范\n- RESTful设计\n- 统一响应格式\n- 错误码说明",
           "sections": [
             {
-              "id": "api-spec",
-              "title": "接口规范"
+              "id": "api-intro",
+              "title": "令牌通开放接口",
+              "scrollPosition": 0,
+              "content": "<h1>令牌通开放接口</h1>"
+            },
+            {
+              "id": "login-api",
+              "title": "1. 登录，新增，更新",
+              "scrollPosition": 0,
+              "content": "<h2>1. 登录，新增，更新</h2><h3>1.1 登录账号</h3><h4>1.1.1 请求地址</h4><table><thead><tr><th>环境</th><th>请求方式</th><th>HTTP请求地址</th></tr></thead><tbody><tr><td>发布环境</td><td>POST</td><td></td></tr></tbody></table><h4>1.1.2 请求参数及示例</h4><table><thead><tr><th>参数</th><th>类型</th><th>是否必填</th><th>最大长度</th><th>描述</th><th>示例值</th></tr></thead><tbody><tr><td>userId</td><td>string</td><td>是</td><td>255</td><td>系统用户的编号</td><td></td></tr><tr><td>timestamp</td><td>string</td><td>是</td><td></td><td>时间戳</td><td>yyyyMMddHHmmssfff</td></tr><tr><td>sign</td><td>string</td><td>是</td><td></td><td>签名字符串</td><td>详情见签名算法</td></tr></tbody></table><pre><code>{\"userId\": \"103\",\"timestamp\": \"20191112120000000\",\"data\": \"{ }\",\"sign\": \"51BA57A74B97070D508B0C5D3BB0C8A8\"}</code></pre><h4>1.1.3 返回参数说明</h4><table><thead><tr><th>参数</th><th>类型</th><th>描述</th></tr></thead><tbody><tr><td>resultcode</td><td>string</td><td>返回码（1：成功，其它为失败）</td></tr><tr><td>msg</td><td>string</td><td>返回信息</td></tr><tr><td>data</td><td>string</td><td>返回数据容器</td></tr></tbody></table>"
+            },
+            {
+              "id": "create-account",
+              "title": "1.2 新增账号",
+              "scrollPosition": 0,
+              "content": "<h3>1.2 新增账号</h3><h4>1.2.1 请求地址</h4><table><thead><tr><th>环境</th><th>请求方式</th><th>HTTP请求地址</th></tr></thead><tbody><tr><td>发布环境</td><td>POST</td><td></td></tr></tbody></table><h4>1.2.2 请求参数及示例</h4><table><thead><tr><th>参数</th><th>类型</th><th>是否必填</th><th>最大长度</th><th>描述</th><th>示例值</th></tr></thead><tbody><tr><td>username</td><td>string</td><td>是</td><td>255</td><td>会员名称</td><td></td></tr><tr><td>password</td><td>string</td><td>是</td><td>255</td><td>会员密码</td><td></td></tr></tbody></table>"
+            },
+            {
+              "id": "update-account",
+              "title": "1.3 更新账号",
+              "scrollPosition": 0,
+              "content": "<h3>1.3 更新账号</h3><h4>1.3.1 请求地址</h4><table><thead><tr><th>环境</th><th>请求方式</th><th>HTTP请求地址</th></tr></thead><tbody><tr><td>发布环境</td><td>POST</td><td></td></tr></tbody></table><h4>1.3.2 请求参数及示例</h4><table><thead><tr><th>参数</th><th>类型</th><th>是否必填</th><th>最大长度</th><th>描述</th><th>示例值</th></tr></thead><tbody><tr><td>username</td><td>string</td><td>是</td><td>255</td><td>会员名称</td><td></td></tr><tr><td>password</td><td>string</td><td>是</td><td>255</td><td>会员密码</td><td></td></tr><tr><td>mailbox</td><td>string</td><td>否</td><td>255</td><td>会员邮箱</td><td></td></tr><tr><td>faceBase64</td><td>string</td><td>否</td><td></td><td>会员人脸信息</td><td></td></tr></tbody></table>"
             }
           ]
         },
         {
           "title": "签名方式",
           "path": "/signature",
-          "content": "# 签名方式\n\n## 签名算法\n详细介绍API签名的生成方式和验证流程。",
           "sections": [
             {
               "id": "signature-algorithm",
-              "title": "签名算法"
+              "title": "签名算法",
+              "scrollPosition": 0,
+              "content": "<h2>2. 签名算法</h2><h3>2.1 算法说明</h3><p>签名算法更新时间：2019-12-10</p><h4>1、签名算法</h4><p>签名生成的通用步骤如下：</p><p>第一步，设所有发送或者接收到的数据为集合M，将集合M内非空参数值的参数按照参数名从小到大排序（字典序），使用URL键值对的格式（即key1=value1&key2=value2…）拼接成字符串stringA。</p><p>特别注意以下重要规则：</p><ul><li>参数名从小到大排序（字典序）</li><li>如果参数的值为NULL则不参与签名</li><li>参数名区分大小写</li><li>验证调用返回或设备开放平台主动通知签名时，传送的sign参数不参与签名，将生成的签名与该sign值作校验</li><li>设备开放平台接口可能增加字段，验证签名时必须支持增加的扩展字段</li></ul><p>第二步，在stringA最后拼接上AppSecret得到stringSignTemp字符串，并对stringSignTemp进行MD5运算，再将得到的字符串所有字符转换为大写，得到sign值。</p><pre><code>示例：{\"userId\": \"107\",\"timestamp\": \"20191210175551305\",\"data\": \"\",\"sign\": \"cf0df68b5712e658c08c429e96377add\"}</code></pre><p>此外签名后，需要对data中的数据进行AES加密，秘钥当前为；偏移量AesIv：在个人页面查看</p>"
             }
           ]
         }
@@ -148,109 +178,144 @@
         {
           "title": "私有化部署",
           "path": "/private-deployment",
-          "content": "<div><h1>私有化部署</h1><div><h2>部署要求</h2><ul><li>硬件要求</li><li>软件环境</li><li>网络要求</li></ul></div></div>",
           "sections": [
             {
               "id": "deployment-requirements",
               "title": "部署要求",
-              "scrollPosition": 0
+              "scrollPosition": 0,
+              "content": "<div><h1>私有化部署</h1><div><h2>部署要求</h2><ul><li>硬件要求</li><li>软件环境</li><li>网络要求</li></ul></div></div>"
             }
           ]
         },
         {
           "title": "加入团队",
           "path": "/join-us",
-          "content": "<div><h1>加入团队</h1><div><h2>联系QQ:2416820386</h2></div></div>",
           "sections": [
             {
-              "id": "positions",
-              "title": "招聘岗位",
-              "scrollPosition": 0
+              "id": "company-intro",
+              "title": "团队介绍",
+              "scrollPosition": 0,
+              "content": "<div class='content-section'><h2>关于我们</h2><p>我们是一家专注于区块链技术创新的科技团队，致力于为全球用户提供安全、便捷的数字资产服务。</p><h3>团队文化</h3><ul><li>创新：拥抱变化，追求卓越</li><li>诚信：以诚为本，信守承诺</li><li>协作：团结协作，共创价值</li><li>成长：持续学习，共同进步</li></ul><h3>我们的优势</h3><ul><li>具有竞争力的薪资福利</li><li>完善的培训体系</li><li>扁平化的管理模式</li><li>良好的团队氛围</li><li>定期团建活动</li></ul></div>"
+            },
+            {
+              "id": "backend-position",
+              "title": "后端开发岗位",
+              "scrollPosition": 470,
+              "content": "<div class='content-section'><h2>后端开发工程师</h2><div class='job-detail'><h3>职位描述</h3><ul><li>负责核心业务系统的设计和开发</li><li>参与系统架构设计和技术选型</li><li>优化系统性能，提升系统可用性</li><li>编写技术文档，参与代码评审</li></ul><h3>任职要求</h3><ul><li>本科及以上学历，计算机相关专业</li><li>3年以上Java开发经验</li><li>精通Spring Boot、Spring Cloud微服务架构</li><li>熟悉MySQL、Redis等数据库</li><li>具备良好的问题分析和解决能力</li></ul><h3>加分项</h3><ul><li>有区块链相关开发经验</li><li>有高并发系统开发经验</li><li>熟悉Docker、K8s等容器技术</li></ul><h3>薪资福利</h3><ul><li>薪资范围：25-50K * 14</li><li>五险一金、补充医疗保险</li><li>年终奖金、项目奖金</li><li>带薪年假、加班补助</li></ul></div></div>"
+            },
+            {
+              "id": "blockchain-position",
+              "title": "区块链开发岗位",
+              "scrollPosition": 1100,
+              "content": "<div class='content-section'><h2>区块链开发工程师</h2><div class='job-detail'><h3>职位描述</h3><ul><li>负责智能合约开发和优化</li><li>区块链节点维护和管理</li><li>跨链技术研究和实现</li><li>区块链安全方案设计</li></ul><h3>任职要求</h3><ul><li>本科及以上学历，计算机相关专业</li><li>2年以上区块链开发经验</li><li>精通Solidity智能合约开发</li><li>熟悉主流公链技术架构</li><li>具备良好的加密算法基础</li></ul><h3>加分项</h3><ul><li>参与过知名区块链项目开发</li><li>有DeFi项目开发经验</li><li>熟悉零知识证明技术</li></ul><h3>薪资福利</h3><ul><li>薪资范围：30-60K * 14</li><li>期权激励</li><li>五险一金、补充医疗保险</li><li>弹性工作制</li></ul></div></div>"
             }
           ]
         },
         {
           "title": "代理平台",
           "path": "/proxy",
-          "content": "<div><h1>代理平台</h1><div><h2>代理政策</h2><ul><li>代理等级</li><li>收益分成</li><li>支持政策</li></ul></div></div>",
           "sections": [
             {
-              "id": "proxy-policy",
-              "title": "代理政策",
-              "scrollPosition": 0
+              "id": "diamond-agent",
+              "title": "钻石代理",
+              "scrollPosition": 0,
+              "content": "<div class='content-section'><h2>钻石代理</h2><div class='agent-detail'><h3>等级权益</h3><ul><li>最高45%交易手续费分成</li><li>15%下级代理业绩提成</li><li>专属客户经理1对1服务</li><li>可自主开发下级代理</li></ul><h3>晋升条件</h3><ul><li>月交易额达到100万以上</li><li>下级代理不少于5个</li><li>保证金50万</li></ul><h3>专属特权</h3><ul><li>优先享受平台新功能</li><li>专属活动策划支持</li><li>定制化营销方案</li><li>年度代理商大会</li></ul></div></div>"
+            },
+            {
+              "id": "gold-agent",
+              "title": "金牌代理",
+              "scrollPosition": 520,
+              "content": "<div class='content-section'><h2>金牌代理</h2><div class='agent-detail'><h3>等级权益</h3><ul><li>35%交易手续费分成</li><li>10%下级代理业绩提成</li><li>专属运营指导</li></ul><h3>晋升条件</h3><ul><li>月交易额达到50万以上</li><li>下级代理不少于3个</li><li>保证金20万</li></ul><h3>专属特权</h3><ul><li>定期运营培训</li><li>活动物料支持</li><li>快速结算通道</li></ul></div></div>"
+            },
+            {
+              "id": "income-share",
+              "title": "收益分成",
+              "scrollPosition": 1100,
+              "content": "<div class='content-section'><h2>收益分成详解</h2><div class='income-detail'><h3>手续费分成</h3><table><thead><tr><th>等级</th><th>直推分成</th><th>间推分成</th></tr></thead><tbody><tr><td>钻石代理</td><td>45%</td><td>15%</td></tr><tr><td>金牌代理</td><td>35%</td><td>10%</td></tr><tr><td>银牌代理</td><td>25%</td><td>5%</td></tr></tbody></table><h3>额外奖励</h3><ul><li>月度业绩奖励：最高可得10万</li><li>季度冠军奖励：最高可得30万</li><li>年度代理商大奖：最高可得100万</li></ul><h3>结算说明</h3><ul><li>佣金T+1结算</li><li>每日自动结算</li><li>无限制提现</li></ul></div></div>"
             }
           ]
         },
         {
           "title": "帮助",
           "path": "/help",
-          "content": "<div><h1>帮助中心</h1><div><h2>使用指南</h2><ul><li>基础功能介绍</li><li>操作指南</li><li>使用技巧</li></ul></div></div>",
           "sections": [
             {
-              "id": "user-guide",
-              "title": "使用指南",
-              "scrollPosition": 0
+              "id": "account-guide",
+              "title": "账户指南",
+              "scrollPosition": 0,
+              "content": "<div class='content-section'><h2>账户管理指南</h2><div class='guide-detail'><h3>注册流程</h3><ol><li>填写注册信息</li><li>验证手机号码</li><li>设置安全密码</li><li>完成实名认证</li></ol><h3>安全设置</h3><ul><li>开启双重认证</li><li>设置资金密码</li><li>绑定安全手机</li><li>设置防钓鱼码</li></ul><h3>实名认证</h3><p>详细说明实名认证的步骤和注意事项，包括证件要求、认证标准等。</p></div></div>"
+            },
+            {
+              "id": "trade-guide",
+              "title": "交易指南",
+              "scrollPosition": 460,
+              "content": "<div class='content-section'><h2>交易操作指南</h2><div class='guide-detail'><h3>充值流程</h3><ol><li>选择充值币种</li><li>获取充值地址</li><li>发起转账交易</li><li>等待确认到账</li></ol><h3>交易流程</h3><ol><li>选择交易对</li><li>查看行情数据</li><li>设置交易价格</li><li>输入交易数量</li><li>确认交易信息</li></ol><h3>提现说明</h3><ul><li>单笔提现限额</li><li>提现手续费说明</li><li>到账时间说明</li></ul></div></div>"
             }
           ]
         },
         {
           "title": "常见问题",
           "path": "/faq",
-          "content": "<div><h1>常见问题</h1><div><h2>问题列表</h2><ul><li>账号相关</li><li>接口调用</li><li>部署问题</li></ul></div></div>",
           "sections": [
             {
               "id": "faq-list",
               "title": "问题列表",
-              "scrollPosition": 0
+              "scrollPosition": 0,
+              "content": "<div><h1>常见问题</h1><div><h2>问题列表</h2><ul><li>账号相关</li><li>接口调用</li><li>部署问题</li></ul></div></div>"
             }
           ]
         },
         {
           "title": "联系我们",
           "path": "/contact",
-          "content": "<div><h1>联系我们</h1><div><h2>联系方式</h2><ul><li>客服电话：400-xxx-xxxx</li><li>技术支持：support@xxx.com</li><li>商务合作：business@xxx.com</li></ul></div></div>",
           "sections": [
             {
               "id": "contact-info",
               "title": "联系方式",
-              "scrollPosition": 0
+              "scrollPosition": 0,
+              "content": "<div><h1>联系我们</h1><div><h2>联系方式</h2><ul><li>客服电话：xxx-xxx-xxxx</li><li>技术支持：2416820386@qq.com</li></ul></div></div>"
             }
           ]
         },
         {
           "title": "团队成员",
           "path": "/team/members",
-          "content": "<div><h1>团队成员</h1><div><h2>队长：陈文强</h2><p>陈文强作为队长，拥有出色的领导能力和项目管理经验。他在团队中负责整体规划和决策，确保项目顺利推进。凭借丰富的经验和战略眼光，陈文强能够准确把握项目方向，并激励团队成员高效完成各自任务。</p><h2>队员：崔学童</h2><p>崔学童是团队的核心成员之一，具备扎实的技术功底和创新思维。在项目中，他负责需求分析、系统设计以及部分代码编写工作。同时，崔学童还承担了与客户沟通协调的任务，能够准确理解客户需求并将其转化为技术实现方案。</p><h2>队员：张比特</h2><p>张比特是团队的技术专家，专注于后端开发。他负责项目中核心模块的代码编写，对系统的架构设计和性能优化有深入研究。张比特能够运用先进的编程技术和工具，高效地完成复杂功能的实现，为系统的稳定运行提供坚实的技术支持。</p><h2>队员：韦晓婷</h2><p>韦晓婷在团队中负责前端开发和用户体验设计。她具备出色的视觉设计能力和交互设计能力，能够打造出美观、易用的用户界面。同时，韦晓婷还参与了项目的文档撰写和团队内部的沟通协调工作，确保项目的各个方面都能顺利进行。</p><h2>队员：黄嘉庆</h2><p>黄嘉庆在团队中扮演着多面手的角色。他不仅参与代码编写，还负责系统的测试和优化工作。黄嘉庆注重细节，对代码质量有严格要求，能够从用户角度出发，发现并解决系统中的潜在问题，确保系统的稳定性和易用性。</p><h2>队员：黄国杉</h2><p>黄国杉是团队的另一位技术骨干，主要负责代码编写和系统的部署工作。他对系统的整体架构有深入的理解，能够确保代码的可维护性和可扩展性。在项目中，黄国杉还积极参与技术难题的攻克，为团队解决了一系列技术瓶颈。</p></div></div>",
           "sections": [
             {
               "id": "leader",
               "title": "队长：陈文强",
-              "scrollPosition": 0
+              "scrollPosition": 0,
+              "content": "<div><h1>团队成员</h1><div><h2>队长：陈文强</h2><p>陈文强作为队长，拥有出色的领导能力和项目管理经验。他在团队中负责整体规划和决策，确保项目顺利推进。凭借丰富的经验和战略眼光，陈文强能够准确把握项目方向，并激励团队成员高效完成各自任务。</p></div></div>"
             },
             {
               "id": "member-1",
               "title": "队员：崔学童",
-              "scrollPosition": 300
+              "scrollPosition": 300,
+              "content": "<div><h1>团队成员</h1><div><h2>队员：崔学童</h2><p>崔学童是团队的核心成员之一，具备扎实的技术功底和创新思维。在项目中，他负责需求分析、系统设计以及部分代码编写工作。同时，崔学童还承担了与客户沟通协调的任务，能够准确理解客户需求并将其转化为技术实现方案。</p></div></div>"
             },
             {
               "id": "member-2",
               "title": "队员：张比特",
-              "scrollPosition": 600
+              "scrollPosition": 600,
+              "content": "<div><h1>团队成员</h1><div><h2>队员：张比特</h2><p>张比特是团队的技术专家，专注于后端开发。他负责项目中核心模块的代码编写，对系统的架构设计和性能优化有深入研究。张比特能够运用先进的编程技术和工具，高效地完成复杂功能的实现，为系统的稳定运行提供坚实的技术支持。</p></div></div>"
             },
             {
               "id": "member-3",
               "title": "队员：韦晓婷",
-              "scrollPosition": 900
+              "scrollPosition": 900,
+              "content": "<div><h1>团队成员</h1><div><h2>队员：韦晓婷</h2><p>韦晓婷在团队中负责前端开发和用户体验设计。她具备出色的视觉设计能力和交互设计能力，能够打造出美观、易用的用户界面。同时，韦晓婷还参与了项目的文档撰写和团队内部的沟通协调工作，确保项目的各个方面都能顺利进行。</p></div></div>"
             },
             {
               "id": "member-4",
               "title": "队员：黄嘉庆",
-              "scrollPosition": 1200
+              "scrollPosition": 1200,
+              "content": "<div><h1>团队成员</h1><div><h2>队员：黄嘉庆</h2><p>黄嘉庆在团队中扮演着多面手的角色。他不仅参与代码编写，还负责系统的测试和优化工作。黄嘉庆注重细节，对代码质量有严格要求，能够从用户角度出发，发现并解决系统中的潜在问题，确保系统的稳定性和易用性。</p></div></div>"
             },
             {
               "id": "member-5",
               "title": "队员：黄国杉",
-              "scrollPosition": 1500
+              "scrollPosition": 1500,
+              "content": "<div><h1>团队成员</h1><div><h2>队员：黄国杉</h2><p>黄国杉是团队的另一位技术骨干，主要负责代码编写和系统的部署工作。他对系统的整体架构有深入的理解，能够确保代码的可维护性和可扩展性。在项目中，黄国杉还积极参与技术难题的攻克，为团队解决了一系列技术瓶颈。</p></div></div>"
             }
           ]
         }

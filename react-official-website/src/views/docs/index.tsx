@@ -38,20 +38,17 @@ interface ThemeOptionType {
   icon: IconType
 }
 
+interface DocSection {
+  id: string
+  title: string
+  scrollPosition: number
+  content: string
+}
+
 interface DocContent {
   title: string
   path: string
-  content?: string
-  sections?: Array<{
-    id: string
-    title: string
-    scrollPosition: number
-  }>
-}
-
-interface DocSection {
-  title: string
-  children: DocContent[]
+  sections?: DocSection[]
 }
 
 interface SearchResult {
@@ -59,14 +56,18 @@ interface SearchResult {
   path: string
   content: string
   matchText: string
-  sectionTitle?: string
+  sectionTitle: string
+  scrollPosition: number
 }
 
 const DocsPage: React.FC = () => {
   const location = useLocation()
   const navigate = useNavigate()
   const [currentContent, setCurrentContent] = useState<DocContent | null>(null)
-  const [theme, setTheme] = useState('reading')
+  const [theme, setTheme] = useState(() => {
+    // 从本地存储读取主题，如果没有则默认为 'reading'
+    return localStorage.getItem('docs-theme') || 'reading'
+  })
   const [showSidebar, setShowSidebar] = useState(true)
   const [searchKeyword, setSearchKeyword] = useState('')
   const [showThemeDropdown, setShowThemeDropdown] = useState(false)
@@ -102,10 +103,9 @@ const DocsPage: React.FC = () => {
   // 初始化时设置当前内容
   useEffect(() => {
     // 设置主题
-    if (!document.body.getAttribute('data-theme')) {
-      setTheme('reading')
-      document.body.setAttribute('data-theme', 'reading')
-    }
+    const savedTheme = localStorage.getItem('docs-theme') || 'reading'
+    setTheme(savedTheme)
+    document.body.setAttribute('data-theme', savedTheme)
 
     // 设置文档内容
     const currentPath = location.pathname.replace('/docs', '')
@@ -142,18 +142,18 @@ const DocsPage: React.FC = () => {
     [navigate, location.pathname]
   )
 
-  const handleSearchResultClick = useCallback(
-    (result: SearchResult) => {
-      const doc = findDocByPath(result.path)
-      if (doc) {
-        setCurrentContent(doc)
-        navigate(`/docs${result.path}`, { replace: true })
-        setShowSearchResults(false)
-        setSearchKeyword('')
-      }
-    },
-    [navigate]
-  )
+  const handleSearchResultClick = (result: SearchResult) => {
+    navigate(`/docs${result.path}`)
+
+    setTimeout(() => {
+      window.scrollTo({
+        top: result.scrollPosition,
+        behavior: 'smooth'
+      })
+    }, 100)
+
+    setShowSearchResults(false)
+  }
 
   const handleSearch = (keyword: string) => {
     const results: SearchResult[] = []
@@ -165,79 +165,50 @@ const DocsPage: React.FC = () => {
       return
     }
 
-    // 搜索所有文档内容
+    // 辅助函数：移除 HTML 标签
+    const stripHtml = (html: string) => {
+      const tmp = document.createElement('div')
+      tmp.innerHTML = html
+      return tmp.textContent || tmp.innerText || ''
+    }
+
     docsData.sidebar.forEach((section) => {
       section.children.forEach((item) => {
-        if (item.content) {
-          // 搜索标题
-          if (item.title.toLowerCase().includes(searchKeyword)) {
+        item.sections?.forEach((section) => {
+          // 移除 HTML 标签后的纯文本内容
+          const plainContent = stripHtml(section.content)
+
+          // 只搜索纯文本内容
+          if (plainContent.toLowerCase().includes(searchKeyword)) {
+            // 找到关键词在文本中的位置
+            const keywordIndex = plainContent
+              .toLowerCase()
+              .indexOf(searchKeyword)
+            // 获取关键词前后的一些文本，作为上下文
+            const start = Math.max(0, keywordIndex - 50)
+            const end = Math.min(plainContent.length, keywordIndex + 100)
+            const context = plainContent.substring(start, end)
+
             results.push({
               title: item.title,
               path: item.path,
-              content: item.content,
-              matchText: item.title
+              content: section.content,
+              matchText: context,
+              sectionTitle: section.title,
+              scrollPosition: section.scrollPosition
             })
           }
-
-          // 创建临时 DOM 元素来解析 HTML 内容
-          const tempDiv = document.createElement('div')
-          tempDiv.innerHTML = item.content
-
-          // 搜索文本内容
-          const textContent = tempDiv.textContent || tempDiv.innerText
-          const textLines = textContent
-            .split('\n')
-            .filter((line) => line.trim())
-
-          textLines.forEach((line) => {
-            const trimmedLine = line.trim()
-            if (trimmedLine.toLowerCase().includes(searchKeyword)) {
-              results.push({
-                title: item.title,
-                path: item.path,
-                content: item.content,
-                matchText: trimmedLine
-              })
-            }
-          })
-
-          // 搜索 h1-h6 标题内容
-          const headings = tempDiv.querySelectorAll('h1, h2, h3, h4, h5, h6')
-          headings.forEach((heading: Element) => {
-            const headingText = heading.textContent || ''
-            if (headingText.toLowerCase().includes(searchKeyword)) {
-              results.push({
-                title: item.title,
-                path: item.path,
-                content: item.content,
-                matchText: headingText,
-                sectionTitle: headingText
-              })
-            }
-          })
-
-          // 搜索章节标题
-          item.sections?.forEach((section) => {
-            if (section.title.toLowerCase().includes(searchKeyword)) {
-              results.push({
-                title: item.title,
-                path: item.path,
-                content: item.content,
-                matchText: section.title,
-                sectionTitle: section.title
-              })
-            }
-          })
-        }
+        })
       })
     })
 
-    // 去重
+    // 去重，基于路径和章节标题
     const uniqueResults = results.filter(
       (result, index, self) =>
         index ===
         self.findIndex(
-          (r) => r.path === result.path && r.matchText === result.matchText
+          (r) =>
+            r.path === result.path && r.sectionTitle === result.sectionTitle
         )
     )
 
@@ -254,14 +225,24 @@ const DocsPage: React.FC = () => {
   }
 
   const renderContent = () => {
-    if (!currentContent?.content) return null
-    return <div dangerouslySetInnerHTML={{ __html: currentContent.content }} />
+    if (!currentContent?.sections) return null
+    return (
+      <div>
+        {currentContent.sections.map((section) => (
+          <div key={section.id} id={section.id}>
+            <div dangerouslySetInnerHTML={{ __html: section.content }} />
+          </div>
+        ))}
+      </div>
+    )
   }
 
   const handleThemeChange = (newTheme: string) => {
     setTheme(newTheme)
     setShowThemeDropdown(false)
-    // 根据主题设置全局样式
+    // 保存主题到本地存储
+    localStorage.setItem('docs-theme', newTheme)
+    // 设置全局样式
     document.body.setAttribute('data-theme', newTheme)
   }
 
@@ -284,7 +265,7 @@ const DocsPage: React.FC = () => {
           onClick={() => (window.location.href = '/home')}
         >
           <Logo src="/favicon.ico" alt="Logo" />
-          <Title>LPT 开发指南（文档更新时间：2025-3-24）</Title>
+          <Title>LPT 开发指南（文档更新时间：2025-3-30）</Title>
         </div>
         <SearchBar>
           <input
