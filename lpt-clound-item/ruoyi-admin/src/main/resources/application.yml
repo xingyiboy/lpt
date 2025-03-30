@@ -136,6 +136,6 @@ xss:
   # 匹配链接
   urlPatterns: /system/*,/monitor/*,/tool/*
 lpt:
-  userId: 107
-  appSecret: flvaxraehv9cqn870a3ao6uuvq9olkq5
-  aesIv: 98g5gu5ozgy04shx
+  userId: 108
+  appSecret: 3tyltspa196dixalxco2b6fm6f1tx2ww
+  aesIv: nkh2meoq5gdjs5be

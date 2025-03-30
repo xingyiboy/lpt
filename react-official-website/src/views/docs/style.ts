@@ -362,6 +362,23 @@ export const GlobalStyle = createGlobalStyle`
         color: #1890ff;
       }
     }
+
+    ${Content} {
+      background: #2d2d2d;
+      color: #fff;
+
+      .main-title {
+        color: #fff;
+      }
+
+      .section-title {
+        color: #fff;
+      }
+
+      .content-paragraph {
+        color: #fff;
+      }
+    }
   }
 
   body[data-theme='reading'] {

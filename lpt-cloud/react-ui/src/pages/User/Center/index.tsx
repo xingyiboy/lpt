@@ -46,6 +46,7 @@ const Center: React.FC = () => {
 
   //  渲染用户信息
   const renderUserInfo = ({
+    userId,
     userName,
     phonenumber,
     email,
@@ -55,6 +56,17 @@ const Center: React.FC = () => {
   }: Partial<API.CurrentUser>) => {
     return (
       <List>
+        <List.Item>
+          <div>
+            <UserOutlined
+              style={{
+                marginRight: 8,
+              }}
+            />
+            用户编号
+          </div>
+          <div>{userId}</div>
+        </List.Item>
         <List.Item>
           <div>
             <UserOutlined

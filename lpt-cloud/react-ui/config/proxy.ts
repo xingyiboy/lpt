@@ -1,7 +1,7 @@
 /*
  * @Date: 2025-03-14 18:11:08
  * @LastEditors: xingyi && 2416820386@qq.com
- * @LastEditTime: 2025-03-24 19:07:37
+ * @LastEditTime: 2025-03-30 15:32:18
  * @FilePath: \react-ui\config\proxy.ts
  */
 /**
@@ -21,14 +21,14 @@ export default {
     // localhost:8000/api/** -> https://preview.pro.ant.design/api/**
     '/api/': {
       // 要代理的地址
-      target: 'http://localhost:8080',
+      target: 'http://113.45.31.128:8080',
       // 配置了这个可以从 http 代理到 https
       // 依赖 origin 的功能可能需要这个，比如 cookie
       changeOrigin: true,
       pathRewrite: { '^/api': '' },
     },
     '/profile/avatar/': {
-      target: 'http://localhost:8080',
+      target: 'http://113.45.31.128:8080',
       changeOrigin: true,
     },
   },
