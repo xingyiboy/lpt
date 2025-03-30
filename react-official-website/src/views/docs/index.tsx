@@ -343,14 +343,14 @@ const DocsPage: React.FC = () => {
           <a href="/project">项目实战</a>
           <a href="/video">视频教程</a> */}
           <a
-            href="http://113.45.31.128:99/user/login"
+            href="https://113.45.31.128"
             target="_blank"
             rel="noopener noreferrer"
           >
             在线体验
           </a>
           <a
-            href="https://113.45.31.128"
+            href="http://113.45.31.128:99/user/login"
             target="_blank"
             rel="noopener noreferrer"
           >
