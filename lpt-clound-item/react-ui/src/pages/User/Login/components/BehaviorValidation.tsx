@@ -1,7 +1,7 @@
 /*
  * @Date: 2025-03-17 20:21:01
  * @LastEditors: xingyi && 2416820386@qq.com
- * @LastEditTime: 2025-03-20 21:51:23
+ * @LastEditTime: 2025-03-31 12:41:51
  * @FilePath: \react-ui\src\pages\User\Login\components\BehaviorValidation.tsx
  */
 import { useEffect } from 'react';
@@ -23,13 +23,17 @@ const BehaviorValidation = ({ onSuccess, onClose, username,uuid }: CaptchaProps)
   useEffect(() => {
     const initCaptcha = () => {
       const config = {
+        //请求验证码地址
         requestCaptchaDataUrl: '/api/login?username=' + username+'&uuid='+uuid,
+        //验证验证码地址
         validCaptchaUrl: '/api/login?username=' + username+'&uuid='+uuid,
         bindEl: '#captcha-box',
+        //校验成功回调
         validSuccess: (res: any, _: any, tac: any) => {
           onSuccess(res.msg);
           tac.reloadCaptcha();
         },
+        //校验失败回调
         validFail: (res: any, _: any, tac: any) => {
           console.error('验证失败:', res.msg);
           tac.reloadCaptcha();

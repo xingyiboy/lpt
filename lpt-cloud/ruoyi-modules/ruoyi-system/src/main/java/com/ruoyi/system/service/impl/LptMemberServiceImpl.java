@@ -253,11 +253,17 @@ public class LptMemberServiceImpl implements ILptMemberService
         getParmas.setUsername(loginBody.getUsername());
         LptMember lptMember = lptMemberMapper.selectLptMemberByUsername(getParmas);
         if(StringUtils.isNotBlank(lptMember.getFaceBase64())){
-            //有人脸
             LptFaceCompareReqVo lptFaceCompareReqVo = new LptFaceCompareReqVo();
+            //人脸A
             lptFaceCompareReqVo.setImageBase64A(lptMember.getFaceBase64());
+            //人脸B
             lptFaceCompareReqVo.setImageBase64B(loginBody.getFaceBase64());
             LptFaceCompareRepVo lptFaceCompareRepVo = LptFaceComparisonUtil.compareFace(lptFaceCompareReqVo);
+            //错误消息，为null代表正常，其中会有（Image B is not face）代表该照片不是人脸
+            String message = lptFaceCompareRepVo.getMessage();
+            //相似度，大于50可以认为是本人
+            Float confidence = lptFaceCompareRepVo.getConfidence();
+
             if(lptFaceCompareRepVo.getMessage()==null){
                 //校验成功 大于50的概率认为他是本人
                 if(lptFaceCompareRepVo.getConfidence()>50){
@@ -447,9 +453,9 @@ public class LptMemberServiceImpl implements ILptMemberService
      * @return
      */
     private Object handleSlidingValidation(LoginBody loginBody,LoginVerify loginVerify,HttpSession session) {
-        //判断是否开始校验
+        //判断是否开始校验 前端会传过来 id 和 data 校验信息
         if(loginBody.getId()!=null){
-            //校验
+            //校验答案
             LptImageCaptchaApplication application = (LptImageCaptchaApplication) session.getAttribute("captchaApplication-"+loginBody.getUsername());
             LptApiResponse<?> valid = application.matching(loginBody.getId(), new MatchParam(loginBody.getData()));
             if(valid.isSuccess()){
@@ -470,20 +476,19 @@ public class LptMemberServiceImpl implements ILptMemberService
                 return valid;
             }
         }
-        //生成字符校验图片
+        //生成校验图片 并记录答案在session中
         LptImageCaptchaApplication application = LptTACBuilder.builder()
                 .addDefaultTemplate()
-                // expire 设置验证码的过期时间 ， default 为默认过期时间 为 10秒, WORD_IMAGE_CLICK文字点选验证码的过期时间为 60秒
+                //expire设置验证码的过期时间,default为默认过期时间为10秒,WORD_IMAGE_CLICK文字点选验证码的过期时间为60秒
                 .expire("default", 10000L)
                 .expire("WORD_IMAGE_CLICK", 60000L)
-                // 设置背景图， 这里为 SLIDER WORD_IMAGE_CLICK ROTATE CONCAT 各设置了一张背景图
+                //设置背景图,这里为 SLIDER WORD_IMAGE_CLICK ROTATE CONCAT 各设置了一张背景图
                 .addResource("SLIDER", new lpt.resource.common.model.dto.Resource("classpath", "META-INF/cut-image/resource/1.jpg"))
                 .addResource("WORD_IMAGE_CLICK", new lpt.resource.common.model.dto.Resource("classpath", "META-INF/cut-image/resource/1.jpg"))
                 .addResource("ROTATE", new lpt.resource.common.model.dto.Resource("classpath", "META-INF/cut-image/resource/1.jpg"))
                 .addResource("CONCAT", new lpt.resource.common.model.dto.Resource("classpath", "META-INF/cut-image/resource/1.jpg"))
                 .build();
-        // 生成验证码数据， 可以将该数据直接返回给前端 ，
-        // 支持生成 滑动验证码(SLIDER)、旋转验证码(ROTATE)、滑动还原验证码(CONCAT)、文字点选验证码(WORD_IMAGE_CLICK)
+        //支持生成 滑动验证码(SLIDER)、旋转验证码(ROTATE)、滑动还原验证码(CONCAT)、文字点选验证码(WORD_IMAGE_CLICK)
         LptCaptchaResponse<LptImageCaptchaVO> res = application.generateCaptcha("SLIDER");
         //记录session
         session.setAttribute("captchaApplication-"+loginBody.getUsername(), application);

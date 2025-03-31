@@ -121,6 +121,62 @@ const DocsPage: React.FC = () => {
         navigate(`/docs${defaultDoc.path}`, { replace: true })
       }
     }
+
+    // 定义复制函数
+    window.copyCode = (button: HTMLButtonElement) => {
+      const parent = button.parentElement
+      if (!parent) return
+
+      const pre = parent.querySelector('pre')
+      if (pre) {
+        const code = pre.textContent || ''
+
+        navigator.clipboard.writeText(code).then(() => {
+          const originalIcon = button.innerHTML
+          button.innerHTML =
+            '<svg style="width: 20px; height: 20px; fill: #4CAF50;" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>'
+          setTimeout(() => {
+            button.innerHTML = originalIcon
+          }, 2000)
+        })
+      }
+    }
+
+    // 添加图片放大功能
+    window.showImage = (img: HTMLImageElement) => {
+      // 创建遮罩层
+      const overlay = document.createElement('div')
+      overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        cursor: pointer;
+      `
+
+      // 创建大图
+      const largeImg = document.createElement('img')
+      largeImg.src = img.src
+      largeImg.style.cssText = `
+        max-width: 90%;
+        max-height: 90%;
+        object-fit: contain;
+      `
+
+      // 点击关闭
+      overlay.onclick = () => {
+        document.body.removeChild(overlay)
+      }
+
+      overlay.appendChild(largeImg)
+      document.body.appendChild(overlay)
+    }
   }, []) // 只在组件挂载时执行一次
 
   // 处理路由变化
@@ -424,5 +480,13 @@ const ResultMatch = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
 `
+
+// 添加全局类型声明
+declare global {
+  interface Window {
+    copyCode: (button: HTMLButtonElement) => void
+    showImage: (img: HTMLImageElement) => void
+  }
+}
 
 export default memo(DocsPage)

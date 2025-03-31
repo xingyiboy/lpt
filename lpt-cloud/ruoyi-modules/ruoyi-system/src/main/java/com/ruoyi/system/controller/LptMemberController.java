@@ -180,6 +180,13 @@ public class LptMemberController extends BaseController
                 if(lptMember.getUserId() == null){
                     throw new RuntimeException("用户id不能为空");
                 }
+                LptMember search = new LptMember();
+                search.setUsername(lptMember.getUsername());
+                search.setUserId(lptMember.getUserId());
+                List<LptMember> lptMembers = lptMemberService.selectLptMemberList(search);
+                if (lptMembers.size() > 0) {
+                    throw new RuntimeException("用户名已存在");
+                }
                 String jsonString = JSONUtil.toJsonStr(toAjax(lptMemberService.insertLptMember(lptMember)));
                 return LptSignUtil.encrypt(jsonString, sysUser.getSecretKey(), sysUser.getOffset());
 

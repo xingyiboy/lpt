@@ -1,8 +1,8 @@
 /*
  * @Date: 2025-03-16 16:12:47
  * @LastEditors: xingyi && 2416820386@qq.com
- * @LastEditTime: 2025-03-22 23:53:56
- * @FilePath: \react-ui\src\pages\User\Login\index.tsx
+ * @LastEditTime: 2025-03-31 15:14:28
+ * @FilePath: \lpt-single-item\react-ui\src\pages\User\Login\index.tsx
  */
 import Footer from '@/components/Footer';
 import { login, register } from '@/services/system/auth';
@@ -167,8 +167,7 @@ const Login: React.FC = () => {
     };
   }, []); // 空依赖数组，确保只加载一次
 
-
-  const handleNextSetp = (Step:String)=>{
+  const handleNextSetp = (Step: String) => {
     switch (Step) {
       case '1':
         //执行字符校验
@@ -188,39 +187,39 @@ const Login: React.FC = () => {
         setShowMailboxValidation(true);
         message.success('验证成功，开始邮箱校验');
         break;
-        case '4':
-          closeAllValidation();
-          setShowBehaviorValidation(true);
-          message.success('验证成功，开始滑动校验');
-          break;
-        case '5':
-          closeAllValidation();
-          setShowBehaviorValidation(true);
-          message.success('验证成功，开始旋转校验');
-          break;
-        case '6':
-          closeAllValidation();
-          setShowBehaviorValidation(true);
-          message.success('验证成功，开始点击校验');
-          break;
-        case '7':
-          closeAllValidation();
-          setShowBehaviorValidation(true);
-          message.success('验证成功，开始滑动还原校验');
-          break;
-        case '8':
-          closeAllValidation();
-          setShowFaceValidation(true);
-          message.success('验证成功，开始人脸校验');
-          break;
-        default:
-          //登录成功
-          if (Step.slice(0, 6) == 'token:') {
-            LoginSuccess(Step.slice(6));
-          }
-          break;
+      case '4':
+        closeAllValidation();
+        setShowBehaviorValidation(true);
+        message.success('验证成功，开始滑动校验');
+        break;
+      case '5':
+        closeAllValidation();
+        setShowBehaviorValidation(true);
+        message.success('验证成功，开始旋转校验');
+        break;
+      case '6':
+        closeAllValidation();
+        setShowBehaviorValidation(true);
+        message.success('验证成功，开始点击校验');
+        break;
+      case '7':
+        closeAllValidation();
+        setShowBehaviorValidation(true);
+        message.success('验证成功，开始滑动还原校验');
+        break;
+      case '8':
+        closeAllValidation();
+        setShowFaceValidation(true);
+        message.success('验证成功，开始人脸校验');
+        break;
+      default:
+        //登录成功
+        if (Step.slice(0, 6) == 'token:') {
+          LoginSuccess(Step.slice(6));
+        }
+        break;
     }
-  }
+  };
 
   //处理下一步操作
   const handleSubmitCaptcha = async (step: string, values?: API.LoginParams = null) => {
@@ -234,22 +233,18 @@ const Login: React.FC = () => {
     switch (step) {
       case '1':
         //执行字符校验
-        message.success('验证成功，开始字符校验');
         getCodeDataAndVerify(currentValues, false, '1');
         break;
       case '2':
         //执行数字计算校验
-        message.success('验证成功，开始数字校验');
         getCodeDataAndVerify(currentValues, false, '2');
         break;
       case '3':
         //执行邮箱校验
-        message.success('验证成功，开始邮箱校验');
         getCodeDataAndVerify(currentValues, false, '3');
         break;
       case '4':
         //执行滑动操作
-        message.success('验证成功，开始滑动验证');
         getCodeDataAndVerify(currentValues, false, '4');
       default:
         //错误重新获取验证码不能进行下一步
@@ -309,7 +304,7 @@ const Login: React.FC = () => {
 
           if (response.code === 200) {
             setCodeImgData(response.data);
-            handleNextSetp(Step)
+            handleNextSetp(Step);
             setSubmitting(false);
             // 存储到 ref
             loginValuesRef.current = currentValues;
@@ -388,7 +383,6 @@ const Login: React.FC = () => {
       message.error(isRegister ? '注册失败，请重试！' : '登录失败，请重试！');
     }
   };
-
 
   const { code } = userLoginState;
   const loginType = type;

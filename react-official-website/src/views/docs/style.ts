@@ -63,11 +63,11 @@ export const NavLinks = styled.nav`
 
 export const MainContent = styled.div`
   display: grid;
-  grid-template-columns: 280px 1fr 240px;
+  grid-template-columns: 200px 1fr 240px;
   gap: 24px;
   margin-top: 40px;
-  padding: 0 24px 24px 24px;
-  max-width: 1400px;
+  padding: 0 16px 24px 16px;
+  max-width: 1500px;
   margin-left: auto;
   margin-right: auto;
 `
@@ -305,6 +305,54 @@ export const ToggleSidebarButton = styled(IconButton)`
 export const GlobalStyle = createGlobalStyle`
   body[data-theme='light'] {
     background-color: #f5f7f9;
+    color: #333;
+
+    ${DocWrapper} {
+      background: #f5f7f9;
+    }
+
+    ${Header} {
+      background: #fff;
+      box-shadow: none;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    ${Content} {
+      background: #fff;
+      color: #333;
+      line-height: 1.8;
+      font-size: 16px;
+    }
+
+    ${Sidebar}, ${RightSidebar} {
+      background: #fff;
+    }
+
+    ${SidebarItem} {
+      color: #586e75;
+
+      &:hover {
+        background: #f5f5f5;
+      }
+
+      &[active=true] {
+        background: #f5f5f5;
+        color: #1890ff;
+      }
+    }
+
+    ${IconButton} {
+      background: #fff;
+      color: #586e75;
+
+      &:hover {
+        background: #f5f5f5;
+      }
+    }
+
+    ${ThemeDropdown} {
+      background: #fff;
+    }
   }
 
   body[data-theme='dark'] {
@@ -321,51 +369,15 @@ export const GlobalStyle = createGlobalStyle`
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    ${Title} {
-      color: #e5eaf3;
-    }
-
-    ${SearchBar} input {
-      background: #2d2d2d;
-      border-color: #444;
-      color: #e5eaf3;
-
-      &::placeholder {
-        color: #888;
-      }
-    }
-
-    ${NavLinks} a {
-      color: #e5eaf3;
-
-      &:hover {
-        color: #1890ff;
-      }
-    }
-
-    ${Sidebar}, ${Content}, ${RightSidebar} {
-      background: #2d2d2d;
-      color: #e5eaf3;
-    }
-
     ${Content} {
-      .main-title {
-        color: rgba(255, 255, 255, 0.85);
-        border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-      }
+      background: #2d2d2d;
+      color: #e5eaf3;
+      line-height: 1.8;
+      font-size: 16px;
+    }
 
-      .section-title {
-        color: rgba(255, 255, 255, 0.85);
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-      }
-
-      .content-paragraph {
-        color: rgba(255, 255, 255, 0.85);
-      }
-
-      a {
-        color: #1890ff;
-      }
+    ${Sidebar}, ${RightSidebar} {
+      background: #2d2d2d;
     }
 
     ${SidebarItem} {
@@ -381,20 +393,6 @@ export const GlobalStyle = createGlobalStyle`
       }
     }
 
-    ${RightSidebar} {
-      .toc-title {
-        color: rgba(255, 255, 255, 0.85);
-      }
-
-      .toc-item {
-        color: rgba(255, 255, 255, 0.85);
-      }
-
-      ul li {
-        color: rgba(255, 255, 255, 0.85);
-      }
-    }
-
     ${IconButton} {
       background: #2d2d2d;
       color: #888;
@@ -406,19 +404,6 @@ export const GlobalStyle = createGlobalStyle`
 
     ${ThemeDropdown} {
       background: #2d2d2d;
-    }
-
-    ${ThemeOption} {
-      color: #888;
-
-      &:hover {
-        background: #363636;
-      }
-
-      &[active=true] {
-        background: #363636;
-        color: #1890ff;
-      }
     }
   }
 

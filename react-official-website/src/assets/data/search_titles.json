@@ -23,7 +23,7 @@
         "url": "/docs/api/docs"
       },
       {
-        "title": "签名方式",
+        "title": "加密方式",
         "desc": "接口签名加密说明",
         "url": "/docs/signature"
       },

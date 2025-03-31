@@ -16,13 +16,18 @@ import java.util.Map;
  */
 public class LptCharacterUtil {
     public static void main(String[] args) {
-        Map<String, Object> lineNumberVerification = getShearLetterVerification(6, 17, 4,200,80);
+        Map<String, Object> lineNumberVerification = getShearLetterVerification(1000, 0, 4,200,80);
         System.out.println(lineNumberVerification.get("image"));
     }
 
     /**
      * 生成线段干扰字符验证码(纯数字)
-     * @return
+     * @param codeCount 自身难度
+     * @param interference 干扰难度
+     * @param length 验证码数量
+     * @param width 图片宽度
+     * @param height 图片高度
+     * @return code 答案 image base64图片
      */
     public static Map<String, Object> getLineNumberVerification(Integer codeCount, Integer interference,Integer length,Integer width,Integer height){
         LineCaptcha captcha = CaptchaUtil.createLineCaptcha(width, height,codeCount,interference);

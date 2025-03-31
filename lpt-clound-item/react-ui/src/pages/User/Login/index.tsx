@@ -1,7 +1,7 @@
 /*
  * @Date: 2025-03-16 16:12:47
  * @LastEditors: xingyi && 2416820386@qq.com
- * @LastEditTime: 2025-03-24 17:22:29
+ * @LastEditTime: 2025-03-31 15:20:27
  * @FilePath: \react-ui\src\pages\User\Login\index.tsx
  */
 import Footer from '@/components/Footer';
@@ -720,9 +720,13 @@ const Login: React.FC = () => {
         )}
         {showBehaviorValidation && (
           <BehaviorValidation
+            //成功回调
             onSuccess={handleNextSetp}
+            //失败回调
             onClose={() => setOpen(false)}
+            //用户名（可不传-根据自己代码决定）
             username={loginValuesRef.current.username}
+            //uuid（可不传-根据自己代码决定）
             uuid={uuid.current}
           />
         )}

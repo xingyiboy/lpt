@@ -20,7 +20,8 @@ public class LptFaceComparisonUtil {
     public static final String POST_URL = "http://113.45.31.128:18071/visual/compare/do";
 
     /**
-     * 1v1比对
+     * 1V1 人脸比对
+     * @param lptFaceCompareReqVo
      * @return
      */
     public static LptFaceCompareRepVo compareFace(LptFaceCompareReqVo lptFaceCompareReqVo){
