@@ -1,7 +1,7 @@
 /*
  * @Date: 2025-03-24 21:02:16
  * @LastEditors: xingyi && 2416820386@qq.com
- * @LastEditTime: 2025-03-24 22:19:56
+ * @LastEditTime: 2025-04-01 20:38:01
  * @FilePath: \react-official-website\src\views\docs\index.tsx
  */
 import React, { useState, useEffect, useCallback, memo } from 'react'
@@ -131,13 +131,48 @@ const DocsPage: React.FC = () => {
       if (pre) {
         const code = pre.textContent || ''
 
-        navigator.clipboard.writeText(code).then(() => {
-          const originalIcon = button.innerHTML
-          button.innerHTML =
-            '<svg style="width: 20px; height: 20px; fill: #4CAF50;" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>'
-          setTimeout(() => {
-            button.innerHTML = originalIcon
-          }, 2000)
+        // 尝试使用现代 Clipboard API
+        const copyText = async (text: string) => {
+          try {
+            // 优先使用 Clipboard API
+            if (navigator.clipboard && window.isSecureContext) {
+              await navigator.clipboard.writeText(text)
+              return true
+            }
+
+            // 后备方案：使用传统的复制方法
+            const textArea = document.createElement('textarea')
+            textArea.value = text
+            textArea.style.position = 'fixed'
+            textArea.style.left = '-999999px'
+            textArea.style.top = '-999999px'
+            document.body.appendChild(textArea)
+            textArea.focus()
+            textArea.select()
+
+            try {
+              document.execCommand('copy')
+              textArea.remove()
+              return true
+            } catch (err) {
+              textArea.remove()
+              return false
+            }
+          } catch (err) {
+            return false
+          }
+        }
+
+        // 执行复制并显示反馈
+        copyText(code).then((success) => {
+          if (success) {
+            const originalIcon = button.innerHTML
+            button.innerHTML =
+              '<svg style="width: 20px; height: 20px; fill: #4CAF50;" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>'
+            setTimeout(() => {
+              button.innerHTML = originalIcon
+            }, 2000)
+          }
         })
       }
     }
@@ -321,7 +356,7 @@ const DocsPage: React.FC = () => {
           onClick={() => (window.location.href = '/home')}
         >
           <Logo src="/favicon.ico" alt="Logo" />
-          <Title>LPT 开发指南（文档更新时间：2025-3-30）</Title>
+          <Title>LPT 开发指南（文档更新时间：2025-3-31）</Title>
         </div>
         <SearchBar>
           <input

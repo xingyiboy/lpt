@@ -16,7 +16,7 @@ import lpt.validator.common.model.dto.MatchParam;
  * @date: 2025年03月15日 21:36
  */
 public class Test {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         LptImageCaptchaApplication application = LptTACBuilder.builder()
                 .addDefaultTemplate()
                 // expire 设置验证码的过期时间 ， default 为默认过期时间 为 10秒, WORD_IMAGE_CLICK文字点选验证码的过期时间为 60秒

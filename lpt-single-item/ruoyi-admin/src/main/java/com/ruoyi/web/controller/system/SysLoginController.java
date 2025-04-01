@@ -47,8 +47,7 @@ public class SysLoginController
      * @return 结果
      */
     @PostMapping("/login")
-    public Object login(@RequestBody LoginBody loginBody, String username,String uuid, HttpSession session)
-    {
+    public Object login(@RequestBody LoginBody loginBody, String username,String uuid, HttpSession session) throws Exception {
         loginBody.setUuid(uuid);
         if(StringUtils.isNotBlank(username)){
             loginBody.setUsername(username);

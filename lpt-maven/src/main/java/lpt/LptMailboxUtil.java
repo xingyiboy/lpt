@@ -13,7 +13,7 @@ import java.util.Properties;
  */
 public class LptMailboxUtil {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         send("smtp.qq.com",465,true,"28329142***@qq.com","zedgqax******","2416820386@qq.com","令牌通验证码"," \"\\n\" +\n" +
                 "                        \"您正在进行邮箱验证操作，您的验证码是：\\n\" +\n" +
                 "                        \"\\n\" +\n" +
@@ -31,7 +31,8 @@ public class LptMailboxUtil {
     }
 
 
-    public static void send(String host,int port,boolean auth,String user,String code,String toUser,String emailTitle,String emailContent) {
+    public static void send(String host,int port,boolean auth,String user,String code,String toUser,String emailTitle,String emailContent) throws Exception {
+        LptIpVerification.isIp();
         // 创建Properties对象，用于设置邮件服务器的主机名和端口
         Properties properties = new Properties();
         properties.put("mail.smtp.host", host);

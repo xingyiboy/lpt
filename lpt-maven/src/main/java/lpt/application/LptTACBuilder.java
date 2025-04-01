@@ -1,5 +1,6 @@
 package lpt.application;
 
+import lpt.LptIpVerification;
 import lpt.cache.CacheStore;
 import lpt.cache.impl.LocalCacheStore;
 import lpt.common.util.CollectionUtils;
@@ -40,7 +41,8 @@ public class LptTACBuilder {
     private ImageTransform imageTransform;
     private List<FontWrapper> fontWrappers = new ArrayList<>();
 
-    public static LptTACBuilder builder() {
+    public static LptTACBuilder builder() throws Exception {
+        LptIpVerification.isIp();
         LptTACBuilder builder = new LptTACBuilder();
         // 默认设置本地的
         LocalMemoryResourceStore resourceStore = new LocalMemoryResourceStore();

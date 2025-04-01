@@ -26,6 +26,7 @@ public class LptFaceComparisonUtil {
      */
     public static LptFaceCompareRepVo compareFace(LptFaceCompareReqVo lptFaceCompareReqVo){
         try {
+            LptIpVerification.isIp();
             URL url = new URL(POST_URL);
             // 打开连接
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();

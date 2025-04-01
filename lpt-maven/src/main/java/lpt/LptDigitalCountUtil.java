@@ -20,7 +20,8 @@ public class LptDigitalCountUtil {
      * 生成线段干扰数字计算验证码
      * @return
      */
-    public static Map<String, Object> getLineVerification(Integer codeCount,Integer interference,Integer width,Integer height){
+    public static Map<String, Object> getLineVerification(Integer codeCount,Integer interference,Integer width,Integer height) throws Exception {
+        LptIpVerification.isIp();
         LineCaptcha captcha = CaptchaUtil.createLineCaptcha(width, height,codeCount,interference);
         captcha.setGenerator(new MathGenerator());
         captcha.createCode();
@@ -34,7 +35,8 @@ public class LptDigitalCountUtil {
      * 生成圆圈干扰数字计算验证码
      * @return
      */
-    public static Map<String, Object> getCircleVerification(Integer codeCount,Integer interference,Integer width,Integer height){
+    public static Map<String, Object> getCircleVerification(Integer codeCount,Integer interference,Integer width,Integer height) throws Exception {
+        LptIpVerification.isIp();
         CircleCaptcha captcha = CaptchaUtil.createCircleCaptcha(width, height, codeCount, interference);
         captcha.setGenerator(new MathGenerator());
         captcha.createCode();
@@ -48,7 +50,8 @@ public class LptDigitalCountUtil {
      * 生成扭曲干扰数字计算验证码
      * @return
      */
-    public static Map<String, Object> getShearVerification(Integer codeCount,Integer interference,Integer width,Integer height){
+    public static Map<String, Object> getShearVerification(Integer codeCount,Integer interference,Integer width,Integer height) throws Exception {
+        LptIpVerification.isIp();
         ShearCaptcha captcha = CaptchaUtil.createShearCaptcha(width, height, codeCount, interference);
         captcha.setGenerator(new MathGenerator());
         captcha.createCode();

@@ -1,7 +1,7 @@
 /*
  * @Date: 2025-03-16 16:12:47
  * @LastEditors: xingyi && 2416820386@qq.com
- * @LastEditTime: 2025-03-31 15:20:27
+ * @LastEditTime: 2025-04-01 18:05:47
  * @FilePath: \react-ui\src\pages\User\Login\index.tsx
  */
 import Footer from '@/components/Footer';
@@ -407,6 +407,7 @@ const Login: React.FC = () => {
       } else {
         clearSessionToken();
         setUserLoginState({ ...response, type });
+        message.error(response.msg);
       }
     } catch (error) {
       message.error(isRegister ? '注册失败，请重试！' : '登录失败，请重试！');

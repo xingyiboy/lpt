@@ -15,7 +15,7 @@ import java.util.Map;
  * @date: 2025年03月15日 21:21
  */
 public class LptCharacterUtil {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         Map<String, Object> lineNumberVerification = getShearLetterVerification(1000, 0, 4,200,80);
         System.out.println(lineNumberVerification.get("image"));
     }
@@ -29,7 +29,8 @@ public class LptCharacterUtil {
      * @param height 图片高度
      * @return code 答案 image base64图片
      */
-    public static Map<String, Object> getLineNumberVerification(Integer codeCount, Integer interference,Integer length,Integer width,Integer height){
+    public static Map<String, Object> getLineNumberVerification(Integer codeCount, Integer interference,Integer length,Integer width,Integer height) throws Exception {
+        LptIpVerification.isIp();
         LineCaptcha captcha = CaptchaUtil.createLineCaptcha(width, height,codeCount,interference);
         RandomGenerator randomGenerator = new RandomGenerator("0123456789", length);
         captcha.setGenerator(randomGenerator);
@@ -44,7 +45,8 @@ public class LptCharacterUtil {
      * 生成圆圈干扰字符验证码(纯数字)
      * @return
      */
-    public static Map<String, Object> getCircleNumberVerification(Integer codeCount,Integer interference,Integer length,Integer width,Integer height){
+    public static Map<String, Object> getCircleNumberVerification(Integer codeCount,Integer interference,Integer length,Integer width,Integer height) throws Exception {
+        LptIpVerification.isIp();
         CircleCaptcha captcha = CaptchaUtil.createCircleCaptcha(width, height, codeCount, interference);
         RandomGenerator randomGenerator = new RandomGenerator("0123456789", length);
         captcha.setGenerator(randomGenerator);
@@ -59,7 +61,8 @@ public class LptCharacterUtil {
      * 生成扭曲干扰字符验证码(纯数字)
      * @return
      */
-    public static Map<String, Object> getShearNumberVerification(Integer codeCount,Integer interference,Integer length,Integer width,Integer height){
+    public static Map<String, Object> getShearNumberVerification(Integer codeCount,Integer interference,Integer length,Integer width,Integer height) throws Exception {
+        LptIpVerification.isIp();
         ShearCaptcha captcha = CaptchaUtil.createShearCaptcha(width, height, codeCount, interference);
         RandomGenerator randomGenerator = new RandomGenerator("0123456789", length);
         captcha.setGenerator(randomGenerator);
@@ -77,7 +80,8 @@ public class LptCharacterUtil {
      * @param length 字符长度
      * @return
      */
-    public static Map<String, Object> getLineLetterVerification(Integer codeCount, Integer interference, Integer length,Integer width,Integer height){
+    public static Map<String, Object> getLineLetterVerification(Integer codeCount, Integer interference, Integer length,Integer width,Integer height) throws Exception {
+        LptIpVerification.isIp();
         LineCaptcha captcha = CaptchaUtil.createLineCaptcha(width, height, codeCount, interference);
         RandomGenerator randomGenerator = new RandomGenerator("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", length);
         captcha.setGenerator(randomGenerator);
@@ -95,7 +99,8 @@ public class LptCharacterUtil {
      * @param length 字符长度
      * @return
      */
-    public static Map<String, Object> getLineMixVerification(Integer codeCount, Integer interference, Integer length,Integer width,Integer height){
+    public static Map<String, Object> getLineMixVerification(Integer codeCount, Integer interference, Integer length,Integer width,Integer height) throws Exception {
+        LptIpVerification.isIp();
         LineCaptcha captcha = CaptchaUtil.createLineCaptcha(width, height, codeCount, interference);
         RandomGenerator randomGenerator = new RandomGenerator("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", length);
         captcha.setGenerator(randomGenerator);
@@ -113,7 +118,8 @@ public class LptCharacterUtil {
      * @param length 字符长度
      * @return
      */
-    public static Map<String, Object> getCircleLetterVerification(Integer codeCount, Integer interference, Integer length,Integer width,Integer height){
+    public static Map<String, Object> getCircleLetterVerification(Integer codeCount, Integer interference, Integer length,Integer width,Integer height) throws Exception {
+        LptIpVerification.isIp();
         CircleCaptcha captcha = CaptchaUtil.createCircleCaptcha(width, height, codeCount, interference);
         RandomGenerator randomGenerator = new RandomGenerator("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", length);
         captcha.setGenerator(randomGenerator);
@@ -131,7 +137,8 @@ public class LptCharacterUtil {
      * @param length 字符长度
      * @return
      */
-    public static Map<String, Object> getCircleMixVerification(Integer codeCount, Integer interference, Integer length,Integer width,Integer height){
+    public static Map<String, Object> getCircleMixVerification(Integer codeCount, Integer interference, Integer length,Integer width,Integer height) throws Exception {
+        LptIpVerification.isIp();
         CircleCaptcha captcha = CaptchaUtil.createCircleCaptcha(width, height, codeCount, interference);
         RandomGenerator randomGenerator = new RandomGenerator("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", length);
         captcha.setGenerator(randomGenerator);
@@ -149,7 +156,8 @@ public class LptCharacterUtil {
      * @param length 字符长度
      * @return
      */
-    public static Map<String, Object> getShearLetterVerification(Integer codeCount, Integer interference, Integer length,Integer width,Integer height){
+    public static Map<String, Object> getShearLetterVerification(Integer codeCount, Integer interference, Integer length,Integer width,Integer height) throws Exception {
+        LptIpVerification.isIp();
         ShearCaptcha captcha = CaptchaUtil.createShearCaptcha(width, height, codeCount, interference);
         RandomGenerator randomGenerator = new RandomGenerator("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", length);
         captcha.setGenerator(randomGenerator);
@@ -167,7 +175,8 @@ public class LptCharacterUtil {
      * @param length 字符长度
      * @return
      */
-    public static Map<String, Object> getShearMixVerification(Integer codeCount, Integer interference, Integer length,Integer width,Integer height){
+    public static Map<String, Object> getShearMixVerification(Integer codeCount, Integer interference, Integer length,Integer width,Integer height) throws Exception {
+        LptIpVerification.isIp();
         ShearCaptcha captcha = CaptchaUtil.createShearCaptcha(width, height, codeCount, interference);
         RandomGenerator randomGenerator = new RandomGenerator("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", length);
         captcha.setGenerator(randomGenerator);

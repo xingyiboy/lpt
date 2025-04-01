@@ -65,13 +65,15 @@ public class SysLoginService {
     @Autowired
     private ISysConfigService configService;
 
-    @Autowired
-    private LptSignUtil lptSignUtil;
+
 
     private final String COOKIE_NAME = "lpt-cookie-";
 
 
     private final Long userId;
+
+    @Autowired
+    private LptSignUtil lptSignUtil;
 
     public SysLoginService(
             @Value("${lpt.userId}") Long userId

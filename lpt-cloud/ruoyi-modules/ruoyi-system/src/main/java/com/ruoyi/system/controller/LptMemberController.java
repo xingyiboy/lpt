@@ -16,6 +16,7 @@ import com.ruoyi.system.api.model.LoginUser;
 import com.ruoyi.system.domain.lpt.dto.LoginBody;
 import com.ruoyi.system.domain.lpt.dto.LptData;
 import com.ruoyi.system.domain.lpt.dto.LptSginDTO;
+import com.ruoyi.system.mapper.LptMemberMapper;
 import com.ruoyi.system.mapper.SysUserMapper;
 import com.ruoyi.system.util.LptSignUtil;
 import lpt.LptMailboxUtil;
@@ -53,6 +54,8 @@ public class LptMemberController extends BaseController
     private ILptMemberService lptMemberService;
     @Autowired
     private SysUserMapper sysUserMapper;
+    @Autowired
+    private LptMemberMapper lptMemberMapper;
 
     /**
      * 成员登录接口
@@ -183,7 +186,7 @@ public class LptMemberController extends BaseController
                 LptMember search = new LptMember();
                 search.setUsername(lptMember.getUsername());
                 search.setUserId(lptMember.getUserId());
-                List<LptMember> lptMembers = lptMemberService.selectLptMemberList(search);
+                List<LptMember> lptMembers = lptMemberMapper.selectLptMemberList(search);
                 if (lptMembers.size() > 0) {
                     throw new RuntimeException("用户名已存在");
                 }

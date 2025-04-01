@@ -89,8 +89,7 @@ public class SysLoginService
      *
      * @return 结果
      */
-    public Object login(LoginBody loginBody,HttpSession session)
-    {
+    public Object login(LoginBody loginBody,HttpSession session) throws Exception {
         VerificationTypeEnum verificationTypeEnum = null;
         //获取redis的数据
         LoginVerify loginVerify = null;
@@ -163,7 +162,7 @@ public class SysLoginService
     }
 
     //滑动还原验证码
-    private Object handleConcatValidation(LoginBody loginBody, LoginVerify loginVerify, HttpSession session) {
+    private Object handleConcatValidation(LoginBody loginBody, LoginVerify loginVerify, HttpSession session) throws Exception {
         //判断是否开始校验
         if(loginBody.getId()!=null){
             //校验
@@ -201,7 +200,7 @@ public class SysLoginService
     }
 
     //点击校验处理
-    private Object handleClickValidation(LoginBody loginBody,LoginVerify loginVerify,HttpSession session) {
+    private Object handleClickValidation(LoginBody loginBody,LoginVerify loginVerify,HttpSession session) throws Exception {
         //判断是否开始校验
         if(loginBody.getId()!=null){
             //校验
@@ -239,7 +238,7 @@ public class SysLoginService
     }
 
     //旋转校验处理
-    private Object handleRotationValidation(LoginBody loginBody,LoginVerify loginVerify,HttpSession session) {
+    private Object handleRotationValidation(LoginBody loginBody,LoginVerify loginVerify,HttpSession session) throws Exception {
         //判断是否开始校验
         if(loginBody.getId()!=null){
             //校验
@@ -282,7 +281,7 @@ public class SysLoginService
      * @param loginVerify
      * @return
      */
-    private Object handleSlidingValidation(LoginBody loginBody,LoginVerify loginVerify,HttpSession session) {
+    private Object handleSlidingValidation(LoginBody loginBody,LoginVerify loginVerify,HttpSession session) throws Exception {
         //判断是否开始校验
         if(loginBody.getId()!=null){
             //校验
@@ -379,7 +378,7 @@ public class SysLoginService
      * @param loginVerify
      * @return
      */
-    private String handleCharacterValidation(LoginBody loginBody,LoginVerify loginVerify) {
+    private String handleCharacterValidation(LoginBody loginBody,LoginVerify loginVerify) throws Exception {
         //判断是否开始校验
         if(loginBody.getCode()!=null){
             //校验字符 是否和redis存入的一样
@@ -412,7 +411,7 @@ public class SysLoginService
      * @param loginVerify
      * @return
      */
-    private String handleCalculationValidation(LoginBody loginBody,LoginVerify loginVerify) {
+    private String handleCalculationValidation(LoginBody loginBody,LoginVerify loginVerify) throws Exception {
         //判断是否开始校验
         if(loginBody.getCode()!=null){
             //校验字符 是否和redis存入的一样
@@ -438,7 +437,7 @@ public class SysLoginService
         return image;
     }
 
-    private String handleEmailValidation(LoginBody loginBody,LoginVerify loginVerify) {
+    private String handleEmailValidation(LoginBody loginBody,LoginVerify loginVerify) throws Exception {
         //判断是否开始校验
         if(loginBody.getCode()!=null){
             //校验字符 是否和redis存入的一样
