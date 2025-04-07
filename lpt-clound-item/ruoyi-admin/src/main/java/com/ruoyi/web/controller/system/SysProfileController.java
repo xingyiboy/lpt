@@ -86,15 +86,15 @@ public class SysProfileController extends BaseController
         currentUser.setSex(user.getSex());
         currentUser.setFaceBase64(user.getFaceBase64());
         //检查人脸是否正确
-        if(user.getFaceBase64()!=null){
-            LptFaceCompareReqVo send = new LptFaceCompareReqVo();
-            send.setImageBase64B(user.getFaceBase64());
-            send.setImageBase64A(user.getFaceBase64());
-            LptFaceCompareRepVo res = LptFaceComparisonUtil.compareFace(send);
-            if (res.getMessage()!=null){
-                return error("您上传的人脸有误，请重新上传人脸");
-            }
-        }
+//        if(user.getFaceBase64()!=null){
+//            LptFaceCompareReqVo send = new LptFaceCompareReqVo();
+//            send.setImageBase64B(user.getFaceBase64());
+//            send.setImageBase64A(user.getFaceBase64());
+//            LptFaceCompareRepVo res = LptFaceComparisonUtil.compareFace(send);
+//            if (res.getMessage()!=null){
+//                return error("您上传的人脸有误，请重新上传人脸");
+//            }
+//        }
         if (StringUtils.isNotEmpty(user.getPhonenumber()) && !userService.checkPhoneUnique(currentUser))
         {
             return error("修改用户'" + loginUser.getUsername() + "'失败，手机号码已存在");

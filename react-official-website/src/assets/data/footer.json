@@ -42,7 +42,11 @@
     "list": [
       {
         "title": "私有化部署",
-        "url": "/docs/private-deployment"
+        "url": "/docs/private-deployment1"
+      },
+      {
+        "title": "验证功能部署",
+        "url": "/docs/private-deployment2"
       },
       {
         "title": "加入团队",

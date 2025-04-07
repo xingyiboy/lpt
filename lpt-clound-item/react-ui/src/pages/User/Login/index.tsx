@@ -1,7 +1,7 @@
 /*
  * @Date: 2025-03-16 16:12:47
  * @LastEditors: xingyi && 2416820386@qq.com
- * @LastEditTime: 2025-04-01 18:05:47
+ * @LastEditTime: 2025-04-06 23:35:53
  * @FilePath: \react-ui\src\pages\User\Login\index.tsx
  */
 import Footer from '@/components/Footer';
@@ -515,15 +515,7 @@ const Login: React.FC = () => {
                     : 'pages.login.accountLogin.tab',
                   defaultMessage: isRegister ? '账户注册' : '账户密码登录', // 根据状态修改标签
                 }),
-              },
-              {
-                key: 'mobile',
-                label: intl.formatMessage({
-                  id: 'pages.login.phoneLogin.tab',
-                  defaultMessage: '手机号登录',
-                }),
-                disabled: isRegister, // 注册时禁用手机登录
-              },
+              }
             ]}
           />
 

@@ -13,6 +13,11 @@
         "url": "/docs/quick-start"
       },
       {
+        "title": "技术选型",
+        "desc": "详细令牌通系统技术",
+        "url": "/docs/tech-stack"
+      },
+      {
         "title": "用户对接",
         "desc": "详细介绍对接流程",
         "url": "/docs/user/integration"
@@ -30,12 +35,22 @@
       {
         "title": "私有化部署",
         "desc": "私有化部署说明",
-        "url": "/docs/private-deployment"
+        "url": "/docs/private-deployment1"
       },
       {
-        "title": "代理",
-        "desc": "平台代理说明",
-        "url": "/docs/proxy"
+        "title": "验证功能部署",
+        "desc": "私有化部署说明",
+        "url": "/docs/private-deployment2"
+      },
+      {
+        "title": "帮助",
+        "desc": "帮助信息列表",
+        "url": "/docs/help"
+      },
+      {
+        "title": "常见问题",
+        "desc": "常见问题列表",
+        "url": "/docs/faq"
       }
     ]
   },
@@ -43,9 +58,14 @@
     "title": "团队介绍",
     "searchInfos": [
       {
-        "title": "团队成员",
-        "desc": "团队成员介绍",
-        "url": "/docs/team/members"
+        "title": "加入团队",
+        "desc": "加入团队说明",
+        "url": "/docs/join-us"
+      },
+      {
+        "title": "代理平台",
+        "desc": "平台代理说明",
+        "url": "/docs/proxy"
       },
       {
         "title": "联系我们",
@@ -53,9 +73,9 @@
         "url": "/docs/contact"
       },
       {
-        "title": "常见问题",
-        "desc": "常见问题列表",
-        "url": "/docs/faq"
+        "title": "团队成员",
+        "desc": "团队成员介绍",
+        "url": "/docs/team/members"
       }
     ]
   }

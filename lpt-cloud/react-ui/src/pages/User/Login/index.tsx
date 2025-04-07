@@ -65,9 +65,10 @@ const Login: React.FC = () => {
       flexDirection: 'column',
       height: '100vh',
       overflow: 'auto',
-      backgroundImage:
-        "url('https://mdn.alipayobjects.com/yuyan_qk0oxh/afts/img/V-_oS6r-i7wAAAAAAAAAAAAAFl94AQBr')",
-      backgroundSize: '100% 100%',
+      background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+      backgroundSize: 'cover',
+      justifyContent: 'center',
+      alignItems: 'center',
     };
   });
 
@@ -206,12 +207,20 @@ const Login: React.FC = () => {
         style={{
           flex: '1',
           padding: '32px 0',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          width: '100%',
         }}
       >
         <LoginForm
           contentStyle={{
-            minWidth: 280,
-            maxWidth: '75vw',
+            minWidth: 400,
+            maxWidth: '90vw',
+            background: '#ffffff',
+            padding: '40px',
+            borderRadius: '8px',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
           }}
           logo={<img alt="logo" src="/favicon.ico" style={{ transform: 'scale(1.5)' }} />}
           title="令牌通"
@@ -226,16 +235,12 @@ const Login: React.FC = () => {
             submitButtonProps: {
               block: true,
               size: 'large',
+              style: {
+                background: '#1890ff',
+                borderColor: '#1890ff',
+              },
             },
           }}
-          // actions={[
-          //   <FormattedMessage
-          //     key="loginWith"
-          //     id="pages.login.loginWith"
-          //     defaultMessage="其他登录方式"
-          //   />,
-          //   <ActionIcons key="icons" />,
-          // ]}
           onFinish={async (values) => {
             await handleSubmit(values as API.LoginParams);
           }}
@@ -250,14 +255,7 @@ const Login: React.FC = () => {
                 key: 'account',
                 label: isRegister ? '账户注册' : '账户密码登录',
               },
-              ...(!isRegister
-                ? [
-                    {
-                      key: 'mobile',
-                      label: '手机号登录',
-                    },
-                  ]
-                : []),
+              ...(!isRegister ? [] : []),
             ]}
           />
 
@@ -279,7 +277,7 @@ const Login: React.FC = () => {
                 initialValue=""
                 fieldProps={{
                   size: 'large',
-                  prefix: <UserOutlined />,
+                  prefix: <UserOutlined style={{ color: '#1890ff' }} />,
                 }}
                 placeholder={intl.formatMessage({
                   id: 'pages.login.username.placeholder',
@@ -302,7 +300,7 @@ const Login: React.FC = () => {
                 initialValue=""
                 fieldProps={{
                   size: 'large',
-                  prefix: <LockOutlined />,
+                  prefix: <LockOutlined style={{ color: '#1890ff' }} />,
                 }}
                 placeholder={intl.formatMessage({
                   id: 'pages.login.password.placeholder',
@@ -369,7 +367,7 @@ const Login: React.FC = () => {
               <ProFormText
                 fieldProps={{
                   size: 'large',
-                  prefix: <MobileOutlined />,
+                  prefix: <MobileOutlined style={{ color: '#1890ff' }} />,
                 }}
                 name="mobile"
                 placeholder={intl.formatMessage({
@@ -400,7 +398,7 @@ const Login: React.FC = () => {
               <ProFormCaptcha
                 fieldProps={{
                   size: 'large',
-                  prefix: <LockOutlined />,
+                  prefix: <LockOutlined style={{ color: '#1890ff' }} />,
                 }}
                 captchaProps={{
                   size: 'large',
