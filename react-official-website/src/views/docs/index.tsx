@@ -7,6 +7,7 @@
 import React, { useState, useEffect, useCallback, memo } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { IconType } from 'react-icons'
+import LazyLoad from 'react-lazyload'
 import { FiArrowUp, FiSun, FiMoon, FiBook } from 'react-icons/fi'
 import { IoShirtOutline } from 'react-icons/io5'
 import styled from 'styled-components'
