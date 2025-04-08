@@ -36,6 +36,18 @@ import load from './components/load.min.js';
 import FaceValidation from './components/FaceValidation';
 import { isMobile, isTablet, isDesktop, osVersion, browserName } from 'react-device-detect';
 
+// 验证步骤枚举
+enum ValidationStep {
+  CHARACTER = '1', // 字符校验
+  NUMBER = '2', // 数字计算校验
+  EMAIL = '3', // 邮箱校验
+  SLIDE = '4', // 滑动校验
+  ROTATE = '5', // 旋转校验
+  CLICK = '6', // 点击校验
+  SLIDE_RESTORE = '7', // 滑动还原校验
+  FACE = '8', // 人脸校验
+}
+
 const ActionIcons = () => {
   const langClassName = useEmotionCss(({ token }) => {
     return {
@@ -213,48 +225,48 @@ const Login: React.FC = () => {
     }
     setCaptchaInput('');
     switch (Step) {
-      case '1':
+      case ValidationStep.CHARACTER:
         //执行字符校验
         closeAllValidation();
         setShowImageInputValidation(true);
-        getCodeDataAndVerify(false, '1');
+        getCodeDataAndVerify(false, ValidationStep.CHARACTER);
         message.success('验证成功，开始字符校验');
         break;
-      case '2':
+      case ValidationStep.NUMBER:
         //执行数字计算校验
         closeAllValidation();
         setShowImageInputValidation(true);
-        getCodeDataAndVerify(false, '2');
+        getCodeDataAndVerify(false, ValidationStep.NUMBER);
         message.success('验证成功，开始数字计算校验');
         break;
-      case '3':
+      case ValidationStep.EMAIL:
         //执行邮箱校验
         closeAllValidation();
         setShowMailboxValidation(true);
-        setTimeout(() => getCodeDataAndVerify(false, '3'), 1500);
+        setTimeout(() => getCodeDataAndVerify(false, ValidationStep.EMAIL), 1500);
         message.success('验证成功，开始邮箱校验');
         break;
-      case '4':
+      case ValidationStep.SLIDE:
         closeAllValidation();
         setShowBehaviorValidation(true);
         message.success('验证成功，开始滑动校验');
         break;
-      case '5':
+      case ValidationStep.ROTATE:
         closeAllValidation();
         setShowBehaviorValidation(true);
         message.success('验证成功，开始旋转校验');
         break;
-      case '6':
+      case ValidationStep.CLICK:
         closeAllValidation();
         setShowBehaviorValidation(true);
         message.success('验证成功，开始点击校验');
         break;
-      case '7':
+      case ValidationStep.SLIDE_RESTORE:
         closeAllValidation();
         setShowBehaviorValidation(true);
         message.success('验证成功，开始滑动还原校验');
         break;
-      case '8':
+      case ValidationStep.FACE:
         closeAllValidation();
         setShowFaceValidation(true);
         message.success('验证成功，开始人脸校验');
