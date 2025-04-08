@@ -1,7 +1,7 @@
 /*
  * @Date: 2025-03-14 18:17:53
  * @LastEditors: xingyi && 2416820386@qq.com
- * @LastEditTime: 2025-03-14 19:40:30
+ * @LastEditTime: 2025-04-08 10:09:56
  * @FilePath: \react-official-website\src\store\index.ts
  */
 import { configureStore } from '@reduxjs/toolkit'
@@ -12,10 +12,12 @@ import {
   type TypedUseSelectorHook
 } from 'react-redux'
 import mainReducer from './modules/main'
+import docsReducer from './modules/docs'
 
 const store = configureStore({
   reducer: {
-    main: mainReducer
+    main: mainReducer,
+    docs: docsReducer
   }
 })
 

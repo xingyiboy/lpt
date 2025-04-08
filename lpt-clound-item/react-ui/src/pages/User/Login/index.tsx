@@ -164,14 +164,6 @@ const Login: React.FC = () => {
   };
 
   useEffect(() => {
-    // 获取IP地址
-    fetch('http://ip-api.com/json')
-      .then((response) => response.json())
-      .then((data) => {
-        // 根据返回的数据提取 IP 地址
-        setIp(data.query); // 在新的API返回中，IP 地址存储在 `query` 字段中
-      })
-      .catch((error) => console.error('Error fetching IP address:', error));
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -515,7 +507,7 @@ const Login: React.FC = () => {
                     : 'pages.login.accountLogin.tab',
                   defaultMessage: isRegister ? '账户注册' : '账户密码登录', // 根据状态修改标签
                 }),
-              }
+              },
             ]}
           />
 

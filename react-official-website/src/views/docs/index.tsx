@@ -1,7 +1,7 @@
 /*
  * @Date: 2025-03-24 21:02:16
  * @LastEditors: xingyi && 2416820386@qq.com
- * @LastEditTime: 2025-04-01 20:38:01
+ * @LastEditTime: 2025-04-08 10:23:38
  * @FilePath: \react-official-website\src\views\docs\index.tsx
  */
 import React, { useState, useEffect, useCallback, memo } from 'react'
@@ -31,6 +31,9 @@ import {
 } from './style'
 import docsData from '@/assets/data/docs.json'
 import { useTheme } from '@/hooks/useTheme'
+import { useSelector, useDispatch } from 'react-redux'
+import { useAppSelector, useAppDispatch } from '@/store'
+import { changeTheme } from '@/store/modules/docs'
 
 interface ThemeOptionType {
   value: string
@@ -63,18 +66,14 @@ interface SearchResult {
 const DocsPage: React.FC = () => {
   const location = useLocation()
   const navigate = useNavigate()
+  const dispatch = useAppDispatch()
+  const theme = useAppSelector((state) => state.docs.theme)
   const [currentContent, setCurrentContent] = useState<DocContent | null>(null)
-  const [theme, setTheme] = useState(() => {
-    // 从本地存储读取主题，如果没有则默认为 'reading'
-    return localStorage.getItem('docs-theme') || 'reading'
-  })
   const [showSidebar, setShowSidebar] = useState(true)
   const [searchKeyword, setSearchKeyword] = useState('')
   const [showThemeDropdown, setShowThemeDropdown] = useState(false)
   const [showSearchResults, setShowSearchResults] = useState(false)
   const [searchResults, setSearchResults] = useState<SearchResult[]>([])
-  const { theme: themeFromUseTheme, setTheme: setThemeFromUseTheme } =
-    useTheme()
 
   const themeOptions: ThemeOptionType[] = [
     {
@@ -104,7 +103,7 @@ const DocsPage: React.FC = () => {
   useEffect(() => {
     // 设置主题
     const savedTheme = localStorage.getItem('docs-theme') || 'reading'
-    setTheme(savedTheme)
+    dispatch(changeTheme(savedTheme))
     document.body.setAttribute('data-theme', savedTheme)
 
     // 设置文档内容
@@ -329,10 +328,9 @@ const DocsPage: React.FC = () => {
   }
 
   const handleThemeChange = (newTheme: string) => {
-    setTheme(newTheme)
-    setShowThemeDropdown(false)
-    // 保存主题到本地存储
     localStorage.setItem('docs-theme', newTheme)
+    dispatch(changeTheme(newTheme))
+    setShowThemeDropdown(false)
     // 设置全局样式
     document.body.setAttribute('data-theme', newTheme)
   }
