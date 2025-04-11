@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/lpt-cloud" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/lpt-clound-item" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/lpt-clound-item/lpt-clound-item" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/lpt-single-item" vcs="Git" />
+  </component>
+</project>
