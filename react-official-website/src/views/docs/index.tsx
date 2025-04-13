@@ -403,7 +403,7 @@ const DocsPage: React.FC = () => {
             接口平台
           </a>
           <a
-            href="https://github.com/xingyiboy"
+            href="https://gitee.com/xingyiboy"
             target="_blank"
             rel="noopener noreferrer"
           >
