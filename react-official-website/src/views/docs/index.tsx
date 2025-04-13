@@ -1,7 +1,7 @@
 /*
  * @Date: 2025-03-24 21:02:16
  * @LastEditors: xingyi && 2416820386@qq.com
- * @LastEditTime: 2025-04-08 10:23:38
+ * @LastEditTime: 2025-04-13 11:15:08
  * @FilePath: \react-official-website\src\views\docs\index.tsx
  */
 import React, { useState, useEffect, useCallback, memo } from 'react'
@@ -402,8 +402,18 @@ const DocsPage: React.FC = () => {
           >
             接口平台
           </a>
-          <a href="#">作者博客</a>
-          <a href="#" target="_blank" rel="noopener noreferrer">
+          <a
+            href="https://github.com/xingyiboy"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            作者博客
+          </a>
+          <a
+            href="https://github.com/xingyiboy/lpt"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             GitHub
           </a>
         </NavLinks>

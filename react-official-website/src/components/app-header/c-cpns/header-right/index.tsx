@@ -1,7 +1,7 @@
 /*
  * @Date: 2025-03-14 19:17:24
  * @LastEditors: xingyi && 2416820386@qq.com
- * @LastEditTime: 2025-03-24 22:23:25
+ * @LastEditTime: 2025-04-13 11:03:22
  * @FilePath: \react-official-website\src\components\app-header\c-cpns\header-right\index.tsx
  */
 import React, { memo, useEffect, useState } from 'react'
@@ -43,6 +43,10 @@ const HeaderRight: FC<IProps> = () => {
     window.location.href = '/docs'
   }
 
+  const handleGitHubClick = () => {
+    window.open('https://github.com/xingyiboy/lpt', '_blank') // _blank 会在新标签页中打开
+  }
+
   return (
     <RightWrapper>
       <div className="btns">
@@ -55,7 +59,9 @@ const HeaderRight: FC<IProps> = () => {
         <span className="btn" onClick={handleOnlineClick}>
           在线体验
         </span>
-        <span className="btn">GitHub</span>
+        <span className="btn" onClick={handleGitHubClick}>
+          GitHub
+        </span>
       </div>
     </RightWrapper>
   )
