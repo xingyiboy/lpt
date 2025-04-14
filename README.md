@@ -151,7 +151,7 @@ react-official-website/
 - TypeScript
 - Vite
 - Pinia / Redux
-- Element Plus / Ant Design
+- Element Plus
 - Axios
 
 ## 🚀 快速开始
