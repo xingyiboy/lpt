@@ -215,8 +215,8 @@ const MemberTableList: React.FC = () => {
         return (
           <Switch
             checked={record.isRelease === 1}
-            checkedChildren="否"
-            unCheckedChildren="是"
+            checkedChildren="是"
+            unCheckedChildren="否"
             onClick={() => showChangeStatusConfirm(record)}
           />
         );

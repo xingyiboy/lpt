@@ -117,10 +117,10 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     ],
     links: isDev
       ? [
-        <Link key="openapi" to="/umi/plugin/openapi" target="_blank">
-          <LinkOutlined />
-          <span>OpenAPI 文档</span>
-        </Link>,
+        <a key="openapi" href="http://113.45.31.128:9999/home" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center' }}>
+        <LinkOutlined />
+        <span>前往官网</span>
+      </a>,
       ]
       : [],
     menuHeaderRender: undefined,

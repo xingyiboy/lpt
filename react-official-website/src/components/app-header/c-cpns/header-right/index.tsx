@@ -54,10 +54,10 @@ const HeaderRight: FC<IProps> = () => {
           开发指南
         </span>
         <span className="btn" onClick={handleInterfaceClick}>
-          接口系统
+          登录中台
         </span>
         <span className="btn" onClick={handleOnlineClick}>
-          在线体验
+          项目体验
         </span>
         <span className="btn" onClick={handleGitHubClick}>
           GitHub

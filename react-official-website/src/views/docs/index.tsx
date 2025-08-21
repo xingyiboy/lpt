@@ -355,7 +355,7 @@ const DocsPage: React.FC = () => {
           onClick={() => (window.location.href = '/home')}
         >
           <Logo src="/favicon.ico" alt="Logo" />
-          <Title>LPT 开发指南（文档更新时间：2025-3-31）</Title>
+          <Title>LPT 登录中台指南（文档更新时间：2025-8-19）</Title>
         </div>
         <SearchBar>
           <input
@@ -393,14 +393,14 @@ const DocsPage: React.FC = () => {
             target="_blank"
             rel="noopener noreferrer"
           >
-            在线体验
+            项目体验
           </a>
           <a
             href="http://113.45.31.128:99/user/login"
             target="_blank"
             rel="noopener noreferrer"
           >
-            接口平台
+            登录中台
           </a>
           <a
             href="https://gitee.com/xingyiboy"

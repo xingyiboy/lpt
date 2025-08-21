@@ -76,6 +76,13 @@ const BaseInfo: React.FC<BaseInfoProps> = (props) => {
     }
 
     const resp = await updateUserProfile(data);
+    
+    // 检查特定错误响应
+    if (resp.code === 500 && resp.msg === "Cannot invoke \"lpt.faceDTO.LptFaceCompareRepVo.getMessage()\" because \"res\" is null") {
+      message.error('人脸验证后端已关闭，要开启请联系管理员开启qq:2416820386');
+      return;
+    }
+    
     if (resp.code === 200) {
       message.success('修改成功');
     } else {

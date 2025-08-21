@@ -3,7 +3,7 @@
     "name": "令牌通",
     "list": [
       {
-        "title": "平台简介",
+        "title": "登录中台使用说明",
         "url": "/docs/platform/intro"
       },
       {
@@ -20,7 +20,7 @@
     "name": "平台对接",
     "list": [
       {
-        "title": "用户对接",
+        "title": "项目成员对接",
         "url": "/docs/user/integration"
       },
       {

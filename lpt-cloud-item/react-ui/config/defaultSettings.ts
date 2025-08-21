@@ -21,7 +21,7 @@ const Settings: ProLayoutProps & {
   fixedHeader: false,
   fixSiderbar: true,
   colorWeak: false,
-  title: 'LPT',
+  title: 'LPT令牌通示例项目',
   pwa: true,
   logo: '/favicon.ico',
   iconfontUrl: '',

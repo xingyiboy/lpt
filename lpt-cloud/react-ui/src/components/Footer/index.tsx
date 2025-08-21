@@ -26,7 +26,7 @@ const Footer: React.FC = () => {
       links={[
         {
           key: '令牌通',
-          title: '令牌通',
+          title: '令牌通官网',
           href: 'http://113.45.31.128:9999/homen',
           blankTarget: true,
         },

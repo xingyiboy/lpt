@@ -21,7 +21,7 @@ const Settings: ProLayoutProps & {
   fixSiderbar: true,
   splitMenus: false,
   colorWeak: false,
-  title: '令牌通',
+  title: '令牌通-登录中台',
   pwa: true,
   logo: '/favicon.ico',
   iconfontUrl: '',

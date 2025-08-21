@@ -65,7 +65,7 @@ const Login: React.FC = () => {
       flexDirection: 'column',
       height: '100vh',
       overflow: 'auto',
-      background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+      background: '#f0f2f5',
       backgroundSize: 'cover',
       justifyContent: 'center',
       alignItems: 'center',
@@ -187,7 +187,7 @@ const Login: React.FC = () => {
           }
         }}
       >
-        记住账号密码
+        记住密码
       </Checkbox>
       <a
         style={{
@@ -215,7 +215,7 @@ const Login: React.FC = () => {
       >
         <LoginForm
           contentStyle={{
-            minWidth: 400,
+            minWidth: 450,
             maxWidth: '90vw',
             background: '#ffffff',
             padding: '40px',
@@ -223,8 +223,8 @@ const Login: React.FC = () => {
             boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
           }}
           logo={<img alt="logo" src="/favicon.ico" style={{ transform: 'scale(1.5)' }} />}
-          title="令牌通"
-          subTitle={intl.formatMessage({ id: 'pages.layouts.userLayout.title' })}
+          title="令牌通-登录中台"
+          subTitle="企业级应用统一身份认证登录中台"
           initialValues={{
             autoLogin: true,
           }}
@@ -253,7 +253,7 @@ const Login: React.FC = () => {
             items={[
               {
                 key: 'account',
-                label: isRegister ? '账户注册' : '账户密码登录',
+                label: isRegister ? '账户注册' : '账号密码登录',
               },
               ...(!isRegister ? [] : []),
             ]}
@@ -265,7 +265,7 @@ const Login: React.FC = () => {
                 userLoginState.msg ||
                 intl.formatMessage({
                   id: 'pages.login.accountLogin.errorMessage',
-                  defaultMessage: '账户或密码错误',
+                  defaultMessage: '账号或密码错误',
                 })
               }
             />
@@ -281,7 +281,7 @@ const Login: React.FC = () => {
                 }}
                 placeholder={intl.formatMessage({
                   id: 'pages.login.username.placeholder',
-                  defaultMessage: '用户名: ',
+                  defaultMessage: '用户名',
                 })}
                 rules={[
                   {
@@ -304,7 +304,7 @@ const Login: React.FC = () => {
                 }}
                 placeholder={intl.formatMessage({
                   id: 'pages.login.password.placeholder',
-                  defaultMessage: '密码: ',
+                  defaultMessage: '密码',
                 })}
                 rules={[
                   {
@@ -327,7 +327,7 @@ const Login: React.FC = () => {
                     name="code"
                     placeholder={intl.formatMessage({
                       id: 'pages.login.captcha.placeholder',
-                      defaultMessage: '请输入验证',
+                      defaultMessage: '请输入验证码',
                     })}
                     rules={[
                       {
@@ -335,7 +335,7 @@ const Login: React.FC = () => {
                         message: (
                           <FormattedMessage
                             id="pages.searchTable.updateForm.ruleName.nameRules"
-                            defaultMessage="请输入验证啊"
+                            defaultMessage="请输入验证码"
                           />
                         ),
                       },

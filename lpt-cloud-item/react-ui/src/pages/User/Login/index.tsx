@@ -14,6 +14,7 @@ import {
   TaobaoCircleOutlined,
   UserOutlined,
   WeiboCircleOutlined,
+  MedicineBoxOutlined,
 } from '@ant-design/icons';
 import {
   LoginForm,
@@ -35,6 +36,21 @@ import BehaviorValidation from './components/BehaviorValidation';
 import load from './components/load.min.js';
 import FaceValidation from './components/FaceValidation';
 import { isMobile, isTablet, isDesktop, osVersion, browserName } from 'react-device-detect';
+
+// Extend LoginParams to include additional properties used in the application
+interface ExtendedLoginParams extends API.LoginParams {
+  step?: number;
+  ip?: string;
+  device?: string;
+  latitude?: number | null;
+  longitude?: number | null;
+  code?: string;
+}
+
+// Extend the LoginResult interface to include data property
+interface ExtendedLoginResult extends API.LoginResult {
+  data?: any;
+}
 
 // 验证步骤枚举
 enum ValidationStep {
@@ -65,9 +81,7 @@ const ActionIcons = () => {
 
   return (
     <>
-      <AlipayCircleOutlined key="AlipayCircleOutlined" className={langClassName} />
-      <TaobaoCircleOutlined key="TaobaoCircleOutlined" className={langClassName} />
-      <WeiboCircleOutlined key="WeiboCircleOutlined" className={langClassName} />
+      <MedicineBoxOutlined key="MedicineBoxOutlined" className={langClassName} />
     </>
   );
 };
@@ -113,7 +127,7 @@ const Login: React.FC = () => {
   const [codeImgData, setCodeImgData] = useState('');
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
-  const [userLoginState, setUserLoginState] = useState<API.LoginResult>({ code: 200 });
+  const [userLoginState, setUserLoginState] = useState<ExtendedLoginResult>({ code: 200 });
   const [type, setType] = useState<string>('account');
   const { initialState, setInitialState } = useModel('@@initialState');
   const [captchaInput, setCaptchaInput] = useState('');
@@ -144,11 +158,11 @@ const Login: React.FC = () => {
   const [rememberMe, setRememberMe] = useState<boolean>(true);
 
   // 使用 useRef 替代 useState 来存储最新值
-  const loginValuesRef = useRef<API.LoginParams>();
+  const loginValuesRef = useRef<API.LoginParams | undefined>();
 
-  const uuid = useRef<String>();
+  const uuid = useRef<string>();
 
-  const LoginSuccess = async (token: String) => {
+  const LoginSuccess = async (token: string) => {
     console.log(token);
     //完成登录
     const defaultLoginSuccessMessage = intl.formatMessage({
@@ -217,7 +231,7 @@ const Login: React.FC = () => {
     };
   }, []); // 空依赖数组，确保只加载一次
 
-  const handleNextSetp = async (Step: String) => {
+  const handleNextSetp = async (Step: string) => {
     setUserLoginState({ code: 200 });
     const currentValues = loginValuesRef.current;
     if (currentValues == null) {
@@ -302,13 +316,13 @@ const Login: React.FC = () => {
         if (currentValues == null) {
           return;
         }
-        const response = await login({ ...loginValuesRef.current, code: captchaInput });
+        const response = await login({ ...loginValuesRef.current, code: captchaInput }) as ExtendedLoginResult;
         if (response.code === 200) {
           //执行下一步操作
-          if (response.data != '验证码错误') {
+          if (response.data && response.data != '验证码错误') {
             handleNextSetp(response.data);
           } else {
-            message.error(response.data);
+            message.error(response.data || '验证码错误');
             getCodeDataAndVerify();
           }
         } else {
@@ -326,7 +340,7 @@ const Login: React.FC = () => {
             return;
           }
           setSubmitting(true);
-          const response = await login({ ...currentValues });
+          const response = await login({ ...currentValues }) as ExtendedLoginResult;
 
           if (response.code === 200) {
             setCodeImgData(response.data);
@@ -355,8 +369,9 @@ const Login: React.FC = () => {
       height: '100vh',
       overflow: 'auto',
       backgroundImage:
-        "url('https://mdn.alipayobjects.com/yuyan_qk0oxh/afts/img/V-_oS6r-i7wAAAAAAAAAAAAAFl94AQBr')",
-      backgroundSize: '100% 100%',
+        "url('https://img.freepik.com/free-photo/medical-banner-with-stethoscope_23-2149611199.jpg')",
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
     };
   });
 
@@ -378,22 +393,31 @@ const Login: React.FC = () => {
     try {
       // 如果选择记住密码，则加密存储
       if (rememberMe) {
-        localStorage.setItem('rememberedUsername', encrypt(values.username));
-        localStorage.setItem('rememberedPassword', encrypt(values.password));
+        // Add proper type checks before calling encrypt
+        if (values.username) {
+          localStorage.setItem('rememberedUsername', encrypt(values.username));
+        }
+        if (values.password) {
+          localStorage.setItem('rememberedPassword', encrypt(values.password));
+        }
       } else {
         // 如果取消记住密码，则清除存储
         localStorage.removeItem('rememberedUsername');
         localStorage.removeItem('rememberedPassword');
       }
       const apiMethod = isRegister ? register : login;
-      const response = await apiMethod({
+
+      // Create extended params object with proper syntax
+      const extendedParams: ExtendedLoginParams = {
         ...values,
         step: 0,
         ip: ip,
         device: browserInfo.userAgent,
         latitude: location.latitude,
-        longitude: location.longitude,
-      });
+        longitude: location.longitude
+      };
+
+      const response = await apiMethod(extendedParams) as ExtendedLoginResult;
       // 存储到 ref
       loginValuesRef.current = values;
 
@@ -455,15 +479,35 @@ const Login: React.FC = () => {
     return decrypt(localStorage.getItem('rememberedPassword') || '');
   };
 
+  // Add custom styling for login components
+  const medicalStyleLoginForm = useEmotionCss(() => {
+    return {
+      '.ant-pro-form-login-header': {
+        color: '#1890ff',
+      },
+      '.ant-btn-primary': {
+        backgroundColor: '#1890ff',
+        borderColor: '#1890ff',
+      },
+      '.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn': {
+        color: '#1890ff !important',
+      },
+      '.ant-checkbox-checked .ant-checkbox-inner': {
+        backgroundColor: '#1890ff',
+        borderColor: '#1890ff',
+      },
+    };
+  });
+
   return (
     <div className={containerClassName}>
       <Helmet>
-        <title>
+        <title >
           {intl.formatMessage({
             id: 'menu.login',
             defaultMessage: '登录页',
           })}
-          - {Settings.title}
+          - 医疗管理系统
         </title>
       </Helmet>
       <Lang />
@@ -474,13 +518,23 @@ const Login: React.FC = () => {
         }}
       >
         <LoginForm
+          className={medicalStyleLoginForm}
           contentStyle={{
-            minWidth: 280,
+            minWidth: 320,
             maxWidth: '75vw',
+            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+            padding: '30px',
+            borderRadius: '12px',
+            boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
           }}
-          logo={<img alt="logo" src="/favicon.ico" style={{ transform: 'scale(1.5)' }} />}
-          title="令牌通"
-          subTitle={intl.formatMessage({ id: 'pages.layouts.userLayout.title' })}
+          logo={
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <MedicineBoxOutlined style={{ fontSize: '28px', color: '#1890ff', marginRight: '8px' }} />
+              <img alt="logo" src="/favicon.ico" style={{ transform: 'scale(1.2)',marginRight: '20px'}} />
+            </div>
+          }
+          title="医疗管理系统-demo"
+          subTitle="体验登录验证流程体系示例项目"
           initialValues={{
             autoLogin: true,
             username: getRememberedUsername(),
@@ -493,12 +547,22 @@ const Login: React.FC = () => {
             submitButtonProps: {
               block: true,
               size: 'large',
+              style: { backgroundColor: '#1890ff', borderColor: '#1890ff' }
             },
           }}
           onFinish={async (values) => {
             await handleSubmit(values as API.LoginParams);
           }}
         >
+          {/* Medical-themed image header */}
+          <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+            <img
+              src="https://img.freepik.com/free-vector/flat-hand-drawn-hospital-reception-scene_52683-54613.jpg"
+              alt="Medical System"
+              style={{ maxWidth: '100%', height: 'auto', borderRadius: '8px' }}
+            />
+          </div>
+
           <Tabs
             activeKey={type}
             onChange={(key) => {
@@ -693,11 +757,12 @@ const Login: React.FC = () => {
       </div>
       <Modal
         open={open}
-        title="安全校验"
+        title="医疗系统安全校验"
         width={400}
         onCancel={handleCancel}
         destroyOnClose
         footer={modalFooter}
+        bodyStyle={{ backgroundColor: '#f5f7fa' }}
       >
         {showImageInputValidation && (
           <ImageInputValidation
@@ -722,16 +787,14 @@ const Login: React.FC = () => {
             //失败回调
             onClose={() => setOpen(false)}
             //用户名（可不传-根据自己代码决定）
-            username={loginValuesRef.current.username}
+            username={loginValuesRef.current?.username || ''}
             //uuid（可不传-根据自己代码决定）
             uuid={uuid.current}
           />
         )}
         {showFaceValidation && (
           <FaceValidation
-            onSuccess={handleNextSetp}
-            username={loginValuesRef.current.username}
-            uuid={uuid.current}
+            onSuccess={(token: string) => handleNextSetp(token)}
           />
         )}
       </Modal>

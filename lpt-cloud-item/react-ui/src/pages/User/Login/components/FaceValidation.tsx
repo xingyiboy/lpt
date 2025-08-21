@@ -4,7 +4,13 @@ import { message } from 'antd';
 import { CameraOutlined, CheckOutlined, CloseOutlined, SyncOutlined } from '@ant-design/icons';
 import { login } from '@/services/system/auth';
 
-const FaceValidation = ({ onSuccess, username, uuid }: { onSuccess: (base64: string) => void }) => {
+interface FaceValidationProps {
+  onSuccess: (token: string) => void;
+  username?: string;
+  uuid?: string;
+}
+
+const FaceValidation = ({ onSuccess, username, uuid }: FaceValidationProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [stream, setStream] = useState<MediaStream>();
   const [captured, setCaptured] = useState<string>();
