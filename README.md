@@ -44,12 +44,12 @@ lpt-cloud/
 └── docker/               // docker配置，用于容器化部署
 ```
 
-### 2. lpt-clound-item (在线体验-（单项目-使用http接口连接登录中台示例）)
+### 2. lpt-cloud-item (在线体验-（单项目-使用http接口连接登录中台示例）)
 
 提供在线体验功能的云平台项目，采用分布式架构。
 
 ```
-lpt-clound-item/
+lpt-cloud-item/
 ├── react-ui/              // 前端展示界面
 ├── ruoyi-admin/          // 后台管理服务
 ├── ruoyi-common/         // 公共模块
