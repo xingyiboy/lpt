@@ -17,6 +17,8 @@ interface IProps {
 }
 
 const App: FC<IProps> = () => {
+  /** 构建版本标记: 用于强制 webpack chunk hash 变化, 防止浏览器缓存旧 JS (2026-08-07) */
+  const BUILD_VERSION = 'v20260807-1'
   /** 切换路由时滚到页面顶部 */
   useScrollTop()
 
@@ -26,6 +28,8 @@ const App: FC<IProps> = () => {
       <div className="app">
         <AppHeader />
         <div style={{ width: '100%' }}>{useRoutes(routes)}</div>
+        {/* eslint-disable-next-line no-unused-expressions */}
+        {BUILD_VERSION && null}
       </div>
     </>
   )
