@@ -56,13 +56,6 @@ export async function getInitialState(): Promise<{
   const { location } = history;
   if (location.pathname !== PageEnum.LOGIN) {
     const currentUser = await fetchUserInfo();
-    // 未登录: 绝对路径跳登录页(带 /dlzt base 前缀), 避免白屏/被其他站点接管
-    if (!currentUser) {
-      const loginUrl = `${window.location.origin}/dlzt/user/login`;
-      if (window.location.href !== loginUrl) {
-        window.location.href = loginUrl;
-      }
-    }
     return {
       fetchUserInfo,
       currentUser,

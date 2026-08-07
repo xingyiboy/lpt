@@ -13,7 +13,7 @@
 export default [
   {
     path: '/',
-    redirect: '/account/center',
+    redirect: '/user/login',
   },
   {
     path: '*',
