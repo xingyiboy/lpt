@@ -33,8 +33,11 @@ export async function getInitialState(): Promise<{
       const response = await getUserInfo({
         skipErrorHandler: true,
       });
-      // 未登录(401)时 user 为 undefined: 不抛错避免白屏, 由下方统一跳转登录页
+      // 未登录(401)时 user 为 undefined: 用绝对路径跳登录页, 避免白屏
       if (!response || !response.user) {
+        if (window.location.pathname !== '/dlzt/user/login') {
+          window.location.href = '/dlzt/user/login';
+        }
         return undefined;
       }
       if (response.user.avatar === '') {
@@ -48,7 +51,9 @@ export async function getInitialState(): Promise<{
       } as API.CurrentUser;
     } catch (error) {
       console.log(error);
-      history.push(PageEnum.LOGIN);
+      if (window.location.pathname !== '/dlzt/user/login') {
+        window.location.href = '/dlzt/user/login';
+      }
     }
     return undefined;
   };
