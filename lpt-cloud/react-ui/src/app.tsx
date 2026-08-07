@@ -57,9 +57,10 @@ export async function getInitialState(): Promise<{
     }
     return undefined;
   };
-  // 如果不是登录页面，执行
-  const { location } = history;
-  if (location.pathname !== PageEnum.LOGIN) {
+  // 如果不是登录页面，执行 (用完整 window pathname 判断, base 模式下 history.pathname 可能含前缀)
+  const fullPath = window.location.pathname;
+  const isLoginPage = fullPath === '/dlzt/user/login' || fullPath === '/user/login';
+  if (!isLoginPage) {
     const currentUser = await fetchUserInfo();
     return {
       fetchUserInfo,
@@ -101,10 +102,11 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     },
     footerRender: () => <Footer />,
     onPageChange: () => {
-      const { location } = history;
+      const fullPath = window.location.pathname;
+      const isLoginPage = fullPath === '/dlzt/user/login' || fullPath === '/user/login';
       // 如果没有登录，重定向到 login
-      if (!initialState?.currentUser && location.pathname !== PageEnum.LOGIN) {
-        history.push(PageEnum.LOGIN);
+      if (!initialState?.currentUser && !isLoginPage) {
+        window.location.href = '/dlzt/user/login';
       }
     },
     layoutBgImgList: [
