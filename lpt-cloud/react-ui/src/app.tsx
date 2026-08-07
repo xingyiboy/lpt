@@ -4,10 +4,8 @@ import { LinkOutlined } from '@ant-design/icons';
 import type { Settings as LayoutSettings } from '@ant-design/pro-components';
 import { SettingDrawer } from '@ant-design/pro-components';
 import type { RunTimeLayoutConfig } from '@umijs/max';
-import { history, Link } from '@umijs/max';
 import defaultSettings from '../config/defaultSettings';
 import { clearSessionToken, getAccessToken, getRefreshToken, getTokenExpireTime } from './access';
-import { PageEnum } from './enums/pagesEnums';
 import { errorConfig } from './requestErrorConfig';
 import {
   getRemoteMenu,
@@ -59,13 +57,15 @@ export async function getInitialState(): Promise<{
   const fullPath = window.location.pathname;
   const isLoginPage = fullPath === '/dlzt/user/login' || fullPath === '/user/login';
   if (!isLoginPage) {
+    // fetchUserInfo 内部有无 token 保护: 未登录直接返回不请求, 不会产生 401 循环
     const currentUser = await fetchUserInfo();
     return {
       fetchUserInfo,
       currentUser,
       settings: defaultSettings as Partial<LayoutSettings>,
     };
-  }  return {
+  }
+  return {
     fetchUserInfo,
     settings: defaultSettings as Partial<LayoutSettings>,
   };
@@ -158,12 +158,8 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
 };
 
 export async function onRouteChange({ clientRoutes, location }) {
-  const menus = getRemoteMenu();
-  // console.log('onRouteChange', clientRoutes, location, menus);
-  if (menus === null && location.pathname !== PageEnum.LOGIN) {
-    console.log('refresh');
-    history.go(0);
-  }
+  // 注意: 已移除 history.go(0) 自动刷新 —— 未登录时 remoteMenu 为 null 会导致无限整页刷新循环(白屏)
+  // 远程菜单加载已由 render() + patchClientRoutes 处理
 }
 
 // export function patchRoutes({ routes, routeComponents }) {
