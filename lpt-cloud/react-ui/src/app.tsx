@@ -29,6 +29,10 @@ export async function getInitialState(): Promise<{
   fetchUserInfo?: () => Promise<API.CurrentUser | undefined>;
 }> {
   const fetchUserInfo = async () => {
+    // 无 token 直接返回, 不请求 getInfo (避免未登录 401 循环/白屏)
+    if (!getAccessToken()) {
+      return undefined;
+    }
     try {
       const response = await getUserInfo({
         skipErrorHandler: true,
