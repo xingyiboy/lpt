@@ -9,6 +9,12 @@ const { REACT_APP_ENV = 'dev' } = process.env;
 
 export default defineConfig({
   /**
+   * @name 路由 base 前缀
+   * @description 部署在 /dlzt/ 子路径, 必须配 base 让 history.push 自动带前缀,
+   *              否则 SPA 内部跳转会丢前缀落到根路径被其他站点接管
+   */
+  base: '/dlzt/',
+  /**
    * @name 开启 hash 模式
    * @description 让 build 之后的产物包含 hash 后缀。通常用于增量发布和避免浏览器加载缓存。
    * @doc https://umijs.org/docs/api/config#hash
