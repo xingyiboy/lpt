@@ -33,6 +33,10 @@ export async function getInitialState(): Promise<{
       const response = await getUserInfo({
         skipErrorHandler: true,
       });
+      // 未登录(401)时 user 为 undefined: 不抛错避免白屏, 由下方统一跳转登录页
+      if (!response || !response.user) {
+        return undefined;
+      }
       if (response.user.avatar === '') {
         response.user.avatar =
           'https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png';
@@ -52,13 +56,19 @@ export async function getInitialState(): Promise<{
   const { location } = history;
   if (location.pathname !== PageEnum.LOGIN) {
     const currentUser = await fetchUserInfo();
+    // 未登录: 绝对路径跳登录页(带 /dlzt base 前缀), 避免白屏/被其他站点接管
+    if (!currentUser) {
+      const loginUrl = `${window.location.origin}/dlzt/user/login`;
+      if (window.location.href !== loginUrl) {
+        window.location.href = loginUrl;
+      }
+    }
     return {
       fetchUserInfo,
       currentUser,
       settings: defaultSettings as Partial<LayoutSettings>,
     };
-  }
-  return {
+  }  return {
     fetchUserInfo,
     settings: defaultSettings as Partial<LayoutSettings>,
   };
