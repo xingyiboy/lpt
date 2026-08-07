@@ -33,11 +33,8 @@ export async function getInitialState(): Promise<{
       const response = await getUserInfo({
         skipErrorHandler: true,
       });
-      // 未登录(401)时 user 为 undefined: 用绝对路径跳登录页, 避免白屏
+      // 未登录(401)时 user 为 undefined: 直接返回, 不跳转(登录守卫 wrapper 处理)
       if (!response || !response.user) {
-        if (window.location.pathname !== '/dlzt/user/login') {
-          window.location.href = '/dlzt/user/login';
-        }
         return undefined;
       }
       if (response.user.avatar === '') {
@@ -51,9 +48,6 @@ export async function getInitialState(): Promise<{
       } as API.CurrentUser;
     } catch (error) {
       console.log(error);
-      if (window.location.pathname !== '/dlzt/user/login') {
-        window.location.href = '/dlzt/user/login';
-      }
     }
     return undefined;
   };
@@ -102,12 +96,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     },
     footerRender: () => <Footer />,
     onPageChange: () => {
-      const fullPath = window.location.pathname;
-      const isLoginPage = fullPath === '/dlzt/user/login' || fullPath === '/user/login';
-      // 如果没有登录，重定向到 login
-      if (!initialState?.currentUser && !isLoginPage) {
-        window.location.href = '/dlzt/user/login';
-      }
+      // 未登录跳登录页由 routes wrappers 的 AuthGuard 处理, 这里无需重复
     },
     layoutBgImgList: [
       {

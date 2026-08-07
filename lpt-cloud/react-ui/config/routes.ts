@@ -33,6 +33,7 @@ export default [
   },
   {
     path: '/account',
+    wrappers: ['./wrappers/AuthGuard'],
     routes: [
       {
         name: 'acenter',
@@ -49,6 +50,7 @@ export default [
   {
     name: 'system',
     path: '/system',
+    wrappers: ['./wrappers/AuthGuard'],
     routes: [
       {
         name: '字典数据',
@@ -65,6 +67,7 @@ export default [
   {
     name: 'monitor',
     path: '/monitor',
+    wrappers: ['./wrappers/AuthGuard'],
     routes: [
       {
         name: '任务日志',
@@ -76,6 +79,7 @@ export default [
   {
     name: 'tool',
     path: '/tool',
+    wrappers: ['./wrappers/AuthGuard'],
     routes: [
       {
         name: '导入表',
