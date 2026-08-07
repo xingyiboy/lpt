@@ -117,7 +117,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     ],
     links: isDev
       ? [
-        <a key="openapi" href="http://113.45.31.128:9999/home" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center' }}>
+        <a key="openapi" href="https://106.53.46.59/gw/" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center' }}>
         <LinkOutlined />
         <span>前往官网</span>
       </a>,

@@ -32,15 +32,15 @@ const HeaderRight: FC<IProps> = () => {
   }
   // 跳转函数
   const handleInterfaceClick = () => {
-    window.open('http://113.45.31.128:99/user/login', '_blank') // _blank 会在新标签页中打开
+    window.open('https://106.53.46.59/dlzt/user/login', '_blank') // 登录中台
   }
 
   const handleOnlineClick = () => {
-    window.open('https://113.45.31.128', '_blank') // _blank 会在新标签页中打开
+    window.open('https://106.53.46.59/gw/', '_blank') // 项目体验(官网自身)
   }
 
   const handleDocsClick = () => {
-    window.location.href = '/docs'
+    window.location.href = '/gw/docs'
   }
 
   const handleGitHubClick = () => {

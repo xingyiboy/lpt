@@ -25,12 +25,12 @@ if (process.env.npm_config_preview || rawArgv.includes("--preview")) {
 
   app.listen(port, function () {
     console.log(
-      chalk.green(`> Preview at  http://113.45.31.128:${port}${publicPath}`)
+      chalk.green(`> Preview at  http://106.53.46.59:${port}${publicPath}`)
     );
     if (report) {
       console.log(
         chalk.green(
-          `> Report at  http://113.45.31.128:${port}${publicPath}report.html`
+          `> Report at  http://106.53.46.59:${port}${publicPath}report.html`
         )
       );
     }

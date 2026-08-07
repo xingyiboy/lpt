@@ -352,7 +352,7 @@ const DocsPage: React.FC = () => {
             gap: '20px',
             cursor: 'pointer'
           }}
-          onClick={() => (window.location.href = '/home')}
+          onClick={() => (window.location.href = '/gw/home')}
         >
           <Logo src="/favicon.ico" alt="Logo" />
           <Title>LPT 登录中台指南（文档更新时间：2025-8-19）</Title>
@@ -389,14 +389,14 @@ const DocsPage: React.FC = () => {
           <a href="/project">项目实战</a>
           <a href="/video">视频教程</a> */}
           <a
-            href="https://113.45.31.128"
+            href="https://106.53.46.59/gw/"
             target="_blank"
             rel="noopener noreferrer"
           >
             项目体验
           </a>
           <a
-            href="http://113.45.31.128:99/user/login"
+            href="https://106.53.46.59/dlzt/user/login"
             target="_blank"
             rel="noopener noreferrer"
           >

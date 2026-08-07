@@ -27,13 +27,13 @@ const Footer: React.FC = () => {
         {
           key: '令牌通',
           title: '令牌通官网',
-          href: 'http://113.45.31.128:9999/homen',
+          href: 'https://106.53.46.59/gw/',
           blankTarget: true,
         },
         {
           key: 'LPT',
           title: 'LPT',
-          href: 'http://113.45.31.128:9999/homen',
+          href: 'https://106.53.46.59/gw/',
           blankTarget: true,
         },
       ]}

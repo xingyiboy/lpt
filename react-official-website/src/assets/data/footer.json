@@ -4,15 +4,15 @@
     "list": [
       {
         "title": "登录中台使用说明",
-        "url": "/docs/platform/intro"
+        "url": "/gw/docs/platform/intro"
       },
       {
         "title": "快速入门",
-        "url": "/docs/quick-start"
+        "url": "/gw/docs/quick-start"
       },
       {
         "title": "技术选型",
-        "url": "/docs/tech-stack"
+        "url": "/gw/docs/tech-stack"
       }
     ]
   },
@@ -21,19 +21,19 @@
     "list": [
       {
         "title": "项目成员对接",
-        "url": "/docs/user/integration"
+        "url": "/gw/docs/user/integration"
       },
       {
         "title": "验证对接",
-        "url": "/docs/auth/integration"
+        "url": "/gw/docs/auth/integration"
       },
       {
         "title": "接口文档",
-        "url": "/docs/api/docs"
+        "url": "/gw/docs/api/docs"
       },
       {
         "title": "加密方式",
-        "url": "/docs/signature"
+        "url": "/gw/docs/signature"
       }
     ]
   },
@@ -42,19 +42,19 @@
     "list": [
       {
         "title": "私有化部署",
-        "url": "/docs/private-deployment1"
+        "url": "/gw/docs/private-deployment1"
       },
       {
         "title": "验证功能部署",
-        "url": "/docs/private-deployment2"
+        "url": "/gw/docs/private-deployment2"
       },
       {
         "title": "加入团队",
-        "url": "/docs/join-us"
+        "url": "/gw/docs/join-us"
       },
       {
         "title": "代理平台",
-        "url": "/docs/proxy"
+        "url": "/gw/docs/proxy"
       }
     ]
   },
@@ -63,15 +63,15 @@
     "list": [
       {
         "title": "帮助",
-        "url": "/docs/help"
+        "url": "/gw/docs/help"
       },
       {
         "title": "常见问题",
-        "url": "/docs/faq"
+        "url": "/gw/docs/faq"
       },
       {
         "title": "联系我们",
-        "url": "/docs/contact"
+        "url": "/gw/docs/contact"
       }
     ]
   }

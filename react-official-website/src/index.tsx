@@ -14,7 +14,7 @@ const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
   <Provider store={store}>
     <Suspense fallback="">
-      <BrowserRouter>
+      <BrowserRouter basename="/gw">
         <ThemeProvider theme={theme}>
           <App />
         </ThemeProvider>

@@ -136,7 +136,7 @@ const Login: React.FC = () => {
         setSessionToken(response.data?.access_token, response.data?.access_token, expireTime);
         await fetchUserInfo();
         const urlParams = new URL(window.location.href).searchParams;
-        history.push(urlParams.get('redirect') || '/');
+        history.push(urlParams.get('redirect') || '/dlzt/');
 
         // 如果选择记住密码，则加密存储
         if (rememberMe) {
