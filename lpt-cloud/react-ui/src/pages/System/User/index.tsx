@@ -467,8 +467,16 @@ const UserTableList: React.FC = () => {
                 <FormattedMessage id="pages.searchTable.export" defaultMessage="导出" />
               </Button>,
             ]}
-            request={(params) =>
-              getUserList({ ...params, deptId: selectDept.id } as API.System.UserListParams).then(
+            request={(params) => {
+              // ProTable 用 current/pageSize, 但 RuoYi 后端 /system/user/list 期望 pageNum/pageSize
+              // 这里做转换, 避免分页状态错位(current=2 时后端收 pageNum=2 但参数键是 current)
+              const { current, pageSize, ...rest } = params as any;
+              return getUserList({
+                ...rest,
+                pageNum: current,
+                pageSize,
+                deptId: selectDept.id,
+              } as API.System.UserListParams).then(
                 (res) => {
                   const result = {
                     data: res.rows,
@@ -478,7 +486,7 @@ const UserTableList: React.FC = () => {
                   return result;
                 },
               )
-            }
+            }}
             columns={columns}
             rowSelection={{
               onChange: (_, selectedRows) => {

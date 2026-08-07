@@ -36,7 +36,7 @@ const HeaderRight: FC<IProps> = () => {
   }
 
   const handleOnlineClick = () => {
-    window.open('https://106.53.46.59/gw/', '_blank') // 项目体验(官网自身)
+    window.open('https://106.53.46.59/', '_blank') // 项目体验(LPT 单体根)
   }
 
   const handleDocsClick = () => {
