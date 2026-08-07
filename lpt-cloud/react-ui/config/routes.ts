@@ -47,50 +47,7 @@ export default [
       },
     ],
   },
-  {
-    name: 'system',
-    path: '/system',
-    wrappers: ['@/wrappers/AuthGuard'],
-    routes: [
-      {
-        name: '字典数据',
-        path: '/system/dict-data/index/:id',
-        component: './System/DictData',
-      },
-      {
-        name: '分配用户',
-        path: '/system/role-auth/user/:id',
-        component: './System/Role/authUser',
-      },
-    ],
-  },
-  {
-    name: 'monitor',
-    path: '/monitor',
-    wrappers: ['@/wrappers/AuthGuard'],
-    routes: [
-      {
-        name: '任务日志',
-        path: '/monitor/job-log/index/:id',
-        component: './Monitor/JobLog',
-      },
-    ],
-  },
-  {
-    name: 'tool',
-    path: '/tool',
-    wrappers: ['@/wrappers/AuthGuard'],
-    routes: [
-      {
-        name: '导入表',
-        path: '/tool/gen/import',
-        component: './Tool/Gen/import',
-      },
-      {
-        name: '编辑表',
-        path: '/tool/gen/edit',
-        component: './Tool/Gen/edit',
-      },
-    ],
-  },
+  // 注: 系统管理/系统监控/系统工具等真实菜单由后端 /api/system/menu/getRouters 返回,
+  // patchClientRoutes() 会动态注入到 umi 路由表。这里不写死占位, 避免后端无菜单时
+  // 还显示误导性的空架子(如导入表/编辑表/字典数据/分配用户 等)
 ];
